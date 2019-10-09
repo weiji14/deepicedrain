@@ -1,0 +1,16 @@
+name-template: 'v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
+categories:
+  - title: ':building_construction: Model Improvements'
+    label: 'model :building_construction:'
+  - title: ':card_file_box: Dataset Changes'
+    label: 'data :card_file_box:'
+  - title: ':package: Software Revisions'
+    label: 'dependencies'
+change-template: '* $TITLE (#$NUMBER) @$AUTHOR'
+template: |
+  # What's Changed
+
+  $CHANGES
+
+  Full list of commits made since last release viewable at [compare view](https://github.com/weiji14/deepicedrain/compare/v0.0.0...v0.0.0).
