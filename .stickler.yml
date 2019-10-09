@@ -1,0 +1,4 @@
+linters:
+  black:
+    py36: true
+    fixer: false
