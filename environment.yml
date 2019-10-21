@@ -2,6 +2,7 @@ name: deepicedrain
 channels:
   - conda-forge
 dependencies:
+  - conda-forge::gxx_linux-64=7.3.0[md5=c22eb25a5719c7c4f202d1f028a65bff]
   - conda-forge::pip=19.2.3[md5=b475ca5f9afba8ab1203a413caa8e9ad]
   - conda-forge::python=3.7.3[md5=e9385633516bf38da68e983b4f8b9e2a]
   - pip:
