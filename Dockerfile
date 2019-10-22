@@ -28,6 +28,7 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
     $CONDA_DIR/bin/conda config --system --set auto_update_conda false && \
     $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
+    $CONDA_DIR/bin/conda config --system --set pip_interop_enabled true && \
     $CONDA_DIR/bin/conda clean --all --quiet --yes && \
     $CONDA_DIR/bin/conda init --verbose
 
