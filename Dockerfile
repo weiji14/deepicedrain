@@ -51,7 +51,8 @@ RUN conda env update -n base -f environment.yml && \
 COPY Pipfile* ${HOME}/
 RUN conda activate base && \
     export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib && \
-    pipenv install --python ${CONDA_PREFIX}/bin/python --dev --deploy && \
+    pipenv --python ${CONDA_PREFIX}/bin/python --site-packages && \
+    pipenv install --dev --deploy && \
     rm --recursive ${HOME}/.cache/pip* && \
     pipenv graph
 
