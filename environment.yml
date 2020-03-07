@@ -2,11 +2,10 @@ name: deepicedrain
 channels:
   - conda-forge
 dependencies:
-  - rapidsai::cuspatial=0.11.0[md5=72cd66b7cc0171f55e49c6454f524efd]
-  - conda-forge::gxx_linux-64=7.3.0[md5=c22eb25a5719c7c4f202d1f028a65bff]
-  - conda-forge::pip=19.2.3[md5=b475ca5f9afba8ab1203a413caa8e9ad]
-  - conda-forge::proj=6.2.1[md5=648fa04e8ad91cbf483ea0caa175afe3]
-  - conda-forge::python=3.7.3[md5=e9385633516bf38da68e983b4f8b9e2a]
-  - conda-forge::shapely=1.6.4[md5=0ab81ce5446096b2d6c8c088638565fa]
+  - rapidsai::cuspatial=0.12.0[md5=5aa300346cd55d14ba35783d4f684562]
+  - conda-forge::gxx_linux-64=7.3.0[md5=170a667cc95fead22a9e38aba0e3486d]
+  - conda-forge::pip=20.0.2[md5=83d6dc8b3c934afc43ced2355afb4cf2]
+  - conda-forge::proj=6.3.0[md5=6762854bae3df4b6a653cecde6765f0c]
+  - conda-forge::python=3.7.6[md5=2f347da4a40715a5228412e56fb035d8]
   - pip:
     - pipenv==2018.11.26
