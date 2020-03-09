@@ -5,7 +5,6 @@ dependencies:
   - rapidsai::cuspatial=0.12.0[md5=5aa300346cd55d14ba35783d4f684562]
   - conda-forge::gxx_linux-64=7.3.0[md5=170a667cc95fead22a9e38aba0e3486d]
   - conda-forge::pip=20.0.2[md5=83d6dc8b3c934afc43ced2355afb4cf2]
+  - conda-forge::poetry=1.0.5[md5=16c7c7b2a3a28be70c05d370491480dc]
   - conda-forge::proj=6.3.0[md5=6762854bae3df4b6a653cecde6765f0c]
   - conda-forge::python=3.7.6[md5=2f347da4a40715a5228412e56fb035d8]
-  - pip:
-    - pipenv==2018.11.26

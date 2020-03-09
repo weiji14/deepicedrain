@@ -38,28 +38,27 @@ RUN chown -R ${NB_UID} ${HOME}
 USER ${NB_USER}
 WORKDIR ${HOME}
 
-# Change to interactive bash shell, so that `conda activate base` works
+# Change to interactive bash shell, so that `conda activate` works
 SHELL ["/bin/bash", "-ic"]
 
 # Install dependencies in environment.yml file using conda
 COPY environment.yml ${HOME}
-RUN conda env update -n base -f environment.yml && \
+RUN conda env create -n deepicedrain -f environment.yml && \
     conda clean --all --yes && \
-    conda list -n base
+    conda list -n deepicedrain
 
-# Install dependencies in Pipfile.lock using pipenv
-COPY Pipfile* ${HOME}/
-RUN conda activate base && \
-    export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib && \
-    pipenv --python ${CONDA_PREFIX}/bin/python --site-packages && \
-    pipenv install --dev --deploy && \
-    rm --recursive ${HOME}/.cache/pip* && \
-    pipenv graph
+# Install dependencies in poetry.lock using poetry
+COPY pyproject.toml ${HOME}/
+COPY poetry.lock ${HOME}/
+RUN conda activate deepicedrain && \
+    poetry install && \
+    rm --recursive ${HOME}/.cache/pip && \
+    poetry show
 
 # Setup DeepBedMap virtual environment properly
-RUN conda activate base && \
-    pipenv run python -m ipykernel install --user --name deepicedrain && \
-    pipenv run jupyter kernelspec list --json
+RUN conda activate deepicedrain && \
+    python -m ipykernel install --user --name deepicedrain && \
+    jupyter kernelspec list --json
 
 # Copy remaining files to $HOME
 COPY --chown=1000:1000 . ${HOME}
@@ -69,7 +68,7 @@ FROM base AS app
 
 # Run Jupyter Lab via pipenv in conda environment
 EXPOSE 8888
-RUN echo -e '#!/bin/bash -i\nset -e\nconda activate\npipenv run "$@"' > .entrypoint.sh && \
+RUN echo -e '#!/bin/bash -i\nset -e\nconda activate deepicedrain\npoetry run "$@"' > .entrypoint.sh && \
     chmod +x .entrypoint.sh
 ENTRYPOINT ["./.entrypoint.sh"]
 CMD ["jupyter", "lab", "--ip", "0.0.0.0"]
