@@ -14,7 +14,7 @@ intake = {extras = ["complete"], version = "^0.5.4"}
 intake-xarray = "^0.3.1"
 jupyterlab = "^2.0.1"
 lxml = "^4.5.0"
-matplotlib = "^3.2.0"
+matplotlib = "^3.2.1"
 numcodecs = "<=0.6.3"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
