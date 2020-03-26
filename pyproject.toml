@@ -8,7 +8,7 @@ license = "LGPL-3.0-or-later"
 [tool.poetry.dependencies]
 cartopy = "^0.18.0b1"
 cython = "^0.29.16"
-geoviews = "^1.6.6"
+geoviews = "^1.7.0"
 h5netcdf = "^0.8.0"
 intake = {extras = ["complete"], version = "^0.5.4"}
 intake-xarray = "^0.3.1"
