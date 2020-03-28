@@ -18,13 +18,13 @@ RUN adduser --disabled-password \
 # Setup conda
 ENV CONDA_DIR ${HOME}/.conda
 ENV NB_PYTHON_PREFIX ${CONDA_DIR}
-ENV MINICONDA_VERSION 4.7.12.1
+ENV MINICONDA_VERSION 4.8.2
 
 RUN cd /tmp && \
-    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
-    echo "81c773ff87af5cfac79ab862942ab6b3 *Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
-    /bin/bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
-    rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
+    wget --quiet https://repo.continuum.io/miniconda/Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh && \
+    echo "cbda751e713b5a95f187ae70b509403f *Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
+    /bin/bash Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
+    rm Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
     $CONDA_DIR/bin/conda config --system --set auto_update_conda false && \
     $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
@@ -66,7 +66,7 @@ COPY --chown=1000:1000 . ${HOME}
 
 FROM base AS app
 
-# Run Jupyter Lab via pipenv in conda environment
+# Run Jupyter Lab via poetry in conda environment
 EXPOSE 8888
 RUN echo -e '#!/bin/bash -i\nset -e\nconda activate deepicedrain\npoetry run "$@"' > .entrypoint.sh && \
     chmod +x .entrypoint.sh
