@@ -21,7 +21,7 @@ pyepsg = "^0.4.0"
 python = "^3.7"
 pyproj = "^2.6.0"
 toolz = "^0.10.0"
-tqdm = "^4.43.0"
+tqdm = "^4.44.1"
 
 [tool.poetry.dev-dependencies]
 
