@@ -3,9 +3,10 @@ channels:
   - conda-forge
 dependencies:
   - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
+  - conda-forge::gmt=6.0.0[md5=dc8ef0c0d63b1fbd0caf761b939a5bc9]
   - conda-forge::gxx_linux-64=7.3.0[md5=170a667cc95fead22a9e38aba0e3486d]
-  - conda-forge::pip=20.0.2[md5=dde43f9cacebdea0f352c09ed36a8fd9]
+  - conda-forge::pip=20.1[md5=db77ee5f3abc11201e877b7477e81d74]
   - conda-forge::poetry=1.0.5[md5=171d7400c2aae11e3a3a30055de3eaa7]
-  - conda-forge::proj=6.3.0[md5=6762854bae3df4b6a653cecde6765f0c]
-  - conda-forge::python=3.8.2[md5=3db3bfc8eaa73c1e8ef9f706d17cbb98]
+  - conda-forge::proj=6.3.1[md5=dc4391dda7677c7299248d9754672526]
+  - conda-forge::python=3.8.2[md5=db10a54402e61095706da88a2a5bb75d]
   - conda-forge::python-snappy=0.5.4[md5=53a3e800a8e4c28500888ad83faefbbf]
