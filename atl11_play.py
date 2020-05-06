@@ -14,6 +14,22 @@ import xarray as xr
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
+# Create ATL11 processing script
+if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
+    with open(file="ATL06_to_ATL11_Antarctica.sh", mode="w") as f:
+        atlas_folder = "/Volumes/arc_02/REMOTE_SENSING/ICESAT2/ATLAS"
+        for rgt in range(764, 0, -1):  # 764
+            files = glob.glob(
+                f"{atlas_folder}/ATL06.002/**/ATL06*_*_{rgt:04d}??11_*.h5"
+            )
+            f.write(
+                f"python3 ATL06_to_ATL11.py {rgt} 11 --cycles 01 {len(files):02d}"
+                " --directory {atlas_folder}/ATL06.002/ -o ATL11files\n"
+            )
+    # parallel --jobs 20 < ATL06_to_ATL11_Antarctica.sh
+
+
+# %%
 sorted(os.listdir("ATL11.001/"))
 thefile = "ATL11.001/ATL11_076211_0104_02_v001.h5"
 
