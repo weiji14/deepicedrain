@@ -705,17 +705,17 @@ description = "The JupyterLab notebook server extension."
 name = "jupyterlab"
 optional = false
 python-versions = ">=3.5"
-version = "2.0.1"
+version = "2.1.2"
 
 [package.dependencies]
 jinja2 = ">=2.10"
-jupyterlab-server = ">=1.0.0,<1.1.0"
+jupyterlab-server = ">=1.1.0,<2.0"
 notebook = ">=4.3.1"
 tornado = "<6.0.0 || >6.0.0,<6.0.1 || >6.0.1,<6.0.2 || >6.0.2"
 
 [package.extras]
 docs = ["sphinx", "recommonmark", "sphinx-rtd-theme", "sphinx-copybutton"]
-test = ["pytest", "pytest-check-links", "requests"]
+test = ["pytest", "pytest-check-links", "requests", "wheel", "virtualenv"]
 
 [[package]]
 category = "main"
@@ -723,13 +723,14 @@ description = "JupyterLab Server"
 name = "jupyterlab-server"
 optional = false
 python-versions = ">=3.5"
-version = "1.0.7"
+version = "1.1.1"
 
 [package.dependencies]
 jinja2 = ">=2.10"
 json5 = "*"
 jsonschema = ">=3.0.1"
 notebook = ">=4.2.0"
+requests = "*"
 
 [package.extras]
 test = ["pytest", "requests"]
@@ -1605,7 +1606,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "19f3d5591784bb16b21da00f93b4fc0bc2611de31aa40a7e48214572f831944c"
+content-hash = "f029fdd34584048958f244efd8f6dc2edceca4176b45e4f609e1df71e5a62534"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1862,12 +1863,12 @@ jupyter-core = [
     {file = "jupyter_core-4.6.3.tar.gz", hash = "sha256:394fd5dd787e7c8861741880bdf8a00ce39f95de5d18e579c74b882522219e7e"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-2.0.1-py3-none-any.whl", hash = "sha256:7c0a777aae68bc11c2a772d4c1e32c1f2a15388a3fb4fd43fa621e2261c368e9"},
-    {file = "jupyterlab-2.0.1.tar.gz", hash = "sha256:5d1a833a9e49e6d90d68191917cb16a97ff4ec668c26c85d33ebce629df14141"},
+    {file = "jupyterlab-2.1.2-py3-none-any.whl", hash = "sha256:1e43fc25e3237b6fde09c68641d79d2d08375f4dc90800d51425c3772b68e124"},
+    {file = "jupyterlab-2.1.2.tar.gz", hash = "sha256:380c29d674f6dcf8e380615334c7813bb4feb7bbb6222baf1d4c9f8318f4b104"},
 ]
 jupyterlab-server = [
-    {file = "jupyterlab_server-1.0.7-py3-none-any.whl", hash = "sha256:d554d3660049bd1495b190e63a96e06a2707a59936dd58ba3ec1dfe64775987e"},
-    {file = "jupyterlab_server-1.0.7.tar.gz", hash = "sha256:12381712f2e70b68442c03046b3afa6483dad4ccae9f47673ffe8a808cefd8e2"},
+    {file = "jupyterlab_server-1.1.1-py3-none-any.whl", hash = "sha256:f678a77fa74eeec80c15d6c9884f6ff050f5473267bd342944164115768ec759"},
+    {file = "jupyterlab_server-1.1.1.tar.gz", hash = "sha256:b5921872746b1ca109d1852196ed11e537f8aad67a1933c1d4a8ac63f8e61cca"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.1.0-cp27-cp27m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:7f4dd50874177d2bb060d74769210f3bce1af87a8c7cf5b37d032ebf94f0aca3"},
