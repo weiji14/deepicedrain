@@ -756,6 +756,21 @@ requests = "*"
 test = ["pytest", "requests"]
 
 [[package]]
+category = "dev"
+description = "Jupyter notebooks as Markdown documents, Julia, Python or R scripts"
+name = "jupytext"
+optional = false
+python-versions = "*"
+version = "1.4.2"
+
+[package.dependencies]
+nbformat = ">=4.0.0"
+pyyaml = "*"
+
+[package.extras]
+myst = ["myst-parser (>=0.8,<1.0)"]
+
+[[package]]
 category = "main"
 description = "A fast implementation of the Cassowary constraint solver"
 name = "kiwisolver"
@@ -1658,7 +1673,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "7dd2916d8caf46eae4a474e4d65d673e0ae9df78e56d1b305484cbe964cbde30"
+content-hash = "240f62f798c3139806e7542ce116017d29fe8b43aed690f0c3d6a1114c71b2f8"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1925,6 +1940,9 @@ jupyterlab = [
 jupyterlab-server = [
     {file = "jupyterlab_server-1.1.1-py3-none-any.whl", hash = "sha256:f678a77fa74eeec80c15d6c9884f6ff050f5473267bd342944164115768ec759"},
     {file = "jupyterlab_server-1.1.1.tar.gz", hash = "sha256:b5921872746b1ca109d1852196ed11e537f8aad67a1933c1d4a8ac63f8e61cca"},
+]
+jupytext = [
+    {file = "jupytext-1.4.2.tar.gz", hash = "sha256:58b4c6bf48ba2e18bfc2d8358e852b6e3538ff664843398be09157c184ee1a27"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.1.0-cp27-cp27m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:7f4dd50874177d2bb060d74769210f3bce1af87a8c7cf5b37d032ebf94f0aca3"},
