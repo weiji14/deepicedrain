@@ -65,7 +65,7 @@ sources:
           type: datetime
           default: 2019.06.26
           min: 2018.10.14
-          max: 2020.03.06  # note gap from 2019.06.27 to 2019.07.25 (inclusive)
+          max: 2020.03.06  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
         orbitalsegment:
           description: Orbital Segment
           type: str
