@@ -1,32 +1,86 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: title,-all
+#     formats: ipynb,py:hydrogen
+#     text_representation:
+#       extension: .py
+#       format_name: hydrogen
+#       format_version: '1.3'
+#       jupytext_version: 1.4.2
+#   kernelspec:
+#     display_name: deepicedrain
+#     language: python
+#     name: deepicedrain
+# ---
+
 # %%
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
 import os
 import glob
 
+import dask
+import dask.distributed
 import h5py
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyproj
+import tqdm
 import xarray as xr
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
-# Create ATL11 processing script
+
+# %%
+client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
+client
+
+# %%
+# Create ATL06_to_ATL11 processing script, if not already present
 if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
+    # find number of cycles for each reference ground track and each orbital segment
+    func = lambda ref_gt, orb_st: len(
+        glob.glob(f"ATL06.003/**/ATL06*_*_{ref_gt:04d}??{orb_st}_*.h5")
+    )
+    futures = []
+    for referencegroundtrack in range(1387, 0, -1):
+        for orbitalsegment in [10, 11, 12]:  # loop through Antarctic orbital segments
+            numcycles = client.submit(
+                func,
+                referencegroundtrack,
+                orbitalsegment,
+                key=f"{referencegroundtrack:04d}-{orbitalsegment}",
+            )
+            futures.append(numcycles)
+
+    # Prepare string to write into ATL06_to_ATL11_Antarctica.sh bash script
+    writelines = []
+    for f in tqdm.tqdm(
+        iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
+    ):
+        referencegroundtrack, orbitalsegment = f.key.split("-")
+        cycles = f.result()
+        writelines.append(
+            f"python3 ATL11/ATL06_to_ATL11.py"
+            f" {referencegroundtrack} {orbitalsegment}"
+            f" --cycles 01 {cycles:02d}"
+            f" --Release 3"
+            f" --directory 'ATL06.003/**/'"
+            f" --out_dir ATL11.001\n",
+        )
+    writelines.sort()  # sort writelines in place
+
+    # Finally create the bash script
     with open(file="ATL06_to_ATL11_Antarctica.sh", mode="w") as f:
-        atlas_folder = "/Volumes/arc_02/REMOTE_SENSING/ICESAT2/ATLAS"
-        for rgt in range(764, 0, -1):  # 764
-            files = glob.glob(
-                f"{atlas_folder}/ATL06.002/**/ATL06*_*_{rgt:04d}??11_*.h5"
-            )
-            f.write(
-                f"python3 ATL06_to_ATL11.py {rgt} 11 --cycles 01 {len(files):02d}"
-                " --directory {atlas_folder}/ATL06.002/ -o ATL11files\n"
-            )
-    # parallel --jobs 20 < ATL06_to_ATL11_Antarctica.sh
+        f.writelines(writelines)
+
+
+# %%
+# Now use GNU parallel to run the script, command as below:
+# !parallel --jobs 20 < ATL06_to_ATL11_Antarctica.sh
 
 
 # %%
