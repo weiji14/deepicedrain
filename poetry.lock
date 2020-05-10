@@ -116,7 +116,7 @@ description = "A cartographic python library with Matplotlib support for visuali
 name = "cartopy"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "0.18.0b1"
+version = "0.18.0"
 
 [package.dependencies]
 numpy = ">=1.10"
@@ -129,6 +129,7 @@ six = ">=1.3.0"
 epsg = ["pyepsg (>=0.4.0)"]
 ows = ["OWSLib (>=0.8.11)", "pillow (>=1.7.8)"]
 plotting = ["matplotlib (>=1.5.1)", "GDAL (>=1.10.0)", "pillow (>=1.7.8)", "scipy (>=0.10)"]
+tests = ["filelock", "mock (>=1.0.1)", "pytest (>=3.0.0)"]
 
 [[package]]
 category = "main"
@@ -1673,7 +1674,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "240f62f798c3139806e7542ce116017d29fe8b43aed690f0c3d6a1114c71b2f8"
+content-hash = "8bdfc524e4ca20dbb59b4ae0e02aaafb85395e2d1745eaff15f064a6756d71ca"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1713,7 +1714,7 @@ bokeh = [
     {file = "bokeh-1.4.0.tar.gz", hash = "sha256:c60d38a41a777b8147ee4134e6142cea8026b5eebf48149e370c44689869dce7"},
 ]
 cartopy = [
-    {file = "Cartopy-0.18.0b1.tar.gz", hash = "sha256:1cf5b69ff81936ef66c29397ec663d582523b1d000f04e4e4157e742a897ce55"},
+    {file = "Cartopy-0.18.0.tar.gz", hash = "sha256:7ffa317e8f8011e0d965a3ef1179e57a049f77019867ed677d49dcc5c0744434"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
