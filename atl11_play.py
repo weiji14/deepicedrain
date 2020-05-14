@@ -18,6 +18,8 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
 import os
 import glob
+import sys
+import subprocess
 
 import dask
 import dask.distributed
@@ -29,13 +31,12 @@ import pandas as pd
 import pyproj
 import tqdm
 import xarray as xr
+import zarr
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
-
-# %%
-client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=64, threads_per_worker=1, processes=False)
 client
 
 # %%
@@ -78,9 +79,34 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
         f.writelines(writelines)
 
 
+# %% [markdown]
+# ## ATL06 to ATL11
+#
+# Now use [GNU parallel](https://www.gnu.org/software/parallel/parallel_tutorial.html) to run the script in parallel.
+# Will take about 1 week to run on 64 cores.
+#
+# Reference:
+#
+# - O. Tange (2018): GNU Parallel 2018, Mar 2018, ISBN 9781387509881, DOI https://doi.org/10.5281/zenodo.1146014
+
 # %%
-# Now use GNU parallel to run the script, command as below:
-# !parallel --jobs 20 < ATL06_to_ATL11_Antarctica.sh
+# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --results logdir --joblog log --jobs 64 > /dev/null
+
+# %% [markdown]
+# ## Convert from HDF5 to Zarr format
+#
+# For faster data access speeds!
+
+# %%
+# Note, conversion takes about 11 hours, because HDF5 files work on single thread...
+for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
+    name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
+    zarr.convenience.copy_all(
+        source=h5py.File(name=atl11file, mode="r"),
+        dest=zarr.open_group(store=f"ATL11.001z/{name}.zarr", mode="w"),
+        if_exists="skip",
+        without_attrs=True,
+    )
 
 
 # %%
