@@ -14,100 +14,12 @@
 #     name: deepicedrain
 # ---
 
-# %%
+# %% [markdown]
+# # **ATLAS/ICESat-2 Land Ice Height Changes ATL11 Exploratory Data Analysis**
+#
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
-import os
-import glob
-import sys
-import subprocess
-
-import dask
-import dask.distributed
-import h5py
-import itertools
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import pyproj
-import tqdm
-import xarray as xr
-import zarr
-
-os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
-client = dask.distributed.Client(n_workers=64, threads_per_worker=1, processes=False)
-client
-
-# %%
-# Create ATL06_to_ATL11 processing script, if not already present
-if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
-    # find number of cycles for each reference ground track and each orbital segment
-    func = lambda ref_gt, orb_st: len(
-        glob.glob(f"ATL06.003/**/ATL06*_*_{ref_gt:04d}??{orb_st}_*.h5")
-    )
-    futures = []
-    for referencegroundtrack in range(1387, 0, -1):
-        for orbitalsegment in [10, 11, 12]:  # loop through Antarctic orbital segments
-            numcycles = client.submit(
-                func,
-                referencegroundtrack,
-                orbitalsegment,
-                key=f"{referencegroundtrack:04d}-{orbitalsegment}",
-            )
-            futures.append(numcycles)
-
-    # Prepare string to write into ATL06_to_ATL11_Antarctica.sh bash script
-    writelines = []
-    for f in tqdm.tqdm(
-        iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
-    ):
-        referencegroundtrack, orbitalsegment = f.key.split("-")
-        cycles = f.result()
-        writelines.append(
-            f"python3 ATL11/ATL06_to_ATL11.py"
-            f" {referencegroundtrack} {orbitalsegment}"
-            f" --cycles 01 {cycles:02d}"
-            f" --Release 3"
-            f" --directory 'ATL06.003/**/'"
-            f" --out_dir ATL11.001\n",
-        )
-    writelines.sort()  # sort writelines in place
-
-    # Finally create the bash script
-    with open(file="ATL06_to_ATL11_Antarctica.sh", mode="w") as f:
-        f.writelines(writelines)
-
-
-# %% [markdown]
-# ## ATL06 to ATL11
-#
-# Now use [GNU parallel](https://www.gnu.org/software/parallel/parallel_tutorial.html) to run the script in parallel.
-# Will take about 1 week to run on 64 cores.
-#
-# Reference:
-#
-# - O. Tange (2018): GNU Parallel 2018, Mar 2018, ISBN 9781387509881, DOI https://doi.org/10.5281/zenodo.1146014
-
-# %%
-# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --results logdir --joblog log --jobs 64 > /dev/null
-
-# %% [markdown]
-# ## Convert from HDF5 to Zarr format
-#
-# For faster data access speeds!
-
-# %%
-# Note, conversion takes about 11 hours, because HDF5 files work on single thread...
-for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
-    name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
-    zarr.convenience.copy_all(
-        source=h5py.File(name=atl11file, mode="r"),
-        dest=zarr.open_group(store=f"ATL11.001z/{name}.zarr", mode="w"),
-        if_exists="skip",
-        without_attrs=True,
-    )
-
 
 # %%
 sorted(os.listdir("ATL11.001/"))
