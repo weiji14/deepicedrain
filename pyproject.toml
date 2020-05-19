@@ -9,7 +9,7 @@ license = "LGPL-3.0-or-later"
 cartopy = "^0.18.0"
 cython = "^0.29.18"
 datashader = "^0.10.0"
-distributed = "^2.15.2"
+distributed = "^2.16.0"
 geoviews = "^1.7.0"
 h5netcdf = "^0.8.0"
 intake = {extras = ["complete"], version = "^0.5.5"}
