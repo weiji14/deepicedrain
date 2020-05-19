@@ -1,7 +1,6 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: title,-all
 #     formats: ipynb,py:hydrogen
 #     text_representation:
 #       extension: .py
@@ -18,6 +17,133 @@
 # # **ATLAS/ICESat-2 Land Ice Height Changes ATL11 Exploratory Data Analysis**
 #
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
+
+# %%
+import os
+import glob
+
+import pointCollection.is2_calendar
+
+import dask
+import dask.array
+import holoviews as hv
+import hvplot.dask
+import hvplot.pandas
+import hvplot.xarray
+
+# import intake
+import numpy as np
+import pandas as pd
+
+# import pygmt
+import pyproj
+import tqdm
+import xarray as xr
+import zarr
+
+# %%
+client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
+client
+
+# %%
+stores = glob.glob(pathname="ATL11.001z123/ATL11_*.zarr")
+print(f"{len(stores)} reference ground track Zarr stores")
+
+# %%
+ds = xr.open_mfdataset(
+    paths=stores,
+    group="pt123",
+    engine="zarr",
+    combine="nested",
+    concat_dim="ref_pt",
+    backend_kwargs={"consolidated": True},
+)
+# ds = ds.unify_chunks().compute()
+# TODO use intake
+# source = intake.open_ndzarr(url="ATL11.001z123/ATL11_0*.zarr")
+# %% [markdown]
+# ## Pivot into a pandas/dask dataframe
+#
+# To make data analysis and plotting easier,
+# let's flatten our n-dimensional xarray.Dataset
+# to a 2-dimensiontal pandas.DataFrame table format.
+#
+# There are currently 6 cycles (as of March 2020),
+# and by selecting just one cycle at a time,
+# we can see what the height (h_corr)
+# of the ice is like at that time.
+
+# %% [markdown]
+# ### Looking at ICESat-2 Cycle 6
+
+# %%
+# Subset to needed columns
+dss = ds.sel(cycle_number=6)[
+    ["longitude", "latitude", "h_corr", "delta_time", "cycle_number"]
+]
+dss
+
+# %%
+points = hv.Points(
+    data=dss.set_coords(["longitude", "latitude"]),
+    label="Cycle_6",
+    kdims=["longitude", "latitude"],
+    vdims=["h_corr", "delta_time", "cycle_number"],
+    datatype=["xarray"],
+)
+
+# %%
+df = points.dframe()  # convert to pandas.DataFrame, slow
+df = df.dropna()  # drop empty rows
+print(len(df))
+df.head()
+
+# %% [markdown]
+# #### Convert geographic lon/lat to x/y
+#
+# To center our plot on the South Pole,
+# we'll reproject the original longitude/latitude coordinates
+# to the Antarctic Polar Stereographic (EPSG:3031) projection.
+
+# %%
+x, y = pyproj.Proj(projparams=3031)(df.longitude.values, df.latitude.values)
+df["x"], df["y"] = x, y
+
+
+# %% [markdown]
+# #### Convert delta_time to time
+#
+# To get more human-readable datetimes,
+# we'll convert the delta_time attribute from the original GPS time format
+# (nanoseconds since the beginning of ICESat-2 starting epoch)
+# to Coordinated Universal Time (UTC).
+# The reference date for the ICESat-2 Epoch is 2018 January 1st according to
+# https://github.com/SmithB/pointCollection/blob/master/is2_calendar.py#L11-L15
+#
+# TODO: Account for [leap seconds](https://en.wikipedia.org/wiki/Leap_second)
+# in the future.
+
+# %%
+ICESAT2_EPOCH = pointCollection.is2_calendar.t_0()
+# ICESAT2_EPOCH = datetime.datetime(2018, 1, 1, 0, 0, 0)
+df["time"] = ICESAT2_EPOCH + df.delta_time
+
+# %%
+df.head()
+
+# %% [markdown]
+# #### Plot a sample of the points
+#
+# Let's take a look at an interactive map
+# of the ICESat-2 ATL11 height for Cycle 6!
+# We'll plot a random sample (n=5 million)
+# of the points instead of the whole dataset,
+# it should give a good enough picture.
+
+# %%
+df.sample(n=5_000_000).hvplot.points(
+    x="x", y="y", c="h_corr", cmap="Blues", rasterize=True, hover=True,
+)
 
 # %%
 
