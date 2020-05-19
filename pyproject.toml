@@ -7,7 +7,7 @@ license = "LGPL-3.0-or-later"
 
 [tool.poetry.dependencies]
 cartopy = "^0.18.0"
-cython = "^0.29.16"
+cython = "^0.29.18"
 datashader = "^0.10.0"
 distributed = "^2.15.2"
 geoviews = "^1.7.0"
