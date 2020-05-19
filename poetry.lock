@@ -1641,13 +1641,17 @@ description = "N-D labeled arrays and datasets in Python"
 name = "xarray"
 optional = false
 python-versions = ">=3.6"
-version = "0.15.1"
+version = "0.15.2.dev98+g4ce30073"
 
 [package.dependencies]
 numpy = ">=1.15"
 pandas = ">=0.25"
 setuptools = ">=41.2"
 
+[package.source]
+reference = "4ce3007362af4e22dbe5836e95bebd91cde734b7"
+type = "git"
+url = "https://github.com/Mikejmnez/xarray.git"
 [[package]]
 category = "main"
 description = "An implementation of chunked, compressed, N-dimensional arrays for Python."
@@ -1674,7 +1678,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "8bdfc524e4ca20dbb59b4ae0e02aaafb85395e2d1745eaff15f064a6756d71ca"
+content-hash = "9477844167f4fe4d9800c9ea31175643eec6a26e0cc3ab50cfc070f6756ffb3c"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2683,10 +2687,7 @@ webob = [
     {file = "WebOb-1.8.6-py2.py3-none-any.whl", hash = "sha256:a3c89a8e9ba0aeb17382836cdb73c516d0ecf6630ec40ec28288f3ed459ce87b"},
     {file = "WebOb-1.8.6.tar.gz", hash = "sha256:aa3a917ed752ba3e0b242234b2a373f9c4e2a75d35291dcbe977649bd21fd108"},
 ]
-xarray = [
-    {file = "xarray-0.15.1-py3-none-any.whl", hash = "sha256:a65ab828c6e139b61b93f170f4c96982b764beb27e55bcd87ef4a34285f8a19d"},
-    {file = "xarray-0.15.1.tar.gz", hash = "sha256:64e3138d87b641e22fe7a003c94abc685896b247b63e434505c1e6b38c91a8fb"},
-]
+xarray = []
 zarr = [
     {file = "zarr-2.3.2.tar.gz", hash = "sha256:c62d0158fb287151c978904935a177b3d2d318dea3057cfbeac8541915dfa105"},
 ]
