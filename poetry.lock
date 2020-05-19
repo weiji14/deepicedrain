@@ -1655,6 +1655,22 @@ url = "https://github.com/Mikejmnez/xarray.git"
 
 [[package]]
 category = "main"
+description = "Interactive visualisations for xarrays"
+name = "xrviz"
+optional = false
+python-versions = "*"
+version = "0.1.4"
+
+[package.dependencies]
+datashader = "*"
+holoviews = "*"
+hvplot = "*"
+netcdf4 = "*"
+panel = ">=0.7.0"
+xarray = ">=0.14.1"
+
+[[package]]
+category = "main"
 description = "An implementation of chunked, compressed, N-dimensional arrays for Python."
 name = "zarr"
 optional = false
@@ -1679,7 +1695,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "1d66513b74e0432798abc4e1774227c3d81bb95987b8de0bb76b4008d2d89b8f"
+content-hash = "e2e393c898b9ced960fb25e80dd654ee21ac5a94dae2cad47700c88b7c840334"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2690,6 +2706,9 @@ webob = [
     {file = "WebOb-1.8.6.tar.gz", hash = "sha256:aa3a917ed752ba3e0b242234b2a373f9c4e2a75d35291dcbe977649bd21fd108"},
 ]
 xarray = []
+xrviz = [
+    {file = "xrviz-0.1.4.tar.gz", hash = "sha256:65deb63b695f4edcfa5d4eb85319c0f48ac43e2fbc796f7b8fd3e52be2261206"},
+]
 zarr = [
     {file = "zarr-2.3.2.tar.gz", hash = "sha256:c62d0158fb287151c978904935a177b3d2d318dea3057cfbeac8541915dfa105"},
 ]
