@@ -1,27 +1,75 @@
 metadata:
   version: 1
 sources:
+  icesat2atlasdownloader:
+    args:
+      urlpath:
+        - simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL{{atlproduct}}.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL{{atlproduct}}_*_*10_00{{version}}_0{{revision}}.h5
+        - simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL{{atlproduct}}.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL{{atlproduct}}_*_*11_00{{version}}_0{{revision}}.h5
+        - simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL{{atlproduct}}.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL{{atlproduct}}_*_*12_00{{version}}_0{{revision}}.h5
+      xarray_kwargs:
+        combine: nested
+        concat_dim: ""
+        engine: h5netcdf
+      storage_options:
+        simplecache:
+          cache_storage: ATL{{atlproduct}}.00{{version}}/{{date.strftime("%Y.%m.%d")}}
+          same_names: True
+    parameters:
+      atlproduct:
+        description: ICESat-2/ATLAS product number
+        type: str
+        default: "06"
+        allowed: ["02", "03", "04", "06", "07", "08", "09", "10", "12", "13"]
+      date:
+        description: Year, month, and day of data acquisition
+        type: datetime
+        default: 2019.06.26
+        min: 2018.10.14
+        max: 2020.03.06  # note gap from 2019.06.27 to 2019.07.25 (inclusive)
+      orbitalsegment:
+        description: Orbital Segment
+        type: list
+        default: [10, 11, 12]
+      version:
+        description: Version number
+        type: int
+        default: 3
+        allowed: [1, 2, 3]
+      revision:
+        description: Revision number
+        type: int
+        default: 1
+    driver: intake_xarray.netcdf.NetCDFSource
   icesat2atl06:
     args:
       chunks:
         delta_time: 50000
       path_as_pattern: ATL06_{datetime:%Y%m%d%H%M%S}_{referencegroundtrack:4}{cyclenumber:2}{orbitalsegment:2}_{version:3}_{revision:2}.h5
-      # urlpath: https://n5eil02u.ecs.nsidc.org/opendap/hyrax/ATLAS/ATL06.002/{{date.strftime("%Y.%m.%d")}}/ATL06_*_*{{orbitalsegment}}_002_01.h5
-      urlpath: https://n5eil01u.ecs.nsidc.org/ATLAS/ATL06.002/{{date.strftime("%Y.%m.%d")}}/ATL06_*_*{{orbitalsegment}}_002_01.h5
+      # urlpath: https://n5eil02u.ecs.nsidc.org/opendap/hyrax/ATLAS/ATL06.003/{{date.strftime("%Y.%m.%d")}}/ATL06_*_*{{orbitalsegment}}_003_01.h5
+      urlpath: simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL06.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL06_*_{{referencegroundtrack}}*{{orbitalsegment}}_00{{version}}_01.h5
       xarray_kwargs:
-        combine: nested
-        concat_dim: referencegroundtrack  # from 0000 to 1387
+        combine: by_coords
         engine: h5netcdf
         group: /{{laser}}/land_ice_segments
+        mask_and_scale: true
         parallel: true
+      storage_options:
+        simplecache:
+          cache_storage: ATL06.00{{version}}/{{date.strftime("%Y.%m.%d")}}
+          same_names: True
     # https://intake.readthedocs.io/en/latest/catalog.html#parameter-definition
     parameters:
         date:
           description: Year, month, and day of data acquisition
           type: datetime
-          default: 2019.06.26
+          default: 2020.03.06
           min: 2018.10.14
-          max: 2019.11.15  # note gap from 2019.06.27 to 2019.07.25 (inclusive)
+          max: 2020.03.06  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
+        referencegroundtrack:
+          description: ICESat-2 Reference Ground Track number
+          type: str
+          default: ""  # Default: "" (all), min: "0000", max: "1387"
         orbitalsegment:
           description: Orbital Segment
           type: str
@@ -32,18 +80,24 @@ sources:
           type: str
           default: gt2l
           allowed: ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
+        version:
+          description: Version number
+          type: int
+          default: 3
+          allowed: [1, 2, 3]
     description: ''
     driver: intake_xarray.netcdf.NetCDFSource
-    cache:
-      - argkey: urlpath
-        regex: 'n5eil01u.ecs.nsidc.org'
-        type: file
     metadata:
       plots:
         quickview:
           kind: points
           x: longitude
           y: latitude
-          datashade: True
+          c: h_li
+          cmap: Blues
+          rasterize: True
+          hover: True
           width: 800
           height: 500
+          geo: True
+          coastline: True
