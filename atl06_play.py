@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: ipynb,py:hydrogen
 #     text_representation:
 #       extension: .py
 #       format_name: hydrogen
@@ -36,6 +37,7 @@ import logging
 import netrc
 import os
 
+import cartopy
 import dask
 import dask.distributed
 import hvplot.dask
@@ -45,6 +47,7 @@ import intake
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import pyproj
 import requests
 import tqdm
 import xarray as xr
@@ -53,12 +56,11 @@ import xarray as xr
 
 # %%
 # Configure intake and set number of compute cores for data download
-intake.config.conf["cache_dir"] = "catdir"  # saves data to current folder
 intake.config.conf["download_progress"] = False  # disable automatic tqdm progress bars
 
 logging.basicConfig(level=logging.WARNING)
 
-# Limit compute to 8 cores for download part using intake
+# Limit compute to 10 cores for download part using intake
 # Can possibly go up to 10 because there are 10 DPs?
 # See https://n5eil02u.ecs.nsidc.org/opendap/hyrax/catalog.xml
 client = dask.distributed.Client(n_workers=10, threads_per_worker=1)
@@ -72,9 +74,8 @@ client
 # and view it using [xarray](https://xarray.pydata.org) and [hvplot](https://hvplot.pyviz.org).
 
 # %%
-catalog = intake.open_catalog(
-    uri="catalog.yaml"
-)  # open the local catalog file containing ICESAT2 stuff
+# open the local catalog file containing ICESat-2 stuff
+catalog = intake.open_catalog(uri="catalog.yaml")
 
 # %%
 try:
@@ -87,15 +88,24 @@ except FileNotFoundError as error_msg:
     )
     raise
 
-dataset = (
-    catalog.icesat2atl06.to_dask().unify_chunks()
-)  # depends on .netrc file in home folder
+# depends on .netrc file in home folder
+dataset = catalog.icesat2atl06.to_dask().unify_chunks()
 dataset
 
 # %%
 # dataset.hvplot.points(
-#    x="longitude", y="latitude", datashade=True, width=800, height=500, hover=True,
-#    #geo=True, coastline=True, crs=cartopy.crs.PlateCarree(), #projection=cartopy.crs.Stereographic(central_latitude=-71),
+#     x="longitude",
+#     y="latitude",
+#     c="h_li",
+#     cmap="Blues",
+#     rasterize=True,
+#     hover=True,
+#     width=800,
+#     height=500,
+#     geo=True,
+#     coastline=True,
+#     crs=cartopy.crs.PlateCarree(),
+#     projection=cartopy.crs.Stereographic(central_latitude=-71),
 # )
 catalog.icesat2atl06.hvplot.quickview()
 
@@ -151,32 +161,6 @@ except AssertionError:
         " please delete those folders and retry again!"
     )
 
-# %% [raw]
-# with tqdm.tqdm(total=len(dates)) as pbar:
-#     for date in dates:
-#         source = catalog.icesat2atlasdownloader(date=date)
-#         source_urlpath = source.urlpath
-#         try:
-#             pbar.set_postfix_str(f"Obtaining files from {source_urlpath}")
-#             source.discover()  # triggers download of the file(s), or loads from cache
-#         except (requests.HTTPError, OSError, KeyError, TypeError) as error:
-#             # clear cache and try again
-#             print(f"Errored: {error}, trying again")
-#             source.cache[0].clear_cache(urlpath=source_urlpath)
-#             source.discover()
-#         except (ValueError, pd.core.index.InvalidIndexError) as error:
-#             print(f"Errored: {error}, ignoring")
-#             pass
-#         pbar.update(n=1)
-#         #finally:
-#         #    source.close()
-#     #    del source
-
-# %% [raw]
-# catalog.icesat2atl06(date="2019.06.24", laser="gt1l").discover()  # ValueError??
-# catalog.icesat2atl06(date="2019.02.28", laser="gt2l").discover()  # InvalidIndexError
-# catalog.icesat2atl06(date="2019.11.13", laser="gt2l").discover()  # ValueError
-
 # %%
 
 # %% [markdown]
@@ -186,22 +170,21 @@ except AssertionError:
 # we can have some fun with visualizing the point clouds!
 
 # %%
-dataset = (
-    catalog.icesat2atl06.to_dask()
-)  # unfortunately, we have to load this in dask to get the path...
-root_directory = os.path.dirname(os.path.dirname(dataset.encoding["source"]))
+root_directory = os.path.dirname(
+    catalog.icesat2atl06.storage_options["simplecache"]["cache_storage"]
+)
 
 # %%
 def get_crossing_dates(
     catalog_entry: intake.catalog.local.LocalCatalogEntry,
     root_directory: str,
     referencegroundtrack: str = "????",
-    datetime="*",
-    cyclenumber="??",
-    orbitalsegment="??",
-    version="003",
-    revision="01",
-):
+    datetimestr: str = "*",
+    cyclenumber: str = "??",
+    orbitalsegment: str = "??",
+    version: str = "003",
+    revision: str = "01",
+) -> dict:
     """
     Given a 4-digit reference groundtrack (e.g. 1234),
     we output a dictionary where the
@@ -210,10 +193,10 @@ def get_crossing_dates(
     """
 
     # Get a glob string that looks like "ATL06_??????????????_XXXX????_002_01.h5"
-    globpath = catalog_entry.path_as_pattern
-    if datetime == "*":
-        globpath = globpath.replace("{datetime:%Y%m%d%H%M%S}", "??????????????")
-    globpath = globpath.format(
+    globpath: str = catalog_entry.path_as_pattern
+    if datetimestr == "*":
+        globpath: str = globpath.replace("{datetime:%Y%m%d%H%M%S}", "??????????????")
+    globpath: str = globpath.format(
         referencegroundtrack=referencegroundtrack,
         cyclenumber=cyclenumber,
         orbitalsegment=orbitalsegment,
@@ -222,11 +205,11 @@ def get_crossing_dates(
     )
 
     # Get list of filepaths (dates are contained in the filepath)
-    globedpaths = glob.glob(os.path.join(root_directory, "??????????", globpath))
+    globedpaths: list = glob.glob(os.path.join(root_directory, "??????????", globpath))
 
     # Pick out just the dates in "YYYY.MM.DD" format from the globedpaths
     # crossingdates = [os.path.basename(os.path.dirname(p=p)) for p in globedpaths]
-    crossingdates = {
+    crossingdates: dict = {
         os.path.basename(os.path.dirname(p=p)): p for p in sorted(globedpaths)
     }
 
@@ -235,9 +218,9 @@ def get_crossing_dates(
 
 # %%
 crossing_dates_dict = {}
-for rgt in range(0, 1388):  # ReferenceGroundTrack goes from 0001 to 1387
-    referencegroundtrack = f"{rgt}".zfill(4)
-    crossing_dates = dask.delayed(get_crossing_dates)(
+for rgt in range(1, 1388):  # ReferenceGroundTrack goes from 0001 to 1387
+    referencegroundtrack: str = f"{rgt}".zfill(4)
+    crossing_dates: dict = dask.delayed(get_crossing_dates)(
         catalog_entry=catalog.icesat2atl06,
         root_directory=root_directory,
         referencegroundtrack=referencegroundtrack,
@@ -252,33 +235,22 @@ crossing_dates_dict["0349"].keys()
 # %% [markdown]
 # ![ICESat-2 Laser Beam Pattern](https://ars.els-cdn.com/content/image/1-s2.0-S0034425719303712-gr1.jpg)
 
-# %% [raw]
-# # For one laser along one reference ground track,
-# # concatenate all points from all dates into one xr.Dataset
-# da = xr.concat(
-#     objs=(
-#         catalog.icesat2atl06(date=date, laser="gt1r")
-#         .to_dask()
-#         .sel(referencegroundtrack=referencegroundtrack)
-#         for date in crossing_dates
-#     ),
-#     dim=pd.Index(data=crossing_dates, name="crossingdates"),
-# )
-
 # %%
-def six_laser_beams(crossing_dates: list):
+def six_laser_beams(filepaths: list) -> dask.dataframe.DataFrame:
     """
     For all 6 lasers along one reference ground track,
-    concatenate all points from all crossing dates into one xr.Dataset
-    """
-    lasers = ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
+    concatenate all points from all crossing dates into one Dask DataFrame
 
-    objs = [
+    E.g. if there are 5 crossing dates and 6 lasers,
+    there would be data from 5 x 6 = 30 files being concatenated together.
+    """
+    lasers: list = ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
+
+    objs: list = [
         xr.open_mfdataset(
-            paths=crossing_dates.values(),
-            combine="nested",
+            paths=filepaths,
+            combine="by_coords",
             engine="h5netcdf",
-            concat_dim="delta_time",
             group=f"{laser}/land_ice_segments",
             parallel=True,
         ).assign_coords(coords={"laser": laser})
@@ -286,13 +258,12 @@ def six_laser_beams(crossing_dates: list):
     ]
 
     try:
-        da = xr.concat(
-            objs=objs, dim="laser"
-        )  # dim=pd.Index(data=lasers, name="laser")
-        df = da.unify_chunks().to_dask_dataframe()
+        da: xr.Dataset = xr.concat(objs=objs, dim="laser")
+        df: dask.dataframe.DataFrame = da.unify_chunks().to_dask_dataframe()
     except ValueError:
-        # ValueError: cannot reindex or align along dimension 'delta_time' because the index has duplicate values
-        df = dask.dataframe.concat(
+        # ValueError: cannot reindex or align along dimension 'delta_time'
+        # because the index has duplicate values
+        df: dask.dataframe.DataFrame = dask.dataframe.concat(
             [obj.unify_chunks().to_dask_dataframe() for obj in objs]
         )
 
@@ -301,17 +272,15 @@ def six_laser_beams(crossing_dates: list):
 
 # %%
 dataset_dict = {}
-# for referencegroundtrack in list(crossing_dates_dict)[349:350]:   # ReferenceGroundTrack goes from 0001 to 1387
-for referencegroundtrack in list(crossing_dates_dict)[
-    340:350
-]:  # ReferenceGroundTrack goes from 0001 to 1387
+# ReferenceGroundTrack goes from 0001 to 1387
+for referencegroundtrack in list(crossing_dates_dict)[348:349]:
     # print(referencegroundtrack)
-    if len(crossing_dates_dict[referencegroundtrack]) > 0:
-        da = dask.delayed(six_laser_beams)(
-            crossing_dates=crossing_dates_dict[referencegroundtrack]
+    filepaths = list(crossing_dates_dict[referencegroundtrack].values())
+    if len(filepaths) > 0:
+        dataset_dict[referencegroundtrack] = dask.delayed(obj=six_laser_beams)(
+            filepaths=filepaths
         )
-        # da = six_laser_beams(crossing_dates=crossing_dates_dict[referencegroundtrack])
-        dataset_dict[referencegroundtrack] = da
+        # df = six_laser_beams(filepaths=filepaths)
 
 # %%
 df = dataset_dict["0349"].compute()  # loads into a dask dataframe (lazy)
@@ -322,33 +291,14 @@ df
 # %%
 
 # %%
-dataset_dict = dask.compute(dataset_dict)[
-    0
-]  # compute every referencegroundtrack, slow... though somewhat parallelized
+# compute every referencegroundtrack, slow... though somewhat parallelized
+# dataset_dict = dask.compute(dataset_dict)[0]
 
 # %%
-bdf = dask.dataframe.concat(dfs=list(dataset_dict.values()))
+# big dataframe containing data across all 1387 reference ground tracks!
+# bdf = dask.dataframe.concat(dfs=list(dataset_dict.values()))
 
 # %%
-
-# %%
-da.sel(crossingdates="2018.10.21").h_li.unify_chunks().drop(
-    labels=["longitude", "datetime", "cyclenumber"]
-).hvplot(
-    kind="scatter",
-    x="latitude",
-    by="crossingdates",
-    datashade=True,
-    dynspread=True,
-    width=800,
-    height=500,
-    dynamic=True,
-    flip_xaxis=True,
-    hover=True,
-)
-
-# %%
-
 # %% [raw]
 # # https://xarray.pydata.org/en/stable/combining.html#concatenate
 # # For all 6 lasers one one date ~~along one reference ground track~~,
@@ -356,9 +306,8 @@ da.sel(crossingdates="2018.10.21").h_li.unify_chunks().drop(
 # lasers = ["gt1l", "gt1r", "gt2l", "gt2r", "gt3l", "gt3r"]
 # da = xr.concat(
 #     objs=(
-#         catalog.icesat2atl06(laser=laser)
+#         catalog.icesat2atl06(laser=laser, referencegroundtrack=referencegroundtrack)
 #         .to_dask()
-#         #.sel(referencegroundtrack=referencegroundtrack)
 #         for laser in lasers
 #     ),
 #     dim=pd.Index(data=lasers, name="laser")
@@ -367,18 +316,20 @@ da.sel(crossingdates="2018.10.21").h_li.unify_chunks().drop(
 # %%
 
 # %% [markdown]
-# ## Plot them points!
+# ## Plot ATL06 points!
 
 # %%
-# convert dask.dataframe to pd.DataFrame
-df = df.compute()
+# Convert dask.DataFrame to pd.DataFrame
+df: pd.DataFrame = df.compute()
 
 # %%
+# Drop points with poor quality
 df = df.dropna(subset=["h_li"]).query(expr="atl06_quality_summary == 0").reset_index()
 
 # %%
-dfs = df.query(expr="0 <= segment_id - 1443620 < 900")
-dfs
+# Get a small random sample of our data
+dfs = df.sample(n=1_000, random_state=42)
+dfs.head()
 
 # %%
 dfs.hvplot.scatter(
@@ -390,8 +341,8 @@ dfs.hvplot.scatter(
     # width=800, height=500, colorbar=True
 )
 
-# %%
-import pyproj
+# %% [markdown]
+# ### Transform from EPSG:4326 (lat/lon) to EPSG:3031 (Antarctic Polar Stereographic)
 
 # %%
 transformer = pyproj.Transformer.from_crs(
@@ -406,7 +357,7 @@ dfs["x"], dfs["y"] = transformer.transform(
 )
 
 # %%
-dfs
+dfs.head()
 
 # %%
 dfs.hvplot.scatter(
@@ -419,6 +370,7 @@ dfs.hvplot.scatter(
 )
 
 # %%
+# Plot cross section view
 dfs.hvplot.scatter(x="x", y="h_li", by="laser")
 
 # %%
@@ -427,7 +379,10 @@ dfs.to_pickle(path="icesat2_sample.pkl")
 # %%
 
 # %% [markdown]
-# ## Old making a DEM grid surface from points
+# ## Experimental Work-in-Progress stuff below
+
+# %% [markdown]
+# ### Old way of making a DEM grid surface from points
 
 # %%
 import scipy
