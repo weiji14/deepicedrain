@@ -45,6 +45,15 @@ import zarr
 client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
 client
 
+# %% [markdown]
+# # Load Data from Zarr
+#
+# Let's start by getting our data and running some preprocessing steps:
+# - Load 1385 (reference ground tracks) ATL11/*.zarr files
+# - Convert coordinates from longitude/latitude to x/y
+# - Convert GPS delta_time to UTC time
+# - Mask out low quality height (h_corr) data
+
 # %%
 stores = glob.glob(pathname="ATL11.001z123/ATL11_*.zarr")
 print(f"{len(stores)} reference ground track Zarr stores")
@@ -62,56 +71,32 @@ ds = xr.open_mfdataset(
 # TODO use intake
 # source = intake.open_ndzarr(url="ATL11.001z123/ATL11_0*.zarr")
 # %% [markdown]
-# ## Pivot into a pandas/dask dataframe
-#
-# To make data analysis and plotting easier,
-# let's flatten our n-dimensional xarray.Dataset
-# to a 2-dimensiontal pandas.DataFrame table format.
-#
-# There are currently 6 cycles (as of March 2020),
-# and by selecting just one cycle at a time,
-# we can see what the height (h_corr)
-# of the ice is like at that time.
-
-# %% [markdown]
-# ### Looking at ICESat-2 Cycle 6
-
-# %%
-# Subset to needed columns
-dss = ds.sel(cycle_number=6)[
-    ["longitude", "latitude", "h_corr", "delta_time", "cycle_number"]
-]
-dss
-
-# %%
-points = hv.Points(
-    data=dss.set_coords(["longitude", "latitude"]),
-    label="Cycle_6",
-    kdims=["longitude", "latitude"],
-    vdims=["h_corr", "delta_time", "cycle_number"],
-    datatype=["xarray"],
-)
-
-# %%
-df = points.dframe()  # convert to pandas.DataFrame, slow
-df = df.dropna()  # drop empty rows
-print(len(df))
-df.head()
-
-# %% [markdown]
-# #### Convert geographic lon/lat to x/y
+# ## Convert geographic lon/lat to x/y
 #
 # To center our plot on the South Pole,
 # we'll reproject the original longitude/latitude coordinates
 # to the Antarctic Polar Stereographic (EPSG:3031) projection.
 
 # %%
-x, y = pyproj.Proj(projparams=3031)(df.longitude.values, df.latitude.values)
-df["x"], df["y"] = x, y
+lonlat_to_xy = lambda longitude, latitude: pyproj.Proj(projparams=3031)(
+    longitude, latitude
+)
+
+
+# %%
+x, y = lonlat_to_xy(ds.longitude.values, ds.latitude.values)
+ds["x"] = xr.DataArray(data=x, coords=ds.longitude.coords)
+ds["y"] = xr.DataArray(data=y, coords=ds.latitude.coords)
+
+
+# %%
+# Also set x, y as coordinates in xarray.Dataset
+ds = ds.set_coords(names=["x", "y"])
+# ds = ds.set_index(x="x", y="y")
 
 
 # %% [markdown]
-# #### Convert delta_time to time
+# ## Convert delta_time to utc_time
 #
 # To get more human-readable datetimes,
 # we'll convert the delta_time attribute from the original GPS time format
@@ -124,15 +109,76 @@ df["x"], df["y"] = x, y
 # in the future.
 
 # %%
-ICESAT2_EPOCH = pointCollection.is2_calendar.t_0()
-# ICESAT2_EPOCH = datetime.datetime(2018, 1, 1, 0, 0, 0)
-df["time"] = ICESAT2_EPOCH + df.delta_time
+ICESAT2_EPOCH = np.datetime64(pointCollection.is2_calendar.t_0())
+# ICESAT2_EPOCH = np.datetime64(datetime.datetime(2018, 1, 1, 0, 0, 0))
 
 # %%
+utc_time = ICESAT2_EPOCH + ds.delta_time.values
+ds["utc_time"] = xr.DataArray(data=utc_time, coords=ds.delta_time.coords)
+
+# %% [markdown]
+# ## Mask out low quality height data
+#
+# Good quality data has value 0, not so good is 1-8.
+# Look at the 'quality_summary_ref_surf' attribute in `ds`
+# for more information on what the quality flags mean.
+#
+# We'll mask out values other than 0 with NaN using xarray's
+# [where](http://xarray.pydata.org/en/v0.15.1/indexing.html#masking-with-where).
+
+# %%
+ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
+
+# %%
+
+# %% [markdown]
+# # Pivot into a pandas/dask dataframe
+#
+# To make data analysis and plotting easier,
+# let's flatten our n-dimensional `xarray.Dataset`
+# to a 2-dimensiontal `pandas.DataFrame` table format.
+#
+# There are currently 6 cycles (as of March 2020),
+# and by selecting just one cycle at a time,
+# we can see what the height (`h_corr`)
+# of the ice is like at that time.
+
+# %% [markdown]
+# ## Looking at ICESat-2 Cycle 6
+
+# %%
+cycle_number: int = 6
+# Subset to essential columns
+essential_columns = [
+    "x",
+    "y",
+    "utc_time",
+    "h_corr",
+    "longitude",
+    "latitude",
+    "delta_time",
+    "cycle_number",
+]
+dss = ds.sel(cycle_number=cycle_number)[[*essential_columns]]
+dss
+
+# %%
+points = hv.Points(
+    data=dss,
+    label=f"Cycle_{cycle_number}",
+    kdims=["x", "y"],
+    vdims=["utc_time", "h_corr", "cycle_number"],
+    datatype=["xarray"],
+)
+
+# %%
+df = points.dframe()  # convert to pandas.DataFrame, slow
+df = df.dropna()  # drop empty rows
+print(len(df))
 df.head()
 
 # %% [markdown]
-# #### Plot a sample of the points
+# ### Plot a sample of the points over Antarctica
 #
 # Let's take a look at an interactive map
 # of the ICESat-2 ATL11 height for Cycle 6!
@@ -142,7 +188,69 @@ df.head()
 
 # %%
 df.sample(n=5_000_000).hvplot.points(
-    x="x", y="y", c="h_corr", cmap="Blues", rasterize=True, hover=True,
+    title=f"Elevation (metres) at Cycle {cycle_number}",
+    x="x",
+    y="y",
+    c="h_corr",
+    cmap="Blues",
+    rasterize=True,
+    hover=True,
+)
+
+# %% [markdown]
+# ## Subset to geographic region of interest (optional)
+#
+# Take a geographical subset and save to a NetCDF/Zarr format for distribution.
+
+# %%
+# Kamb Ice Stream bounding box in EPSG:3031 coordinates
+xmin, xmax, ymin, ymax = (
+    -739741.7702261859,
+    -411054.19240523444,
+    -699564.516934089,
+    -365489.6822096751,
+)
+cond = xr.ufuncs.logical_and(
+    xr.ufuncs.logical_and(ds.x > xmin, ds.x < xmax),
+    xr.ufuncs.logical_and(ds.y > ymin, ds.y < ymax),
+)
+
+# %%
+# Do the actual computation to find data points within region of interest
+ds_subset = ds.where(cond=cond, drop=True)
+ds_subset = ds_subset.unify_chunks()
+ds_subset = ds_subset.compute()
+
+# %%
+# Save to NetCDF/Zarr formats for distribution
+ds_subset.to_netcdf(
+    path="atl11_subset.nc", engine="h5netcdf",
+)
+ds_subset.to_zarr(
+    store="atl11_subset.zarr", mode="w", consolidated=True,
+)
+
+# %%
+# Look at Cycle Number 6 only for plotting
+points_subset = hv.Points(
+    data=ds_subset.sel(cycle_number=6)[[*essential_columns]],
+    label="Cycle_6",
+    kdims=["x", "y"],
+    vdims=["utc_time", "h_corr", "cycle_number"],
+    datatype=["xarray"],
+)
+df_subset = points_subset.dframe()
+
+# %%
+# Plot our subset of points on an interactive map
+df_subset.hvplot.points(
+    title=f"Elevation (metres) at Cycle {cycle_number}",
+    x="x",
+    y="y",
+    c="h_corr",
+    cmap="Blues",
+    rasterize=True,
+    hover=True,
 )
 
 # %%
