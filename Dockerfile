@@ -55,6 +55,11 @@ RUN conda activate deepicedrain && \
     rm --recursive ${HOME}/.cache/pip && \
     poetry show
 
+# Install jupyterlab extensions
+RUN conda activate deepicedrain && \
+    jupyter labextension install @pyviz/jupyterlab_pyviz && \
+    jupyter labextension list
+
 # Setup DeepBedMap virtual environment properly
 RUN conda activate deepicedrain && \
     python -m ipykernel install --user --name deepicedrain && \
