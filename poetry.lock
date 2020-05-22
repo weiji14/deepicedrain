@@ -523,21 +523,9 @@ extras = ["dataframe"]
 optional = true
 version = "*"
 
-[package.dependencies.bokeh]
-optional = true
-version = "<2.0"
-
-[package.dependencies.hvplot]
-optional = true
-version = "*"
-
 [package.dependencies.msgpack-numpy]
 optional = true
 version = "*"
-
-[package.dependencies.panel]
-optional = true
-version = ">=0.7.0"
 
 [package.dependencies.pyarrow]
 optional = true
@@ -1695,7 +1683,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "e2e393c898b9ced960fb25e80dd654ee21ac5a94dae2cad47700c88b7c840334"
+content-hash = "6d411f1b1caeed778b6a23b9824963a64695ec23750fb7168178f5e8ba3a8915"
 python-versions = "^3.8"
 
 [metadata.files]
