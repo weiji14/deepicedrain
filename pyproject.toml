@@ -10,7 +10,7 @@ cartopy = "^0.18.0"
 cython = "^0.29.18"
 datashader = "^0.10.0"
 distributed = "^2.16.0"
-geoviews = "^1.7.0"
+geoviews = "^1.8.1"
 h5netcdf = "^0.8.0"
 intake = {extras = ["dataframe", "server"], version = "^0.5.5"}
 intake-xarray = { git = "https://github.com/intake/intake-xarray.git", rev = "bf98a3c69eea81be716b310e33aeefbf1a89b1d0" }
