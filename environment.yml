@@ -11,4 +11,4 @@ dependencies:
   - conda-forge::poetry=1.0.5[md5=171d7400c2aae11e3a3a30055de3eaa7]
   - conda-forge::proj=6.3.1[md5=dc4391dda7677c7299248d9754672526]
   - conda-forge::python=3.8.2[md5=db10a54402e61095706da88a2a5bb75d]
-  - conda-forge::python-snappy=0.5.4[md5=53a3e800a8e4c28500888ad83faefbbf]
+  - conda-forge::snappy=1.1.8[md5=15d316a7e49f31571d3bdafc4a3ac9c0]
