@@ -58,6 +58,7 @@ RUN conda activate deepicedrain && \
 # Install jupyterlab extensions
 RUN conda activate deepicedrain && \
     jupyter labextension install @pyviz/jupyterlab_pyviz && \
+    jupyter labextension install dask-labextension && \
     jupyter labextension list
 
 # Setup DeepBedMap virtual environment properly
