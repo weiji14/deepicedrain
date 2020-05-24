@@ -11,6 +11,7 @@ cython = "^0.29.18"
 dask_labextension = "^2.0.2"
 datashader = "^0.10.0"
 distributed = "^2.16.0"
+geopandas = "^0.7.0"
 geoviews = "^1.8.1"
 h5netcdf = "^0.8.0"
 intake = {extras = ["dataframe", "server"], version = "^0.5.5"}

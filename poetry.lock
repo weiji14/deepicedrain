@@ -194,6 +194,34 @@ version = "7.1.2"
 
 [[package]]
 category = "main"
+description = "An extension module for click to enable registering CLI commands via setuptools entry-points."
+name = "click-plugins"
+optional = false
+python-versions = "*"
+version = "1.1.1"
+
+[package.dependencies]
+click = ">=4.0"
+
+[package.extras]
+dev = ["pytest (>=3.6)", "pytest-cov", "wheel", "coveralls"]
+
+[[package]]
+category = "main"
+description = "Click params for commmand line interfaces to GeoJSON"
+name = "cligj"
+optional = false
+python-versions = "*"
+version = "0.5.0"
+
+[package.dependencies]
+click = ">=4.0,<8"
+
+[package.extras]
+test = ["pytest-cov"]
+
+[[package]]
+category = "main"
 description = "Extended pickling support for Python objects"
 name = "cloudpickle"
 optional = false
@@ -400,11 +428,47 @@ six = "*"
 
 [[package]]
 category = "main"
+description = "Fiona reads and writes spatial data files"
+name = "fiona"
+optional = false
+python-versions = "*"
+version = "1.8.13.post1"
+
+[package.dependencies]
+attrs = ">=17"
+click = ">=4.0,<8"
+click-plugins = ">=1.0"
+cligj = ">=0.5"
+munch = "*"
+six = ">=1.7"
+
+[package.extras]
+all = ["shapely", "boto3 (>=1.2.4)", "pytest (>=3)", "pytest-cov", "mock"]
+calc = ["shapely"]
+s3 = ["boto3 (>=1.2.4)"]
+test = ["pytest (>=3)", "pytest-cov", "boto3 (>=1.2.4)", "mock"]
+
+[[package]]
+category = "main"
 description = "File-system specification"
 name = "fsspec"
 optional = false
 python-versions = ">3.5"
 version = "0.7.3"
+
+[[package]]
+category = "main"
+description = "Geographic pandas extensions"
+name = "geopandas"
+optional = false
+python-versions = ">=3.5"
+version = "0.7.0"
+
+[package.dependencies]
+fiona = "*"
+pandas = ">=0.23.0"
+pyproj = ">=2.2.0"
+shapely = "*"
 
 [[package]]
 category = "main"
@@ -936,6 +1000,21 @@ version = "0.6.0"
 
 [package.dependencies]
 six = "*"
+
+[[package]]
+category = "main"
+description = "A dot-accessible dictionary (a la JavaScript objects)"
+name = "munch"
+optional = false
+python-versions = "*"
+version = "2.5.0"
+
+[package.dependencies]
+six = "*"
+
+[package.extras]
+testing = ["pytest", "coverage", "astroid (>=1.5.3,<1.6.0)", "pylint (>=1.7.2,<1.8.0)", "astroid (>=2.0)", "pylint (>=2.3.1,<2.4.0)"]
+yaml = ["PyYAML (>=5.1.0)"]
 
 [[package]]
 category = "main"
@@ -1772,7 +1851,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "dc76264683b0b2975ea1e3701de05c8a81ae79353a45943fb5fc5cbbd2e65e8b"
+content-hash = "7c0afe0544c89db7901d64c3ad15f162a7d6ad8ea36016d0b50c8f52381a16bc"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1862,6 +1941,15 @@ click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
     {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
 ]
+click-plugins = [
+    {file = "click-plugins-1.1.1.tar.gz", hash = "sha256:46ab999744a9d831159c3411bb0c79346d94a444df9a3a3742e9ed63645f264b"},
+    {file = "click_plugins-1.1.1-py2.py3-none-any.whl", hash = "sha256:5d262006d3222f5057fd81e1623d4443e41dcda5dc815c06b442aa3c02889fc8"},
+]
+cligj = [
+    {file = "cligj-0.5.0-py2-none-any.whl", hash = "sha256:60c93dda4499562eb87509a8ff3535a7441053b766c9c26bcf874a732f939c7c"},
+    {file = "cligj-0.5.0-py3-none-any.whl", hash = "sha256:20f24ce9abfde3f758aec3399e6811b936b6772f360846c662c19bf5537b4f14"},
+    {file = "cligj-0.5.0.tar.gz", hash = "sha256:6c7d52d529a78712491974f975c33473f430c0f7beb18c0d7a402a743dcb460a"},
+]
 cloudpickle = [
     {file = "cloudpickle-1.4.1-py3-none-any.whl", hash = "sha256:ff31298eca781315e097bc1f222d8045208c14063a0102cc89bd5899adb4abef"},
     {file = "cloudpickle-1.4.1.tar.gz", hash = "sha256:0b6258a20a143603d53b037a20983016d4e978f554ec4f36b3d0895b947099ae"},
@@ -1950,9 +2038,26 @@ fasteners = [
     {file = "fasteners-0.15-py2.py3-none-any.whl", hash = "sha256:007e4d2b2d4a10093f67e932e5166722d2eab83b77724156e92ad013c6226574"},
     {file = "fasteners-0.15.tar.gz", hash = "sha256:3a176da6b70df9bb88498e1a18a9e4a8579ed5b9141207762368a1017bf8f5ef"},
 ]
+fiona = [
+    {file = "Fiona-1.8.13.post1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:6d6200a64f0f6fad431a767dd2da62706bf9f683be77bb157b6d0459bb263b7f"},
+    {file = "Fiona-1.8.13.post1-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:1c9c6e883e82298293042f7b7f51a5680f50d5a3bb1a61ad179b2d5f7f4d6952"},
+    {file = "Fiona-1.8.13.post1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:781d29c21714da4c1c0f118b56bef936a1a935fead8878c22ab57a0d3875e412"},
+    {file = "Fiona-1.8.13.post1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:7598ed3ce7a88941a2eab5ffa90b39f8f44113355c39abcbda6920eecdba26b4"},
+    {file = "Fiona-1.8.13.post1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:3c236a8f9ddfc23ac746f4988526cbed73b43f8f86613a0001c62feb415daadc"},
+    {file = "Fiona-1.8.13.post1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:b8ad562b77c76dbff5a9298e1032c87714f079fc80752ca7c9c85edef52039aa"},
+    {file = "Fiona-1.8.13.post1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:923a64bded457adee795b4f926b8cbb87d58bbafaabded77bc1d47abb2bba5c6"},
+    {file = "Fiona-1.8.13.post1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:79c3b80e00c9d055d20aead5d74319f54cdd1384e0d9e1a9e67446da2d74d89c"},
+    {file = "Fiona-1.8.13.post1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:c6e99bf596c2322e134833490611a612a8cce35a39c4c6499b7df919e24b482b"},
+    {file = "Fiona-1.8.13.post1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:6d30d755e9041a3380d85c1b2e09003f657c03a749fb02a3d36b191296f57f5d"},
+    {file = "Fiona-1.8.13.post1.tar.gz", hash = "sha256:1a432bf9fd56f089256c010da009c90d4a795c531a848132c965052185336600"},
+]
 fsspec = [
     {file = "fsspec-0.7.3-py3-none-any.whl", hash = "sha256:9f0e3f4915b463b94c5788afa37b89d2c29c696f0d4da7d05f9cb5b17c8c84f7"},
     {file = "fsspec-0.7.3.tar.gz", hash = "sha256:1b540552c93b47e83c568e87507d6e02993e6d1b30bc7285f2336c81c5014103"},
+]
+geopandas = [
+    {file = "geopandas-0.7.0-py2.py3-none-any.whl", hash = "sha256:dd478cfb979c7aca529a61c05f26a4606852547a0d7e22ae9babe0c70f7d73f8"},
+    {file = "geopandas-0.7.0.tar.gz", hash = "sha256:19074b090ab928527193c50b383d31a259a9b84b18553562631295fa67f640bc"},
 ]
 geoviews = [
     {file = "geoviews-1.8.1-py2.py3-none-any.whl", hash = "sha256:bc944fde2c8ce8442d3a1c6a57c8f3958cdf5cdc1fbf12547a3a5fa86b079439"},
@@ -2265,6 +2370,10 @@ multipledispatch = [
     {file = "multipledispatch-0.6.0-py2-none-any.whl", hash = "sha256:407e6d8c5fa27075968ba07c4db3ef5f02bea4e871e959570eeb69ee39a6565b"},
     {file = "multipledispatch-0.6.0-py3-none-any.whl", hash = "sha256:a55c512128fb3f7c2efd2533f2550accb93c35f1045242ef74645fc92a2c3cba"},
     {file = "multipledispatch-0.6.0.tar.gz", hash = "sha256:a7ab1451fd0bf9b92cab3edbd7b205622fb767aeefb4fb536c2e3de9e0a38bea"},
+]
+munch = [
+    {file = "munch-2.5.0-py2.py3-none-any.whl", hash = "sha256:6f44af89a2ce4ed04ff8de41f70b226b984db10a91dcc7b9ac2efc1c77022fdd"},
+    {file = "munch-2.5.0.tar.gz", hash = "sha256:2d735f6f24d4dba3417fa448cae40c6e896ec1fdab6cdb5e6510999758a4dbd2"},
 ]
 nbconvert = [
     {file = "nbconvert-5.6.1-py2.py3-none-any.whl", hash = "sha256:f0d6ec03875f96df45aa13e21fd9b8450c42d7e1830418cccc008c0df725fcee"},
