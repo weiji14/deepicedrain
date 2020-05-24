@@ -2,9 +2,13 @@ name: deepicedrain
 channels:
   - conda-forge
 dependencies:
+  - bokeh::bokeh=2.0.2[md5=23c6ac32f35570065dbb410eb6bb456b]
+  - conda-forge::datashader=0.10.0[md5=434368350692fa548747f35040924d19]
   - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
+  - conda-forge::geoviews=1.8.1[md5=29062ab20a9543d77ae3353201697b9d]
   - conda-forge::gmt=6.0.0[md5=dc8ef0c0d63b1fbd0caf761b939a5bc9]
   - conda-forge::gxx_linux-64=7.3.0[md5=170a667cc95fead22a9e38aba0e3486d]
+  - conda-forge::hvplot=0.5.2[md5=feda34e40d1a7cc81f9ccca223d8bf8a]
   - conda-forge::nodejs=13.13.0[md5=cf25f8cee7aad7f417980872d34d8fd6]
   - conda-forge::parallel=20200322[md5=fdfd211013d373cd36126b6c059bc9e9]
   - conda-forge::pip=20.1[md5=db77ee5f3abc11201e877b7477e81d74]
@@ -12,3 +16,4 @@ dependencies:
   - conda-forge::proj=6.3.1[md5=dc4391dda7677c7299248d9754672526]
   - conda-forge::python=3.8.2[md5=db10a54402e61095706da88a2a5bb75d]
   - conda-forge::snappy=1.1.8[md5=15d316a7e49f31571d3bdafc4a3ac9c0]
+  - conda-forge::xrviz=0.1.4[md5=a75b5776267f17e46dfb7168733559cb]
