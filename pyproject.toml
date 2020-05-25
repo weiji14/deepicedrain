@@ -24,7 +24,7 @@ pydap = "^3.2.2"
 pyepsg = "^0.4.0"
 pygmt = "^0.1.1"
 python = "^3.8"
-pyproj = "^2.6.0"
+pyproj = "^2.6.1"
 toolz = "^0.10.0"
 tqdm = "^4.46.0"
 xarray = {git = "https://github.com/Mikejmnez/xarray.git", rev="4ce3007362af4e22dbe5836e95bebd91cde734b7"}
