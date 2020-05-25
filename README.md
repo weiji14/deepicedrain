@@ -39,6 +39,13 @@ Finally, double-check that the libraries have been installed.
 
     poetry show
 
+(Optional) Install jupyterlab extensions for interactive [bokeh](https://bokeh.org) visualizations.
+
+    jupyter labextension install @pyviz/jupyterlab_pyviz
+    jupyter labextension install dask-labextension
+
+    jupyter labextension list  # ensure that extensions are installed
+
 ## Running jupyter lab
 
     conda activate deepicedrain

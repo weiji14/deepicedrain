@@ -7,12 +7,14 @@ license = "LGPL-3.0-or-later"
 
 [tool.poetry.dependencies]
 cartopy = "^0.18.0"
-cython = "^0.29.16"
+cython = "^0.29.18"
+dask_labextension = "^2.0.2"
 datashader = "^0.10.0"
-distributed = "^2.15.2"
-geoviews = "^1.7.0"
+distributed = "^2.16.0"
+geopandas = "^0.7.0"
+geoviews = "^1.8.1"
 h5netcdf = "^0.8.0"
-intake = {extras = ["complete"], version = "^0.5.5"}
+intake = {extras = ["dataframe", "server"], version = "^0.5.5"}
 intake-xarray = { git = "https://github.com/intake/intake-xarray.git", rev = "bf98a3c69eea81be716b310e33aeefbf1a89b1d0" }
 jupyterlab = "^2.1.2"
 lxml = "^4.5.0"
@@ -20,12 +22,13 @@ matplotlib = "^3.2.1"
 numcodecs = "<=0.6.3"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
-pygmt = "^0.1.0"
+pygmt = "^0.1.1"
 python = "^3.8"
 pyproj = "^2.6.0"
 toolz = "^0.10.0"
 tqdm = "^4.46.0"
 xarray = {git = "https://github.com/Mikejmnez/xarray.git", rev="4ce3007362af4e22dbe5836e95bebd91cde734b7"}
+xrviz = "^0.1.4"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
