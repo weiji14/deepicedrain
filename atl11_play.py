@@ -19,6 +19,7 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
 
 # %%
+import collections
 import os
 import glob
 
@@ -26,17 +27,20 @@ import pointCollection.is2_calendar
 
 import dask
 import dask.array
+import datashader
 import holoviews as hv
+import holoviews.operation
 import hvplot.dask
 import hvplot.pandas
 import hvplot.xarray
 
 # import intake
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-
-# import pygmt
+import pygmt
 import pyproj
+import shapely
 import tqdm
 import xarray as xr
 import zarr
@@ -65,6 +69,7 @@ ds = xr.open_mfdataset(
     engine="zarr",
     combine="nested",
     concat_dim="ref_pt",
+    parallel="True",
     backend_kwargs={"consolidated": True},
 )
 # ds = ds.unify_chunks().compute()
@@ -113,7 +118,7 @@ ICESAT2_EPOCH = np.datetime64(pointCollection.is2_calendar.t_0())
 # ICESAT2_EPOCH = np.datetime64(datetime.datetime(2018, 1, 1, 0, 0, 0))
 
 # %%
-utc_time = ICESAT2_EPOCH + ds.delta_time.values
+utc_time = dask.array.asarray(ICESAT2_EPOCH) + ds.delta_time.data
 ds["utc_time"] = xr.DataArray(data=utc_time, coords=ds.delta_time.coords)
 
 # %% [markdown]
@@ -252,6 +257,190 @@ df_subset.hvplot.points(
     rasterize=True,
     hover=True,
 )
+
+
+# %%
+
+# %% [markdown]
+# # Calculate Elevation Change (dh) over ICESAT-2 cycles!!
+#
+# Let's take a look at the change in elevation over one recent ICESat-2 cycle.
+# From our loaded dataset (ds), we'll select Cycles 6 and 5,
+# and subtract the height (h_corr) between them to get a height difference (dh).
+
+# %%
+def calculate_delta_height(
+    dataset: xr.Dataset, oldcyclenum: int = 5, newcyclenum: int = 6
+) -> xr.DataArray:
+    """
+    Calculates ATL11 change in height between two cycles (new minus old).
+    """
+
+    oldcycle: xr.Dataset = dataset.sel(cycle_number=oldcyclenum)
+    newcycle: xr.Dataset = dataset.sel(cycle_number=newcyclenum)
+
+    delta_height: xr.DataArray = newcycle.h_corr - oldcycle.h_corr
+    # delta_time: xr.DataArray = newcycle.delta_time - oldcycle.delta_time
+
+    return delta_height
+
+
+# %%
+dh: xr.DataArray = calculate_delta_height(dataset=ds, oldcyclenum=5, newcyclenum=6)
+
+# %%
+# Persist data in memory
+dh = dh.persist()
+
+# %%
+delta_h = dh.dropna(dim="ref_pt").to_dataset(name="delta_height")
+delta_h
+
+# %%
+dhdf = delta_h.to_dataframe()
+dhdf.head()
+
+# %%
+# dhdf.to_parquet("temp_dhdf.parquet")
+# dhdf = pd.read_parquet("temp_dhdf.parquet")
+# dhdf = dhdf.sample(n=1_000_000)
+
+# %% [markdown]
+# ## Plot elevation difference for a region
+#
+# Using [datashader](https://datashader.org) to make the plotting real fast,
+# it actually rasterizes the vector points into a raster grid,
+# since our eyes can't see millions of points that well anyway.
+# You can choose any region, but we'll focus on the Siple Coast Ice Streams.
+# Using [PyGMT](https://pygmt.org), we'll plot the Antarctic grounding line
+# as well as the ATL11 height changes overlaid with Subglacial Lake outlines
+# from [Smith et al., 2009](https://doi.org/10.3189/002214309789470879).
+
+# %%
+# Bounding Box in EPSG:3031 as minx, maxx, miny, maxy
+BBox = collections.namedtuple(
+    typename="BBox", field_names=["xmin", "xmax", "ymin", "ymax"]
+)
+region = BBox(-2700000, 2800000, -2200000, 2300000)  # Antarctica
+region = BBox(-1000000, 250000, -1000000, -100000)  # Siple Coast
+region = BBox(-500000, -400000, -600000, -500000)  # Kamb Ice Stream
+region = BBox(-350000, -100000, -700000, -450000)  # Whillans Ice Stream
+
+# %%
+# Datashade our height values (vector points) onto a grid (raster image)
+canvas = datashader.Canvas(
+    plot_width=450,
+    plot_height=450,
+    x_range=(region.xmin, region.xmax),
+    y_range=(region.ymin, region.ymax),
+)
+agg_grid = canvas.points(
+    source=dhdf, x="x", y="y", agg=datashader.mean(column="delta_height")
+)
+agg_grid
+
+# %%
+# Find subglacial lakes (Smith et al., 2009) within region of interest
+subglacial_lakes_gdf = gpd.read_file(
+    filename=r"Quantarctica3/Glaciology/Subglacial Lakes/SubglacialLakes_Smith.shp"
+)
+subglacial_lakes_gdf = subglacial_lakes_gdf.loc[
+    subglacial_lakes_gdf.within(
+        shapely.geometry.Polygon.from_bounds(
+            xmin=region.xmin, xmax=region.xmax, ymin=region.ymin, ymax=region.ymax
+        )
+    )
+]
+subglacial_lakes_geom = [g for g in subglacial_lakes_gdf.geometry]
+subglacial_lakes = [
+    np.dstack(g.exterior.coords.xy).squeeze().astype(np.float32)
+    for g in subglacial_lakes_geom
+]
+
+
+# %%
+# Plot our map!
+scale = "1:1500000"
+fig = pygmt.Figure()
+fig.coast(
+    region=region,
+    projection=f"s0/-90/-71/{scale}",
+    area_thresh="+ag",
+    resolution="i",
+    shorelines="0.5p",
+    land="snow4",
+    water="snow3",
+    V="q",
+)
+# fig.grdimage(
+#    grid="Quantarctica3/SatelliteImagery/MODIS/MODIS_Mosaic.tif",
+#    region=region,
+#    projection=f"x{scale}",
+#    I="+d",
+# )
+pygmt.makecpt(cmap="roma", series=[-2, 2])
+fig.grdimage(
+    grid=agg_grid,
+    region=region,
+    projection=f"x{scale}",
+    frame=["afg", 'WSne+t"ICESat-2 Ice Surface Change from Cycle 5 to 6"'],
+    Q=True,
+)
+for subglacial_lake in subglacial_lakes:
+    fig.plot(data=subglacial_lake, L=True, pen="thick")
+fig.colorbar(
+    position="JCR", frame=["af", 'x+l"Elevation Change"', "y+lm"],
+)
+fig.show(width=600)
+
+# %%
+
+# %% [markdown]
+# #### Non-PyGMT plotting code on PyViz stack
+#
+# Meant to be a bit more interactive but slightly buggy,
+# need to sort out python dependency issues.
+
+# %%
+import matplotlib.cm
+
+# %%
+shade_grid = datashader.transfer_functions.shade(
+    agg=agg_grid, cmap=matplotlib.cm.RdYlBu, how="linear", span=[-2, 2]
+)
+spread_grid = datashader.transfer_functions.dynspread(shade_grid)
+spread_grid
+
+# %%
+dhdf.hvplot.points(
+    # title="Elevation Change (metres) from Cycle 5 to 6",
+    x="x",
+    y="y",
+    c="delta_height",
+    # cmap="RdYlBu",
+    # aggregator=datashader.mean("delta_height"),
+    rasterize=True,
+    # responsive=True,
+    # datashade=True,
+    # dynamic=True,
+    # dynspread=True,
+    hover=True,
+    height=400,
+    symmetric=True,
+    clim=(-20, 20),
+)
+
+# %%
+points = hv.Points(
+    data=dhdf,
+    kdims=["x", "y"],
+    vdims=["delta_height"],
+    # datatype=["xarray"],
+)
+
+# %%
+hv.operation.datashader.datashade(points)
+
 
 # %%
 
