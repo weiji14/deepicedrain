@@ -1,0 +1,6 @@
+[submodule "ATL11"]
+	path = ATL11
+	url = https://github.com/suzanne64/ATL11
+[submodule "pointCollection"]
+	path = pointCollection
+	url = https://github.com/SmithB/pointCollection
