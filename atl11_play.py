@@ -19,7 +19,7 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
 
 # %%
-import collections
+import dataclasses
 import os
 import glob
 
@@ -137,6 +137,109 @@ ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
 # %%
 
 # %% [markdown]
+# ## Subset to geographic region of interest (optional)
+#
+# Take a geographical subset and save to a NetCDF/Zarr format for distribution.
+
+# %%
+# Bounding Box in EPSG:3031 as minx, maxx, miny, maxy
+@dataclasses.dataclass(frozen=True)
+class BBox:
+    name: str  # name of region
+    xmin: float  # left coordinate
+    xmax: float  # right coordinate
+    ymin: float  # bottom coordinate
+    ymax: float  # top coordinate
+
+    @property
+    def scale(self) -> int:
+        """
+        Automatically set a map scale (1:scale)
+        based on x-coordinate range divided by 0.2
+        """
+        return int((self.xmax - self.xmin) / 0.2)
+
+    def bounds(self, style="lrbt") -> tuple:
+        """
+        Convenience function to get the bounding box coordinates
+        of the region in two different styles, lrbt or lbrt.
+        Defaults to 'lrbt', i.e. left, right, bottom, top.
+        """
+        if style == "lrbt":  # left, right, bottom, top (for PyGMT)
+            return (self.xmin, self.xmax, self.ymin, self.ymax)
+        elif style == "lbrt":  # left, bottom, right, top (for Shapely, etc)
+            return (self.xmin, self.ymin, self.xmax, self.ymax)
+        else:
+            raise ValueError(f"Unknown style type {style}")
+
+    def subset(self, ds: xr.Dataset, x_dim: str = "x", y_dim: str = "y") -> xr.Dataset:
+        """
+        Convenience function to find datapoints in an xarray.Dataset
+        that fit within the bounding boxes of this region
+        """
+        return xr.ufuncs.logical_and(
+            xr.ufuncs.logical_and(ds[x_dim] > self.xmin, ds[x_dim] < self.xmax),
+            xr.ufuncs.logical_and(ds[y_dim] > self.ymin, ds[y_dim] < self.ymax),
+        )
+
+
+# %%
+# Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
+regions = {
+    "kamb": BBox(
+        name="Kamb Ice Stream",
+        xmin=-739741.7702261859,
+        xmax=-411054.19240523444,
+        ymin=-699564.516934089,
+        ymax=-365489.6822096751,
+    ),
+    "antarctica": BBox("Antarctica", -2700000, 2800000, -2200000, 2300000),
+    "siple_coast": BBox("Siple Coast", -1000000, 250000, -1000000, -100000),
+    "kamb2": BBox("Kamb Ice Stream", -500000, -400000, -600000, -500000),
+    "whillans": BBox("Whillans Ice Stream", -350000, -100000, -700000, -450000),
+}
+
+# %%
+# Do the actual computation to find data points within region of interest
+region = regions["kamb"]  # Select Kamb Ice Stream region
+ds_subset = ds.where(cond=region.subset(ds=ds), drop=True)
+ds_subset = ds_subset.unify_chunks()
+ds_subset = ds_subset.compute()
+
+# %%
+# Save to NetCDF/Zarr formats for distribution
+ds_subset.to_netcdf(
+    path="atl11_subset.nc", engine="h5netcdf",
+)
+ds_subset.to_zarr(
+    store="atl11_subset.zarr", mode="w", consolidated=True,
+)
+
+# %%
+# Look at Cycle Number 6 only for plotting
+points_subset = hv.Points(
+    data=ds_subset.sel(cycle_number=6)[[*essential_columns]],
+    label="Cycle_6",
+    kdims=["x", "y"],
+    vdims=["utc_time", "h_corr", "cycle_number"],
+    datatype=["xarray"],
+)
+df_subset = points_subset.dframe()
+
+# %%
+# Plot our subset of points on an interactive map
+df_subset.hvplot.points(
+    title=f"Elevation (metres) at Cycle {cycle_number}",
+    x="x",
+    y="y",
+    c="h_corr",
+    cmap="Blues",
+    rasterize=True,
+    hover=True,
+)
+
+
+# %% [markdown]
 # # Pivot into a pandas/dask dataframe
 #
 # To make data analysis and plotting easier,
@@ -202,63 +305,6 @@ df.sample(n=5_000_000).hvplot.points(
     hover=True,
 )
 
-# %% [markdown]
-# ## Subset to geographic region of interest (optional)
-#
-# Take a geographical subset and save to a NetCDF/Zarr format for distribution.
-
-# %%
-# Kamb Ice Stream bounding box in EPSG:3031 coordinates
-xmin, xmax, ymin, ymax = (
-    -739741.7702261859,
-    -411054.19240523444,
-    -699564.516934089,
-    -365489.6822096751,
-)
-cond = xr.ufuncs.logical_and(
-    xr.ufuncs.logical_and(ds.x > xmin, ds.x < xmax),
-    xr.ufuncs.logical_and(ds.y > ymin, ds.y < ymax),
-)
-
-# %%
-# Do the actual computation to find data points within region of interest
-ds_subset = ds.where(cond=cond, drop=True)
-ds_subset = ds_subset.unify_chunks()
-ds_subset = ds_subset.compute()
-
-# %%
-# Save to NetCDF/Zarr formats for distribution
-ds_subset.to_netcdf(
-    path="atl11_subset.nc", engine="h5netcdf",
-)
-ds_subset.to_zarr(
-    store="atl11_subset.zarr", mode="w", consolidated=True,
-)
-
-# %%
-# Look at Cycle Number 6 only for plotting
-points_subset = hv.Points(
-    data=ds_subset.sel(cycle_number=6)[[*essential_columns]],
-    label="Cycle_6",
-    kdims=["x", "y"],
-    vdims=["utc_time", "h_corr", "cycle_number"],
-    datatype=["xarray"],
-)
-df_subset = points_subset.dframe()
-
-# %%
-# Plot our subset of points on an interactive map
-df_subset.hvplot.points(
-    title=f"Elevation (metres) at Cycle {cycle_number}",
-    x="x",
-    y="y",
-    c="h_corr",
-    cmap="Blues",
-    rasterize=True,
-    hover=True,
-)
-
-
 # %%
 
 # %% [markdown]
@@ -317,14 +363,26 @@ dhdf.head()
 # from [Smith et al., 2009](https://doi.org/10.3189/002214309789470879).
 
 # %%
-# Bounding Box in EPSG:3031 as minx, maxx, miny, maxy
-BBox = collections.namedtuple(
-    typename="BBox", field_names=["xmin", "xmax", "ymin", "ymax"]
+# Select region here, see dictionary of regions at top
+placename: str = "whillans"
+region: BBox = regions[placename]
+
+# %%
+# Find subglacial lakes (Smith et al., 2009) within region of interest
+subglacial_lakes_gdf = gpd.read_file(
+    filename=r"Quantarctica3/Glaciology/Subglacial Lakes/SubglacialLakes_Smith.shp"
 )
-region = BBox(-2700000, 2800000, -2200000, 2300000)  # Antarctica
-region = BBox(-1000000, 250000, -1000000, -100000)  # Siple Coast
-region = BBox(-500000, -400000, -600000, -500000)  # Kamb Ice Stream
-region = BBox(-350000, -100000, -700000, -450000)  # Whillans Ice Stream
+subglacial_lakes_gdf = subglacial_lakes_gdf.loc[
+    subglacial_lakes_gdf.within(
+        shapely.geometry.Polygon.from_bounds(*region.bounds(style="lbrt"))
+    )
+]
+subglacial_lakes_geom = [g for g in subglacial_lakes_gdf.geometry]
+subglacial_lakes = [
+    np.dstack(g.exterior.coords.xy).squeeze().astype(np.float32)
+    for g in subglacial_lakes_geom
+]
+
 
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
@@ -340,31 +398,12 @@ agg_grid = canvas.points(
 agg_grid
 
 # %%
-# Find subglacial lakes (Smith et al., 2009) within region of interest
-subglacial_lakes_gdf = gpd.read_file(
-    filename=r"Quantarctica3/Glaciology/Subglacial Lakes/SubglacialLakes_Smith.shp"
-)
-subglacial_lakes_gdf = subglacial_lakes_gdf.loc[
-    subglacial_lakes_gdf.within(
-        shapely.geometry.Polygon.from_bounds(
-            xmin=region.xmin, xmax=region.xmax, ymin=region.ymin, ymax=region.ymax
-        )
-    )
-]
-subglacial_lakes_geom = [g for g in subglacial_lakes_gdf.geometry]
-subglacial_lakes = [
-    np.dstack(g.exterior.coords.xy).squeeze().astype(np.float32)
-    for g in subglacial_lakes_geom
-]
-
-
-# %%
 # Plot our map!
-scale = "1:1500000"
+scale: int = region.scale
 fig = pygmt.Figure()
 fig.coast(
-    region=region,
-    projection=f"s0/-90/-71/{scale}",
+    region=region.bounds(),
+    projection=f"s0/-90/-71/1:{scale}",
     area_thresh="+ag",
     resolution="i",
     shorelines="0.5p",
@@ -381,16 +420,17 @@ fig.coast(
 pygmt.makecpt(cmap="roma", series=[-2, 2])
 fig.grdimage(
     grid=agg_grid,
-    region=region,
-    projection=f"x{scale}",
-    frame=["afg", 'WSne+t"ICESat-2 Ice Surface Change from Cycle 5 to 6"'],
+    region=region.bounds(),
+    projection=f"x1:{scale}",
+    frame=["afg", f'WSne+t"ICESat-2 Ice Surface Change over {region.name}"',],
     Q=True,
 )
 for subglacial_lake in subglacial_lakes:
-    fig.plot(data=subglacial_lake, L=True, pen="thick")
+    fig.plot(data=subglacial_lake, L=True, pen="thin")
 fig.colorbar(
-    position="JCR", frame=["af", 'x+l"Elevation Change"', "y+lm"],
+    position="JCR+e", frame=["af", 'x+l"Elevation Change from Cycle 5 to 6"', "y+lm"],
 )
+fig.savefig(f"figures/plot_atl11_{placename}.png")
 fig.show(width=600)
 
 # %%
