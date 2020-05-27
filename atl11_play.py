@@ -281,24 +281,9 @@ df.sample(n=5_000_000).hvplot.points(
 # and subtract the height (h_corr) between them to get a height difference (dh).
 
 # %%
-def calculate_delta_height(
-    dataset: xr.Dataset, oldcyclenum: int = 5, newcyclenum: int = 6
-) -> xr.DataArray:
-    """
-    Calculates ATL11 change in height between two cycles (new minus old).
-    """
-
-    oldcycle: xr.Dataset = dataset.sel(cycle_number=oldcyclenum)
-    newcycle: xr.Dataset = dataset.sel(cycle_number=newcyclenum)
-
-    delta_height: xr.DataArray = newcycle.h_corr - oldcycle.h_corr
-    # delta_time: xr.DataArray = newcycle.delta_time - oldcycle.delta_time
-
-    return delta_height
-
-
-# %%
-dh: xr.DataArray = calculate_delta_height(dataset=ds, oldcyclenum=5, newcyclenum=6)
+dh: xr.DataArray = deepicedrain.calculate_delta(
+    dataset=ds, oldcyclenum=5, newcyclenum=6, variable="h_corr"
+)
 
 # %%
 # Persist data in memory
