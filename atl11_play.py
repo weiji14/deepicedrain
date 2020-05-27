@@ -63,8 +63,11 @@ stores = glob.glob(pathname="ATL11.001z123/ATL11_*.zarr")
 print(f"{len(stores)} reference ground track Zarr stores")
 
 # %%
+# Load dataset from all Zarr stores
+# Aligning chunks spatially along cycle_number (i.e. time)
 ds = xr.open_mfdataset(
     paths=stores,
+    chunks={"cycle_number": 6},
     group="pt123",
     engine="zarr",
     combine="nested",
