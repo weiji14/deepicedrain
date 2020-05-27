@@ -45,6 +45,7 @@ SHELL ["/bin/bash", "-ic"]
 COPY environment.yml ${HOME}
 RUN conda env create -n deepicedrain -f environment.yml && \
     conda clean --all --yes && \
+    conda info && \
     conda list -n deepicedrain
 
 # Install dependencies in poetry.lock using poetry
@@ -53,6 +54,7 @@ COPY poetry.lock ${HOME}/
 RUN conda activate deepicedrain && \
     poetry install && \
     rm --recursive ${HOME}/.cache/pip && \
+    poetry env info && \
     poetry show
 
 # Install jupyterlab extensions

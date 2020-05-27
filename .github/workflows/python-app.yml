@@ -37,6 +37,14 @@ jobs:
         shell: bash -l {0}
         run: poetry install
 
+      - name: Display virtualenv and installed package information
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+          poetry env info
+          poetry show
+
       - name: Code Quality
         shell: bash -l {0}
         run: poetry run black . --check
