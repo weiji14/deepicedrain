@@ -23,6 +23,7 @@ import dataclasses
 import os
 import glob
 
+import deepicedrain
 import pointCollection.is2_calendar
 
 import dask
@@ -145,61 +146,23 @@ ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
 # Take a geographical subset and save to a NetCDF/Zarr format for distribution.
 
 # %%
-# Bounding Box in EPSG:3031 as minx, maxx, miny, maxy
-@dataclasses.dataclass(frozen=True)
-class BBox:
-    name: str  # name of region
-    xmin: float  # left coordinate
-    xmax: float  # right coordinate
-    ymin: float  # bottom coordinate
-    ymax: float  # top coordinate
-
-    @property
-    def scale(self) -> int:
-        """
-        Automatically set a map scale (1:scale)
-        based on x-coordinate range divided by 0.2
-        """
-        return int((self.xmax - self.xmin) / 0.2)
-
-    def bounds(self, style="lrbt") -> tuple:
-        """
-        Convenience function to get the bounding box coordinates
-        of the region in two different styles, lrbt or lbrt.
-        Defaults to 'lrbt', i.e. left, right, bottom, top.
-        """
-        if style == "lrbt":  # left, right, bottom, top (for PyGMT)
-            return (self.xmin, self.xmax, self.ymin, self.ymax)
-        elif style == "lbrt":  # left, bottom, right, top (for Shapely, etc)
-            return (self.xmin, self.ymin, self.xmax, self.ymax)
-        else:
-            raise ValueError(f"Unknown style type {style}")
-
-    def subset(self, ds: xr.Dataset, x_dim: str = "x", y_dim: str = "y") -> xr.Dataset:
-        """
-        Convenience function to find datapoints in an xarray.Dataset
-        that fit within the bounding boxes of this region
-        """
-        return xr.ufuncs.logical_and(
-            xr.ufuncs.logical_and(ds[x_dim] > self.xmin, ds[x_dim] < self.xmax),
-            xr.ufuncs.logical_and(ds[y_dim] > self.ymin, ds[y_dim] < self.ymax),
-        )
-
-
-# %%
 # Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
 regions = {
-    "kamb": BBox(
+    "kamb": deepicedrain.BBox(
         name="Kamb Ice Stream",
         xmin=-739741.7702261859,
         xmax=-411054.19240523444,
         ymin=-699564.516934089,
         ymax=-365489.6822096751,
     ),
-    "antarctica": BBox("Antarctica", -2700000, 2800000, -2200000, 2300000),
-    "siple_coast": BBox("Siple Coast", -1000000, 250000, -1000000, -100000),
-    "kamb2": BBox("Kamb Ice Stream", -500000, -400000, -600000, -500000),
-    "whillans": BBox("Whillans Ice Stream", -350000, -100000, -700000, -450000),
+    "antarctica": deepicedrain.BBox("Antarctica", -2700000, 2800000, -2200000, 2300000),
+    "siple_coast": deepicedrain.BBox(
+        "Siple Coast", -1000000, 250000, -1000000, -100000
+    ),
+    "kamb2": deepicedrain.BBox("Kamb Ice Stream", -500000, -400000, -600000, -500000),
+    "whillans": deepicedrain.BBox(
+        "Whillans Ice Stream", -350000, -100000, -700000, -450000
+    ),
 }
 
 # %%
@@ -368,7 +331,7 @@ dhdf.head()
 # %%
 # Select region here, see dictionary of regions at top
 placename: str = "whillans"
-region: BBox = regions[placename]
+region: deepicedrain.BBox = regions[placename]
 
 # %%
 # Find subglacial lakes (Smith et al., 2009) within region of interest
