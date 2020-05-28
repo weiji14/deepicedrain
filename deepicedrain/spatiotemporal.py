@@ -1,5 +1,6 @@
 """
-Geographic class that implements some handy geographic tools.
+Geospatial and Temporal class that implements some handy tools.
+Does bounding box region subsets, coordinate/time conversions, and more!
 """
 import dataclasses
 
@@ -8,10 +9,10 @@ import xarray as xr
 
 
 @dataclasses.dataclass(frozen=True)
-class BBox:
+class Region:
     """
-    A BoundingBox structure that outputs nice tuples of coordinates,
-    includes xarray subsetting capabilities and has a map scale property.
+    A nice region data structure that outputs a tuple of bounding box
+    coordinates, has xarray subsetting capabilities and a map scale property.
     """
 
     name: str  # name of region
@@ -41,12 +42,16 @@ class BBox:
         else:
             raise NotImplementedError(f"Unknown style type {style}")
 
-    def subset(self, ds: xr.Dataset, x_dim: str = "x", y_dim: str = "y") -> xr.Dataset:
+    def subset(
+        self, ds: xr.Dataset, x_dim: str = "x", y_dim: str = "y", drop: bool = True
+    ) -> xr.Dataset:
         """
         Convenience function to find datapoints in an xarray.Dataset
         that fit within the bounding boxes of this region
         """
-        return np.logical_and(
+        cond = np.logical_and(
             np.logical_and(ds[x_dim] > self.xmin, ds[x_dim] < self.xmax),
             np.logical_and(ds[y_dim] > self.ymin, ds[y_dim] < self.ymax),
         )
+
+        return ds.where(cond=cond, drop=drop)
