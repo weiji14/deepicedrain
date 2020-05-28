@@ -1,11 +1,15 @@
 # DeepIceDrain
 
-Mapping Antarctic subglacial water using a deep neural network.
+Mapping and monitoring deep subglacial water activity
+in Antarctica using remote sensing and machine learning.
 
 ![GitHub top language](https://img.shields.io/github/languages/top/weiji14/deepicedrain.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-[![Github Actions Status](https://github.com/weiji14/deepicedrain/workflows/Build%20DeepIceDrain/badge.svg)](https://github.com/weiji14/deepicedrain/actions)
+![Test DeepIceDrain package](https://github.com/weiji14/deepicedrain/workflows/Test%20DeepIceDrain%20package/badge.svg)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=weiji14/deepicedrain)](https://dependabot.com)
+![License](https://img.shields.io/github/license/weiji14/deepicedrain)
+
+![ATL11 Cycle 6 minus Cycle 5 height change over Antarctica](https://user-images.githubusercontent.com/23487320/83100017-ffb0ba00-a102-11ea-9603-ac469f09e58b.png)
 
 # Getting started
 
@@ -17,7 +21,17 @@ Launch in [Pangeo Binder](https://pangeo-binder.readthedocs.io) (Interactive jup
 
 ## Installation
 
-Start by cloning this [repo-url](/../../)
+### Basic
+
+To just try out the scripts, download the `environment.yml` file from the repository and run the commands below:
+
+    cd deepicedrain
+    conda env create --name deepicedrain --file environment.yml
+    pip install git+https://github.com/weiji14/deepicedrain.git
+
+### Advanced
+
+To help out with development, start by cloning this [repo-url](/../../)
 
     git clone <repo-url>
 

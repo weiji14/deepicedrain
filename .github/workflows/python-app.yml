@@ -1,0 +1,69 @@
+name: Test DeepIceDrain package
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    name: ${{ matrix.os }} - Python ${{ matrix.python_version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        python_version: [3.8]
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout current git repository
+        uses: actions/checkout@v2.1.0
+
+      - name: Setup Miniconda
+        uses: goanpeca/setup-miniconda@v1.4.1
+        with:
+          miniconda-version: py38_4.8.2
+          activate-environment: deepicedrain
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge
+          show-channel-urls: true
+          auto-activate-base: false
+          use-only-tar-bz2: true
+
+      - name: Cache virtual environment
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            /usr/share/miniconda3/envs/deepicedrain
+          key: cache-venv-${{ github.ref }}-${{ hashFiles('**/environment.yml') }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            cache-venv-refs/heads/master-
+
+      - name: Install conda dependencies
+        shell: bash -l {0}
+        run: conda env update -n deepicedrain -f environment.yml
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Install Poetry python dependencies
+        shell: bash -l {0}
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Display virtualenv and installed package information
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+          poetry env info
+          poetry show
+
+      - name: Code Quality
+        shell: bash -l {0}
+        run: poetry run black . --check
+
+      - name: Test with pytest
+        shell: bash -l {0}
+        run: poetry run pytest --verbose tests/
