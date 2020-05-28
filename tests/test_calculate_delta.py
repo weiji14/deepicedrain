@@ -7,26 +7,14 @@ import numpy.testing as npt
 import pytest
 import xarray as xr
 
-from deepicedrain import calculate_delta
+from deepicedrain import calculate_delta, catalog
 
 
-@pytest.fixture(scope="module")
-def atl11_dataset():
-    """
-    Loads a sample ATL11 test dataset from the intake catalog
-    """
-    catalog: intake.catalog.local.YAMLFileCatalog = intake.open_catalog(
-        uri="tests/test_catalog.yaml"
-    )
-    atl11_dataset: xr.Dataset = catalog.atl11_test_case.read()
-
-    return atl11_dataset
-
-
-def test_calculate_delta_height(atl11_dataset):
+def test_calculate_delta_height():
     """
     Check that calculating change in elevation works.
     """
+    atl11_dataset: xr.Dataset = catalog.test_data.atl11_test_case.read()
     delta_height = calculate_delta(
         dataset=atl11_dataset, oldcyclenum=3, newcyclenum=4, variable="h_corr"
     )
@@ -38,10 +26,11 @@ def test_calculate_delta_height(atl11_dataset):
     npt.assert_allclose(actual=delta_height.max().data, desired=9.49908442)
 
 
-def test_calculate_delta_time(atl11_dataset):
+def test_calculate_delta_time():
     """
     Check that calculating change in time works.
     """
+    atl11_dataset: xr.Dataset = catalog.test_data.atl11_test_case.read()
     delta_time = calculate_delta(
         dataset=atl11_dataset, oldcyclenum=3, newcyclenum=4, variable="delta_time"
     )

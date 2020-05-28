@@ -52,7 +52,7 @@ import requests
 import tqdm
 import xarray as xr
 
-# %matplotlib inline
+import deepicedrain
 
 # %%
 # Configure intake and set number of compute cores for data download
@@ -74,10 +74,6 @@ client
 # and view it using [xarray](https://xarray.pydata.org) and [hvplot](https://hvplot.pyviz.org).
 
 # %%
-# open the local catalog file containing ICESat-2 stuff
-catalog = intake.open_catalog(uri="catalog.yaml")
-
-# %%
 try:
     netrc.netrc()
 except FileNotFoundError as error_msg:
@@ -88,8 +84,9 @@ except FileNotFoundError as error_msg:
     )
     raise
 
-# depends on .netrc file in home folder
-dataset = catalog.icesat2atl06.to_dask().unify_chunks()
+# open the local intake data catalog file containing ICESat-2 stuff
+# data download will depend on having a .netrc file in home folder
+dataset = deepicedrain.catalog.icesat2atl06.to_dask().unify_chunks()
 dataset
 
 # %%

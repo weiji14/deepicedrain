@@ -1,7 +1,9 @@
 metadata:
+  description: 'An intake catalog for loading ICESat-2 ATLAS datasets'
   version: 1
 sources:
   icesat2atlasdownloader:
+    description: 'A catalog for downloading Antarctic ICESat-2 ATLAS products from NSIDC based on date'
     args:
       urlpath:
         - simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL{{atlproduct}}.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL{{atlproduct}}_*_*10_00{{version}}_0{{revision}}.h5
@@ -42,6 +44,7 @@ sources:
         default: 1
     driver: intake_xarray.netcdf.NetCDFSource
   icesat2atl06:
+    description: 'Reads in ICESat-2 ATL06 data into an xarray.Dataset, one date and one laser pair at a time'
     args:
       chunks:
         delta_time: 50000
@@ -85,7 +88,6 @@ sources:
           type: int
           default: 3
           allowed: [1, 2, 3]
-    description: ''
     driver: intake_xarray.netcdf.NetCDFSource
     metadata:
       plots:
@@ -101,3 +103,9 @@ sources:
           height: 500
           geo: True
           coastline: True
+  test_data:
+    args:
+      path: tests/test_catalog.yaml
+    description: 'Sample ICESat-2 datasets for testing purposes'
+    driver: intake.catalog.local.YAMLFileCatalog
+    metadata: {}
