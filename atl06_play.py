@@ -86,6 +86,7 @@ except FileNotFoundError as error_msg:
 
 # open the local intake data catalog file containing ICESat-2 stuff
 # data download will depend on having a .netrc file in home folder
+# dataset = intake.cat.atlas_cat.icesat2atl06.to_dask().unify_chunks()
 dataset = deepicedrain.catalog.icesat2atl06.to_dask().unify_chunks()
 dataset
 
