@@ -387,11 +387,11 @@ description = "Distributed scheduler for Dask"
 name = "distributed"
 optional = false
 python-versions = ">=3.6"
-version = "2.16.0"
+version = "2.17.0"
 
 [package.dependencies]
 click = ">=6.6"
-cloudpickle = ">=0.2.2"
+cloudpickle = ">=1.3.0"
 dask = ">=2.9.0"
 msgpack = ">=0.6.0"
 psutil = ">=5.0"
@@ -1836,7 +1836,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "0c8c3df5388cbacfc4e81779f304680ab4a37338dd67a6a81aa27a8872fe8cd1"
+content-hash = "4be3f639f87de8a4e026837231e193ced58369dc8ec7591ae35ba9253a70052d"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2013,8 +2013,8 @@ defusedxml = [
     {file = "defusedxml-0.6.0.tar.gz", hash = "sha256:f684034d135af4c6cbb949b8a4d2ed61634515257a67299e5f940fbaa34377f5"},
 ]
 distributed = [
-    {file = "distributed-2.16.0-py3-none-any.whl", hash = "sha256:bb4f527173256b0b48c8849a506ccc745953d23be285cb51cd6d26264235f7e1"},
-    {file = "distributed-2.16.0.tar.gz", hash = "sha256:28eb0faea4783f424956b073afa2677b9a13a0cc83ffcc1b1d424fabd98f17e9"},
+    {file = "distributed-2.17.0-py3-none-any.whl", hash = "sha256:cf70e7f8f6221ae508379d23218096381fea906a0082485d2355ef72c0c2b146"},
+    {file = "distributed-2.17.0.tar.gz", hash = "sha256:8b6f8a28eb32ad93f33bd34141fcaf2e437ef5bda900347e8384b332c7f233a3"},
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
