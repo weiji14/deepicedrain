@@ -38,7 +38,7 @@ jobs:
         with:
           path: |
             /usr/share/miniconda3/envs/deepicedrain
-          key: cache-venv-${{ github.ref }}-${{ hashFiles('**/environment.yml') }}-${{ hashFiles('**/poetry.lock') }}
+          key: cache-venv-${{ github.ref }}-${{ hashFiles('**/environment.yml') }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/deepicedrain/*.py') }}
           restore-keys: |
             cache-venv-refs/heads/master-
 

@@ -6,6 +6,7 @@ import dataclasses
 import datetime
 
 import numpy as np
+import pyproj
 import xarray as xr
 
 
@@ -72,3 +73,28 @@ def deltatime_to_utctime(
     utc_time: xr.DataArray = dataarray.__class__(start_epoch) + dataarray
 
     return utc_time
+
+
+def lonlat_to_xy(
+    longitude: xr.DataArray, latitude: xr.DataArray, epsg: int = 3031
+) -> (xr.DataArray, xr.DataArray):
+    """
+    Reprojects longitude/latitude EPSG:4326 coordinates to x/y coordinates.
+    Default conversion is to Antarctic Stereographic Projection EPSG:3031.
+    """
+    if hasattr(longitude, "__array__") and callable(longitude.__array__):
+        # TODO upgrade to PyProj 3.0 to remove this workaround for passing in
+        # dask.dataframe.core.Series or xarray.DataArray objects
+        # Based on https://github.com/pyproj4/pyproj/pull/625
+        _longitude = longitude.__array__()
+        _latitude = latitude.__array__()
+
+    x, y = pyproj.Proj(projparams=epsg)(_longitude, _latitude)
+
+    if hasattr(longitude, "coords"):
+        return (
+            xr.DataArray(data=x, coords=longitude.coords),
+            xr.DataArray(data=y, coords=latitude.coords),
+        )
+    else:
+        return x, y

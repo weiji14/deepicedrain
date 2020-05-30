@@ -86,16 +86,9 @@ ds = xr.open_mfdataset(
 # to the Antarctic Polar Stereographic (EPSG:3031) projection.
 
 # %%
-lonlat_to_xy = lambda longitude, latitude: pyproj.Proj(projparams=3031)(
-    longitude, latitude
+ds["x"], ds["y"] = deepicedrain.lonlat_to_xy(
+    longitude=ds.longitude, latitude=ds.latitude
 )
-
-
-# %%
-x, y = lonlat_to_xy(ds.longitude.values, ds.latitude.values)
-ds["x"] = xr.DataArray(data=x, coords=ds.longitude.coords)
-ds["y"] = xr.DataArray(data=y, coords=ds.latitude.coords)
-
 
 # %%
 # Also set x, y as coordinates in xarray.Dataset
