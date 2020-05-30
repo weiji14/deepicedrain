@@ -3,6 +3,7 @@ Geospatial and Temporal class that implements some handy tools.
 Does bounding box region subsets, coordinate/time conversions, and more!
 """
 import dataclasses
+import datetime
 
 import numpy as np
 import xarray as xr
@@ -55,3 +56,19 @@ class Region:
         )
 
         return ds.where(cond=cond, drop=drop)
+
+
+def deltatime_to_utctime(
+    dataarray: xr.DataArray,
+    start_epoch: np.datetime64 = np.datetime64("2018-01-01T00:00:00.000000"),
+) -> xr.DataArray:
+    """
+    Converts GPS time in nanoseconds from an epoch (default is 2018 Jan 1st)
+    to Coordinated Universal Time (UTC).
+
+    Note, does not account for leap seconds! There are none declared since the
+    last one announced on 31/12/2016, so it should be fine for now as of 2020.
+    """
+    utc_time: xr.DataArray = dataarray.__class__(start_epoch) + dataarray
+
+    return utc_time

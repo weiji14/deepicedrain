@@ -24,7 +24,6 @@ import os
 import glob
 
 import deepicedrain
-import pointCollection.is2_calendar
 
 import dask
 import dask.array
@@ -118,12 +117,7 @@ ds = ds.set_coords(names=["x", "y"])
 # in the future.
 
 # %%
-ICESAT2_EPOCH = np.datetime64(pointCollection.is2_calendar.t_0())
-# ICESAT2_EPOCH = np.datetime64(datetime.datetime(2018, 1, 1, 0, 0, 0))
-
-# %%
-utc_time = dask.array.asarray(ICESAT2_EPOCH) + ds.delta_time.data
-ds["utc_time"] = xr.DataArray(data=utc_time, coords=ds.delta_time.coords)
+ds["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=ds.delta_time)
 
 # %% [markdown]
 # ## Mask out low quality height data
