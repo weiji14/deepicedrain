@@ -2,16 +2,18 @@ metadata:
   version: 1
 sources:
   atl11_test_case:
+    description: 'An example ATL11 hdf5 file for testing various calculations'
     args:
+      chunks:
+        cycle_number: 2
       urlpath: simplecache::https://github.com/suzanne64/ATL11/raw/125ee1a653d78e6b86864b35c9d0fcfd72d64a85/ATL11_test_case/ATL11_078805_0304_02_v002.h5
       xarray_kwargs:
         engine: h5netcdf
         group: /pt2/corrected_h
       storage_options:
         simplecache:
-          cache_storage: tests/test_data
+          cache_storage: '{{ CATALOG_DIR }}/test_data'
           same_names: True
-    description: 'An example ATL11 hdf5 file for testing various calculations'
     driver: intake_xarray.netcdf.NetCDFSource
     metadata:
       coords:

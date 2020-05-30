@@ -52,7 +52,7 @@ import requests
 import tqdm
 import xarray as xr
 
-# %matplotlib inline
+import deepicedrain
 
 # %%
 # Configure intake and set number of compute cores for data download
@@ -73,9 +73,11 @@ client
 # (while making sure we have our Earthdata credentials set up properly),
 # and view it using [xarray](https://xarray.pydata.org) and [hvplot](https://hvplot.pyviz.org).
 
-# %%
-# open the local catalog file containing ICESat-2 stuff
-catalog = intake.open_catalog(uri="catalog.yaml")
+# open the local intake data catalog file containing ICESat-2 stuff
+catalog = intake.open_catalog("deepicedrain/atlas_catalog.yaml")
+# or if the deepicedrain python package is installed, you can use either of the below:
+# catalog = deepicedrain.catalog
+# catalog = intake.cat.atlas_cat
 
 # %%
 try:
@@ -88,7 +90,7 @@ except FileNotFoundError as error_msg:
     )
     raise
 
-# depends on .netrc file in home folder
+# data download will depend on having a .netrc file in home folder
 dataset = catalog.icesat2atl06.to_dask().unify_chunks()
 dataset
 
@@ -345,15 +347,8 @@ dfs.hvplot.scatter(
 # ### Transform from EPSG:4326 (lat/lon) to EPSG:3031 (Antarctic Polar Stereographic)
 
 # %%
-transformer = pyproj.Transformer.from_crs(
-    crs_from=pyproj.CRS.from_epsg(4326),
-    crs_to=pyproj.CRS.from_epsg(3031),
-    always_xy=True,
-)
-
-# %%
-dfs["x"], dfs["y"] = transformer.transform(
-    xx=dfs.longitude.values, yy=dfs.latitude.values
+dfs["x"], dfs["y"] = deepicedrain.lonlat_to_xy(
+    longitude=dfs.longitude, latitude=dfs.latitude
 )
 
 # %%

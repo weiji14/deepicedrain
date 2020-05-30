@@ -24,7 +24,6 @@ import os
 import glob
 
 import deepicedrain
-import pointCollection.is2_calendar
 
 import dask
 import dask.array
@@ -87,16 +86,9 @@ ds = xr.open_mfdataset(
 # to the Antarctic Polar Stereographic (EPSG:3031) projection.
 
 # %%
-lonlat_to_xy = lambda longitude, latitude: pyproj.Proj(projparams=3031)(
-    longitude, latitude
+ds["x"], ds["y"] = deepicedrain.lonlat_to_xy(
+    longitude=ds.longitude, latitude=ds.latitude
 )
-
-
-# %%
-x, y = lonlat_to_xy(ds.longitude.values, ds.latitude.values)
-ds["x"] = xr.DataArray(data=x, coords=ds.longitude.coords)
-ds["y"] = xr.DataArray(data=y, coords=ds.latitude.coords)
-
 
 # %%
 # Also set x, y as coordinates in xarray.Dataset
@@ -118,12 +110,7 @@ ds = ds.set_coords(names=["x", "y"])
 # in the future.
 
 # %%
-ICESAT2_EPOCH = np.datetime64(pointCollection.is2_calendar.t_0())
-# ICESAT2_EPOCH = np.datetime64(datetime.datetime(2018, 1, 1, 0, 0, 0))
-
-# %%
-utc_time = dask.array.asarray(ICESAT2_EPOCH) + ds.delta_time.data
-ds["utc_time"] = xr.DataArray(data=utc_time, coords=ds.delta_time.coords)
+ds["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=ds.delta_time)
 
 # %% [markdown]
 # ## Mask out low quality height data
@@ -148,19 +135,21 @@ ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
 # %%
 # Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
 regions = {
-    "kamb": deepicedrain.BBox(
+    "kamb": deepicedrain.Region(
         name="Kamb Ice Stream",
         xmin=-739741.7702261859,
         xmax=-411054.19240523444,
         ymin=-699564.516934089,
         ymax=-365489.6822096751,
     ),
-    "antarctica": deepicedrain.BBox("Antarctica", -2700000, 2800000, -2200000, 2300000),
-    "siple_coast": deepicedrain.BBox(
+    "antarctica": deepicedrain.Region(
+        "Antarctica", -2700000, 2800000, -2200000, 2300000
+    ),
+    "siple_coast": deepicedrain.Region(
         "Siple Coast", -1000000, 250000, -1000000, -100000
     ),
-    "kamb2": deepicedrain.BBox("Kamb Ice Stream", -500000, -400000, -600000, -500000),
-    "whillans": deepicedrain.BBox(
+    "kamb2": deepicedrain.Region("Kamb Ice Stream", -500000, -400000, -600000, -500000),
+    "whillans": deepicedrain.Region(
         "Whillans Ice Stream", -350000, -100000, -700000, -450000
     ),
 }
@@ -168,7 +157,7 @@ regions = {
 # %%
 # Do the actual computation to find data points within region of interest
 region = regions["kamb"]  # Select Kamb Ice Stream region
-ds_subset = ds.where(cond=region.subset(ds=ds), drop=True)
+ds_subset = region.subset(ds=ds)
 ds_subset = ds_subset.unify_chunks()
 ds_subset = ds_subset.compute()
 
@@ -317,7 +306,7 @@ dhdf.head()
 # %%
 # Select region here, see dictionary of regions at top
 placename: str = "antarctica"
-region: deepicedrain.BBox = regions[placename]
+region: deepicedrain.Region = regions[placename]
 
 # %%
 # Find subglacial lakes (Smith et al., 2009) within region of interest
