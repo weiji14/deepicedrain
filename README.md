@@ -11,7 +11,7 @@ in Antarctica using remote sensing and machine learning.
 
 ![ATL11 Cycle 6 minus Cycle 5 height change over Antarctica](https://user-images.githubusercontent.com/23487320/83100017-ffb0ba00-a102-11ea-9603-ac469f09e58b.png)
 
-![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb])
+![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb],[Ice-Sheet-H(t)-Series]->[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb])
 
 # Getting started
 
@@ -74,7 +74,7 @@ Finally, double-check that the libraries have been installed.
 Once you've installed properly installed the `deepicedrain` package,
 you can use it to do some quick calculations on ICESat-2 datasets.
 The example below shows how to calculate ice surface elevation change
-on a sample ATL11 dataset between ICESat's Cycle 3 and Cycle 4.
+on a sample ATL11 dataset between ICESat-2's Cycle 3 and Cycle 4.
 
     import deepicedrain
     import xarray as xr

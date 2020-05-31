@@ -44,8 +44,6 @@ def test_deltatime_to_utctime():
         desired=np.datetime64("2019-08-18T16:33:57.834610209"),
     )
 
-    atl11_dataset.close()
-
 
 def test_lonlat_to_xy_dask_series():
     """
@@ -80,5 +78,3 @@ def test_lonlat_to_xy_xarray_dataarray():
     assert x.shape == y.shape == (1404,)
     npt.assert_equal(actual=x.mean().data, desired=-56900105.00307034)
     npt.assert_equal(actual=y.mean().data, desired=48141607.48486084)
-
-    atl11_dataset.close()
