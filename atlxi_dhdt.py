@@ -14,7 +14,7 @@
 # ---
 
 # %% [markdown]
-# # **ICESat-2 ATL11 Height Changes over Time (dhdt)**
+# # **ICESat-2 ATL11 Rate of Height change over Time (dhdt)**
 #
 # This Jupyter notebook will cover the calculation of
 # Ice Height Changes (dh) over Time (dt) using Linear Regression.
@@ -84,7 +84,7 @@ ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
 # %% [markdown]
 # ## Trim out unnecessary values
 #
-# There's ~1.5 trillion ATL11 points for the whole of Antarctica,
+# There's ~150 million ATL11 points for the whole of Antarctica,
 # and not all of them will be needed depending on what you want to do.
 # To cut down on the number of data points the computer needs to work on,
 # we can:
@@ -123,7 +123,7 @@ region: deepicedrain.Region = regions[placename]
 # %%
 # We need at least 2 points to draw a trend line or compute differences
 # So let's drop points with less than 2 valid values across all cycles
-# Will take maybe 5-10 min to trim down ~1.5 trillion points to ~1 trillion
+# Will take maybe 5-10 min to trim down ~150 million points to ~100 million
 ds = ds.dropna(dim="ref_pt", thresh=2, subset=["h_corr"])
 print(f"Trimmed to {len(ds.ref_pt)} points")
 
@@ -227,6 +227,117 @@ fig.coast(
     V="q",
 )
 fig.savefig(f"figures/plot_atl11_hrange_{placename}.png")
+fig.show(width=600)
+
+# %%
+
+# %% [markdown]
+# # Calculate rate of height change over time (dhdt)
+#
+# Performing linear regression in parallel.
+# Uses the [`scipy.stats.linregress`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html) function,
+# parallelized with xarray's [`apply_ufunc`](http://xarray.pydata.org/en/v0.15.1/examples/apply_ufunc_vectorize_1d.html) method
+# on a Dask cluster.
+
+# %%
+# Take only the points where there is more than 0.5 metres of elevation change
+# Trim down ~100 million points to ~10 million
+ds = ds.where(cond=ds.h_range > 0.5, drop=True)
+print(f"Trimmed to {len(ds.ref_pt)} points")
+
+# %%
+# Do linear regression on many datapoints, parallelized using dask
+out: xr.DataArray = xr.apply_ufunc(
+    deepicedrain.nan_linregress,
+    ds.delta_time.astype(np.uint64),  # x is time in nanoseconds
+    ds.h_corr,  # y is height in metres
+    input_core_dims=[["cycle_number"], ["cycle_number"]],
+    output_core_dims=[["dhdt_parameters"]],
+    # output_core_dims=[["slope"], ["intercept"], ["r_value"], ["p_value"], ["std_err"]],
+    dask="parallelized",
+    vectorize=True,
+    output_dtypes=[np.float32],
+    output_sizes={"dhdt_parameters": 5},
+    # output_sizes={"slope":1, "intercept":1, "r_value":1, "p_value":1, "std_err":1}
+)
+
+# %%
+# %%time
+out = out.compute()
+
+# %%
+# Do linear regression on single datapoint
+# slope, intercept, rvalue, pvalue, stderr = nan_linregress(
+#     x=ds.delta_time[:1].data.astype(np.uint64), y=ds.h_corr[:1].data
+# )
+# print(slope, intercept, rvalue, pvalue, stderr)
+
+# %%
+slope, intercept, rvalue, pvalue, stderr = out.transpose()
+
+# %%
+slope.name = "dhdt_slope"
+intercept.name = "dhdt_intercept"
+rvalue.name = "dhdt_rvalue"
+pvalue.name = "dhdt_pvalue"
+stderr.name = "dhdt_stderr"
+
+# %%
+dhdt = xr.merge(objects=[slope, intercept, rvalue, pvalue, stderr])
+
+# %%
+# dhdt.to_zarr(store=f"ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
+
+# %%
+# 1 nanosecond = 365.25 years x 24 hours x 60 min x 60 seconds x 1_000_000_000 nanoseconds
+slopeyr = slope * (365.25 * 24 * 60 * 60 * 1_000_000_000)
+
+# %%
+# slope.to_dataframe(name="slope").hvplot.points(x="x", y="y")
+slopedf = slopeyr.to_dataframe(name="dhdt_slope")
+
+# %%
+# Datashade our height values (vector points) onto a grid (raster image)
+canvas = datashader.Canvas(
+    plot_width=1800,
+    plot_height=1800,
+    x_range=(region.xmin, region.xmax),
+    y_range=(region.ymin, region.ymax),
+)
+agg_grid = canvas.points(
+    source=slopedf, x="x", y="y", agg=datashader.mean(column="dhdt_slope")
+)
+agg_grid
+
+# %%
+# Plot our map!
+scale: int = region.scale
+fig = pygmt.Figure()
+pygmt.makecpt(cmap="roma", series=[-5, 5, 0.5])
+fig.grdimage(
+    grid=agg_grid,
+    region=region.bounds(),
+    projection=f"x1:{scale}",
+    frame=[
+        "afg",
+        f'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {region.name}"',
+    ],
+    Q=True,
+)
+fig.colorbar(
+    position="JCR+e", frame=["af", 'x+l"dH/dt across 6 cycles"', "y+lm/yr"],
+)
+# for subglacial_lake in subglacial_lakes:
+#    fig.plot(data=subglacial_lake, L=True, pen="thinnest")
+fig.coast(
+    region=region.bounds(),
+    projection=f"s0/-90/-71/1:{scale}",
+    area_thresh="+ag",
+    resolution="i",
+    shorelines="0.5p",
+    V="q",
+)
+fig.savefig(f"figures/plot_atl11_dhdt_{placename}.png")
 fig.show(width=600)
 
 # %%

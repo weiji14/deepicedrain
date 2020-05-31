@@ -21,3 +21,15 @@ def test_nanptp():
     npt.assert_allclose(actual=height_range.min(), desired=0.07718418)
     npt.assert_allclose(actual=height_range.mean(), desired=0.9836243)
     npt.assert_allclose(actual=height_range.max(), desired=9.49908442)
+
+
+def test_nanptp_with_nan():
+    """
+    Check that calculating point to point range works even with NaN values.
+    """
+    a = [[123, 231, np.NaN, 312, 213]]
+
+    height_range: np.ndarray = nanptp(a=a, axis=1)
+
+    assert isinstance(height_range, np.ndarray)
+    npt.assert_equal(actual=height_range, desired=189)
