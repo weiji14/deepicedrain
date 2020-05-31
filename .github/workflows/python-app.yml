@@ -49,8 +49,12 @@ jobs:
 
       - name: Install Poetry python dependencies
         shell: bash -l {0}
-        run: poetry install
+        run: poetry install --
         if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Install deepicedrain package
+        shell: bash -l {0}
+        run: poetry install
 
       - name: Display virtualenv and installed package information
         shell: bash -l {0}
