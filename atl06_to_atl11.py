@@ -101,7 +101,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 #
 # For faster data access speeds!
 # We'll collect the data for each Reference Ground Track,
-# and store it inside a Zarr group called `pt123`.
+# and store it inside a Zarr format.
 #
 # Grouping hierarchy:
 #   - Reference Ground Track (1-1387)
@@ -110,10 +110,11 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 #         - Attributes (longitude, latitude, h_corr, delta_time, etc)
 
 # %%
-for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
-    name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
+# for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
+#     name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
 
 max_cycles: int = max([int(f[-12:-11]) for f in glob.glob("ATL11.001/*.h5")])
+print(f"{max_cycles} ICESat-2 cycles available")
 
 # %%
 @dask.delayed
@@ -211,9 +212,7 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
             datasets.append(ds)
 
     dataset = dask.delayed(obj=xr.concat)(objs=datasets, dim="ref_pt")
-    store_task = dataset.to_zarr(
-        store=zarrfilepath, mode="w", group="pt123", consolidated=True,
-    )
+    store_task = dataset.to_zarr(store=zarrfilepath, mode="w", consolidated=True)
     stores.append(store_task)
 
 # %%
@@ -227,13 +226,14 @@ for f in tqdm.tqdm(
 
 # %%
 ds = xr.open_dataset(
-    zarrfilepath, engine="zarr", group="pt123", backend_kwargs={"consolidated": True},
+    zarrfilepath, engine="zarr", backend_kwargs={"consolidated": True},
 )
 ds.h_corr.__array__().shape
 
 
 # %% [raw]
-# # Note, conversion takes about 11 hours, because HDF5 files work on single thread...
+# # Note, this raw conversion below takes about 11 hours
+# # because HDF5 files work on a single thread...
 # for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
 #     name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
 #     zarr.convenience.copy_all(
