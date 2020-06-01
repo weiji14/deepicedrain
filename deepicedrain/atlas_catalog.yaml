@@ -104,8 +104,8 @@ sources:
           geo: True
           coastline: True
   test_data:
+    description: 'Sample ICESat-2 datasets for testing purposes'
     args:
       path: '{{ CATALOG_DIR }}/tests/test_catalog.yaml'
-    description: 'Sample ICESat-2 datasets for testing purposes'
     driver: intake.catalog.local.YAMLFileCatalog
     metadata: {}
