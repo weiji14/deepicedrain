@@ -134,13 +134,13 @@ ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
 
 # %%
 # Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
-regions = {
+regions: dict = {
     "kamb": deepicedrain.Region(
         name="Kamb Ice Stream",
-        xmin=-739741.7702261859,
-        xmax=-411054.19240523444,
-        ymin=-699564.516934089,
-        ymax=-365489.6822096751,
+        xmin=-411054.19240523444,
+        xmax=-365489.6822096751,
+        ymin=-739741.7702261859,
+        ymax=-699564.516934089,
     ),
     "antarctica": deepicedrain.Region(
         "Antarctica", -2700000, 2800000, -2200000, 2300000
@@ -148,11 +148,24 @@ regions = {
     "siple_coast": deepicedrain.Region(
         "Siple Coast", -1000000, 250000, -1000000, -100000
     ),
-    "kamb2": deepicedrain.Region("Kamb Ice Stream", -500000, -400000, -600000, -500000),
     "whillans": deepicedrain.Region(
         "Whillans Ice Stream", -350000, -100000, -700000, -450000
     ),
+    "whillans2": deepicedrain.Region(
+        "Whillans Ice Stream", -500000, -400000, -600000, -500000
+    ),
 }
+# Subset to essential columns
+essential_columns: list = [
+    "x",
+    "y",
+    "utc_time",
+    "h_corr",
+    "longitude",
+    "latitude",
+    "delta_time",
+    "cycle_number",
+]
 
 # %%
 # Do the actual computation to find data points within region of interest
@@ -185,7 +198,7 @@ df_subset = points_subset.dframe()
 # %%
 # Plot our subset of points on an interactive map
 df_subset.hvplot.points(
-    title=f"Elevation (metres) at Cycle {cycle_number}",
+    title=f"Elevation (metres) at Cycle 6",
     x="x",
     y="y",
     c="h_corr",
@@ -212,17 +225,6 @@ df_subset.hvplot.points(
 
 # %%
 cycle_number: int = 6
-# Subset to essential columns
-essential_columns = [
-    "x",
-    "y",
-    "utc_time",
-    "h_corr",
-    "longitude",
-    "latitude",
-    "delta_time",
-    "cycle_number",
-]
 dss = ds.sel(cycle_number=cycle_number)[[*essential_columns]]
 dss
 

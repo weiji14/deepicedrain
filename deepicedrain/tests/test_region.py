@@ -38,7 +38,7 @@ def test_region_bounds_ltrb():
     """
     Tests that error is raised when passing in a style that is not implemented.
     """
-    region = Region("Kamb Ice Stream", -500000, -400000, -600000, -500000)
+    region = Region("Whillans Ice Stream", -500000, -400000, -600000, -500000)
     with pytest.raises(NotImplementedError):
         print(region.bounds(style="ltrb"))
 

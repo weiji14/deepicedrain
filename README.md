@@ -9,7 +9,7 @@ in Antarctica using remote sensing and machine learning.
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=weiji14/deepicedrain)](https://dependabot.com)
 ![License](https://img.shields.io/github/license/weiji14/deepicedrain)
 
-![ICESat-2 ATL11 rate of height change over time in Antarctica](https://user-images.githubusercontent.com/23487320/83348787-cc309280-a383-11ea-8a21-c9143858845c.png)
+![ICESat-2 ATL11 rate of height change over time in Antarctica](https://user-images.githubusercontent.com/23487320/83498673-4e4dc200-a510-11ea-8980-b71aa0f89a80.png)
 
 ![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb],[Ice-Sheet-H(t)-Series]->[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb])
 

@@ -95,13 +95,13 @@ ds["h_corr"]: xr.DataArray = ds.h_corr.where(cond=ds.quality_summary_ref_surf ==
 
 # %%
 # Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
-regions = {
+regions: dict = {
     "kamb": deepicedrain.Region(
         name="Kamb Ice Stream",
-        xmin=-739741.7702261859,
-        xmax=-411054.19240523444,
-        ymin=-699564.516934089,
-        ymax=-365489.6822096751,
+        xmin=-411054.19240523444,
+        xmax=-365489.6822096751,
+        ymin=-739741.7702261859,
+        ymax=-699564.516934089,
     ),
     "antarctica": deepicedrain.Region(
         "Antarctica", -2700000, 2800000, -2200000, 2300000
@@ -109,9 +109,11 @@ regions = {
     "siple_coast": deepicedrain.Region(
         "Siple Coast", -1000000, 250000, -1000000, -100000
     ),
-    "kamb2": deepicedrain.Region("Kamb Ice Stream", -500000, -400000, -600000, -500000),
     "whillans": deepicedrain.Region(
         "Whillans Ice Stream", -350000, -100000, -700000, -450000
+    ),
+    "whillans2": deepicedrain.Region(
+        "Whillans Ice Stream", -500000, -400000, -600000, -500000
     ),
 }
 
@@ -180,6 +182,7 @@ ds_ht: xr.Dataset = ds[["h_range", "h_corr", "delta_time"]].compute()
 # ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w", consolidated=True)
 ds_ht: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_hrange_time_{placename}.zarr",
+    chunks={"cycle_number": 6},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -242,7 +245,7 @@ print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %%
 # Do linear regression on many datapoints, parallelized using dask
-out: xr.DataArray = xr.apply_ufunc(
+dhdt_params: xr.DataArray = xr.apply_ufunc(
     deepicedrain.nan_linregress,
     ds.delta_time.astype(np.uint64),  # x is time in nanoseconds
     ds.h_corr,  # y is height in metres
@@ -257,8 +260,22 @@ out: xr.DataArray = xr.apply_ufunc(
 )
 
 # %%
+# Construct an xarray.Dataset containing time, height, and dhdt variables
+ds_dhdt: xr.Dataset = ds[["delta_time", "h_corr"]]
+for var_name, dataarray in zip(
+    ["slope", "intercept", "r_value", "p_value", "std_err"], dhdt_params.transpose()
+):
+    ds_dhdt[f"dhdt_{var_name}"]: xr.DataArray = dataarray
+
+# %%
+# Convert dhdt_slope units from metres per nanosecond to metres per year
+# 1 year = 365.25 days x 24 hours x 60 min x 60 seconds x 1_000_000_000 nanoseconds
+ds_dhdt["dhdt_slope"] = ds_dhdt["dhdt_slope"] * (365.25 * 24 * 60 * 60 * 1_000_000_000)
+
+# %%
 # %%time
-out = out.compute()
+# Compute rate of height change over time (dhdt). Also include all height and time info
+ds_dhdt: xr.Dataset = ds_dhdt.compute()
 
 # %%
 # Do linear regression on single datapoint
@@ -268,34 +285,17 @@ out = out.compute()
 # print(slope_ns, intercept, r_value, p_value, std_err)
 
 # %%
-slope_ns, intercept, r_value, p_value, std_err = out.transpose()
-
-# %%
-# Convert slope units from metres per nanosecond to metres per year
-# 1 year = 365.25 days x 24 hours x 60 min x 60 seconds x 1_000_000_000 nanoseconds
-slope = slope_ns * (365.25 * 24 * 60 * 60 * 1_000_000_000)
-
-# %%
-slope.name = "dhdt_slope"
-intercept.name = "dhdt_intercept"
-r_value.name = "dhdt_rvalue"
-p_value.name = "dhdt_pvalue"
-std_err.name = "dhdt_stderr"
-
-# %%
-ds_dhdt: xr.Dataset = xr.merge(objects=[slope, intercept, rvalue, pvalue, stderr])
-
-# %%
 # Load or Save rate of height change over time (dhdt) data
 # ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
 ds_dhdt: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_dhdt_{placename}.zarr",
+    chunks={"cycle_number": 6},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
 
 # %%
-df_slope: pd.DataFrame = ds_dhdt.dhdt_slope.to_dataframe(name="dhdt_slope")
+df_slope: pd.DataFrame = ds_dhdt.dhdt_slope.to_dataframe()
 
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
