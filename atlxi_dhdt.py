@@ -37,6 +37,7 @@
 import dask
 import datashader
 import numpy as np
+import pandas as pd
 import pygmt
 import scipy.stats
 import xarray as xr
@@ -79,7 +80,7 @@ ds: xr.Dataset = ds.set_coords(names=["x", "y"])
 
 # %%
 # Mask out low quality height data
-ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
+ds["h_corr"]: xr.DataArray = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
 
 # %% [markdown]
 # ## Trim out unnecessary values
@@ -124,7 +125,7 @@ region: deepicedrain.Region = regions[placename]
 # We need at least 2 points to draw a trend line or compute differences
 # So let's drop points with less than 2 valid values across all cycles
 # Will take maybe 5-10 min to trim down ~150 million points to ~100 million
-ds = ds.dropna(dim="ref_pt", thresh=2, subset=["h_corr"])
+ds: xr.Dataset = ds.dropna(dim="ref_pt", thresh=2, subset=["h_corr"])
 print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %% [markdown]
@@ -164,8 +165,9 @@ ds["h_range"]: xr.DataArray = xr.apply_ufunc(
 )
 
 # %%
-# Compute height range
-dsh: xr.Dataset = ds[["h_range"]].compute()
+# %%time
+# Compute height range. Also include all height and time info
+ds_ht: xr.Dataset = ds[["h_range", "h_corr", "delta_time"]].compute()
 
 # %%
 # Non-parallelized
@@ -175,30 +177,23 @@ dsh: xr.Dataset = ds[["h_range"]].compute()
 
 # %%
 # Save or Load height range data
-# dsh.to_zarr(store=f"ds_hrange_{placename}.zarr", mode="w", consolidated=True)
-dsh: xr.Dataset = xr.open_dataset(
-    filename_or_obj=f"ds_hrange_{placename}.zarr",
+# ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w", consolidated=True)
+ds_ht: xr.Dataset = xr.open_dataset(
+    filename_or_obj=f"ATLXI/ds_hrange_time_{placename}.zarr",
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
+# ds: xr.Dataset = ds_ht  # shortcut for later steps
 
 # %%
-hrdf = dsh.h_range.to_dataframe()
+df_hr: pd.DataFrame = ds_ht.h_range.to_dataframe()
 
 # %%
-hrdf.describe()
+df_hr.describe()
 
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
-canvas = datashader.Canvas(
-    plot_width=1800,
-    plot_height=1800,
-    x_range=(region.xmin, region.xmax),
-    y_range=(region.ymin, region.ymax),
-)
-agg_grid = canvas.points(
-    source=hrdf, x="x", y="y", agg=datashader.mean(column="h_range")
-)
+agg_grid: xr.DataArray = region.datashade(df=df_hr, z_dim="h_range")
 agg_grid
 
 # %%
@@ -253,12 +248,12 @@ out: xr.DataArray = xr.apply_ufunc(
     ds.h_corr,  # y is height in metres
     input_core_dims=[["cycle_number"], ["cycle_number"]],
     output_core_dims=[["dhdt_parameters"]],
-    # output_core_dims=[["slope"], ["intercept"], ["r_value"], ["p_value"], ["std_err"]],
+    # output_core_dims=[["slope_ns"], ["intercept"], ["r_value"], ["p_value"], ["std_err"]],
     dask="parallelized",
     vectorize=True,
     output_dtypes=[np.float32],
     output_sizes={"dhdt_parameters": 5},
-    # output_sizes={"slope":1, "intercept":1, "r_value":1, "p_value":1, "std_err":1}
+    # output_sizes={"slope_ns":1, "intercept":1, "r_value":1, "p_value":1, "std_err":1}
 )
 
 # %%
@@ -267,46 +262,44 @@ out = out.compute()
 
 # %%
 # Do linear regression on single datapoint
-# slope, intercept, rvalue, pvalue, stderr = nan_linregress(
+# slope_ns, intercept, r_value, p_value, std_err = nan_linregress(
 #     x=ds.delta_time[:1].data.astype(np.uint64), y=ds.h_corr[:1].data
 # )
-# print(slope, intercept, rvalue, pvalue, stderr)
+# print(slope_ns, intercept, r_value, p_value, std_err)
 
 # %%
-slope, intercept, rvalue, pvalue, stderr = out.transpose()
+slope_ns, intercept, r_value, p_value, std_err = out.transpose()
+
+# %%
+# Convert slope units from metres per nanosecond to metres per year
+# 1 year = 365.25 days x 24 hours x 60 min x 60 seconds x 1_000_000_000 nanoseconds
+slope = slope_ns * (365.25 * 24 * 60 * 60 * 1_000_000_000)
 
 # %%
 slope.name = "dhdt_slope"
 intercept.name = "dhdt_intercept"
-rvalue.name = "dhdt_rvalue"
-pvalue.name = "dhdt_pvalue"
-stderr.name = "dhdt_stderr"
+r_value.name = "dhdt_rvalue"
+p_value.name = "dhdt_pvalue"
+std_err.name = "dhdt_stderr"
 
 # %%
-dhdt = xr.merge(objects=[slope, intercept, rvalue, pvalue, stderr])
+ds_dhdt: xr.Dataset = xr.merge(objects=[slope, intercept, rvalue, pvalue, stderr])
 
 # %%
-# dhdt.to_zarr(store=f"ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
+# Load or Save rate of height change over time (dhdt) data
+# ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
+ds_dhdt: xr.Dataset = xr.open_dataset(
+    filename_or_obj=f"ATLXI/ds_dhdt_{placename}.zarr",
+    engine="zarr",
+    backend_kwargs={"consolidated": True},
+)
 
 # %%
-# 1 nanosecond = 365.25 years x 24 hours x 60 min x 60 seconds x 1_000_000_000 nanoseconds
-slopeyr = slope * (365.25 * 24 * 60 * 60 * 1_000_000_000)
-
-# %%
-# slope.to_dataframe(name="slope").hvplot.points(x="x", y="y")
-slopedf = slopeyr.to_dataframe(name="dhdt_slope")
+df_slope: pd.DataFrame = ds_dhdt.dhdt_slope.to_dataframe(name="dhdt_slope")
 
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
-canvas = datashader.Canvas(
-    plot_width=1800,
-    plot_height=1800,
-    x_range=(region.xmin, region.xmax),
-    y_range=(region.ymin, region.ymax),
-)
-agg_grid = canvas.points(
-    source=slopedf, x="x", y="y", agg=datashader.mean(column="dhdt_slope")
-)
+agg_grid: xr.DataArray = region.datashade(df=df_slope, z_dim="dhdt_slope")
 agg_grid
 
 # %%

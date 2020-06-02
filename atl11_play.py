@@ -89,6 +89,7 @@ ds["x"], ds["y"] = deepicedrain.lonlat_to_xy(
     longitude=ds.longitude, latitude=ds.latitude
 )
 
+
 # %%
 # Also set x, y as coordinates in xarray.Dataset
 ds = ds.set_coords(names=["x", "y"])
@@ -155,18 +156,19 @@ regions = {
 
 # %%
 # Do the actual computation to find data points within region of interest
-region = regions["kamb"]  # Select Kamb Ice Stream region
-ds_subset = region.subset(ds=ds)
+placename: str = "kamb"  # Select Kamb Ice Stream region
+region: deepicedrain.Region = regions[placename]
+ds_subset: xr.Dataset = region.subset(ds=ds)
 ds_subset = ds_subset.unify_chunks()
 ds_subset = ds_subset.compute()
 
 # %%
-# Save to NetCDF/Zarr formats for distribution
-ds_subset.to_netcdf(
-    path="atl11_subset.nc", engine="h5netcdf",
-)
+# Save to Zarr/NetCDF formats for distribution
 ds_subset.to_zarr(
-    store="atl11_subset.zarr", mode="w", consolidated=True,
+    store=f"ATLXI/ds_subset_{placename}.zarr", mode="w", consolidated=True,
+)
+ds_subset.to_netcdf(
+    path=f"ATLXI/ds_subset_{placename}.nc", engine="h5netcdf",
 )
 
 # %%
@@ -279,17 +281,18 @@ dh: xr.DataArray = deepicedrain.calculate_delta(
 dh = dh.persist()
 
 # %%
-delta_h = dh.dropna(dim="ref_pt").to_dataset(name="delta_height")
+delta_h: xr.Dataset = dh.dropna(dim="ref_pt").to_dataset(name="delta_height")
 delta_h
 
 # %%
-dhdf = delta_h.to_dataframe()
-dhdf.head()
+df_dh: pd.DataFrame = delta_h.to_dataframe()
+df_dh.head()
 
 # %%
-# dhdf.to_parquet("temp_dhdf.parquet")
-# dhdf = pd.read_parquet("temp_dhdf.parquet")
-# dhdf = dhdf.sample(n=1_000_000)
+# Save or Load delta height data
+# df_dh.to_parquet(f"ATLXI/df_dh_{placename}.parquet")
+# df_dh: pd.DataFrame = pd.read_parquet(f"ATLXI/df_dh_{placename}.parquet")
+# df_dh = df_dh.sample(n=1_000_000)
 
 # %% [markdown]
 # ## Plot elevation difference for a region
@@ -326,15 +329,7 @@ subglacial_lakes = [
 
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
-canvas = datashader.Canvas(
-    plot_width=900,
-    plot_height=900,
-    x_range=(region.xmin, region.xmax),
-    y_range=(region.ymin, region.ymax),
-)
-agg_grid = canvas.points(
-    source=dhdf, x="x", y="y", agg=datashader.mean(column="delta_height")
-)
+agg_grid: xr.DataArray = region.datashade(df=df_dh, z_dim="delta_height")
 agg_grid
 
 # %%
@@ -370,7 +365,7 @@ for subglacial_lake in subglacial_lakes:
 fig.colorbar(
     position="JCR+e", frame=["af", 'x+l"Elevation Change from Cycle 5 to 6"', "y+lm"],
 )
-fig.savefig(f"figures/plot_atl11_{placename}.png")
+fig.savefig(f"figures/plot_atl11_dh56_{placename}.png")
 fig.show(width=600)
 
 
@@ -393,7 +388,7 @@ spread_grid = datashader.transfer_functions.dynspread(shade_grid)
 spread_grid
 
 # %%
-dhdf.hvplot.points(
+df_dh.hvplot.points(
     # title="Elevation Change (metres) from Cycle 5 to 6",
     x="x",
     y="y",
@@ -413,7 +408,7 @@ dhdf.hvplot.points(
 
 # %%
 points = hv.Points(
-    data=dhdf,
+    data=df_dh,
     kdims=["x", "y"],
     vdims=["delta_height"],
     # datatype=["xarray"],
