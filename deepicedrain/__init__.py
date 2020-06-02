@@ -4,7 +4,7 @@ import logging
 import intake
 
 import deepicedrain
-from deepicedrain.deltamath import calculate_delta
+from deepicedrain.deltamath import calculate_delta, nanptp, nan_linregress
 from deepicedrain.spatiotemporal import Region, deltatime_to_utctime, lonlat_to_xy
 
 __version__: str = "0.1.0"

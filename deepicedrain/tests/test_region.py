@@ -1,11 +1,13 @@
 """
-Tests behaviour of the Region class
+Tests behaviour of the Region class's bounding box based functionality
 """
 import numpy as np
+import numpy.testing as npt
+import pandas as pd
 import pytest
 import xarray as xr
 
-from deepicedrain import Region
+from deepicedrain import Region, catalog, lonlat_to_xy
 
 
 def test_region_scale():
@@ -36,9 +38,30 @@ def test_region_bounds_ltrb():
     """
     Tests that error is raised when passing in a style that is not implemented.
     """
-    region = Region("Kamb Ice Stream", -500000, -400000, -600000, -500000)
+    region = Region("Whillans Ice Stream", -500000, -400000, -600000, -500000)
     with pytest.raises(NotImplementedError):
         print(region.bounds(style="ltrb"))
+
+
+def test_region_datashade():
+    """
+    Tests that we can datashade a pandas.DataFrame based on the region's bounds
+    """
+    region = Region("Kitaa, Greenland", -1_600_000, -1_520_000, -1_360_000, -1_300_000)
+
+    atl11_dataset: xr.Dataset = catalog.test_data.atl11_test_case.to_dask()
+    atl11_dataset["x"], atl11_dataset["y"] = lonlat_to_xy(
+        longitude=atl11_dataset.longitude, latitude=atl11_dataset.latitude, epsg=3995,
+    )
+    atl11_dataset = atl11_dataset.set_coords(["x", "y"])
+    df: pd.DataFrame = atl11_dataset.h_corr.to_dataframe()
+
+    agg_grid: xr.DataArray = region.datashade(df=df, z_dim="h_corr", plot_width=100)
+
+    assert agg_grid.shape == (75, 100)  # check correct aspect ratio is maintained
+    npt.assert_allclose(agg_grid.min(), 1426.336637)
+    npt.assert_allclose(agg_grid.mean(), 1668.94741)
+    npt.assert_allclose(agg_grid.max(), 1798.066285)
 
 
 def test_region_subset():

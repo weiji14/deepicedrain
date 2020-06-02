@@ -49,7 +49,7 @@ jobs:
 
       - name: Install Poetry python dependencies
         shell: bash -l {0}
-        run: poetry install --
+        run: poetry install --no-root
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Install deepicedrain package

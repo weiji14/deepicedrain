@@ -25,8 +25,6 @@ def test_calculate_delta_height():
     npt.assert_allclose(actual=delta_height.mean().data, desired=-0.90124122)
     npt.assert_allclose(actual=delta_height.max().data, desired=9.49908442)
 
-    atl11_dataset.close()
-
 
 def test_calculate_delta_time():
     """
@@ -48,5 +46,3 @@ def test_calculate_delta_time():
     npt.assert_equal(
         actual=np.asarray(delta_time.max()), desired=np.timedelta64(7846787022726588)
     )
-
-    atl11_dataset.close()

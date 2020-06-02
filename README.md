@@ -9,9 +9,9 @@ in Antarctica using remote sensing and machine learning.
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=weiji14/deepicedrain)](https://dependabot.com)
 ![License](https://img.shields.io/github/license/weiji14/deepicedrain)
 
-![ATL11 Cycle 6 minus Cycle 5 height change over Antarctica](https://user-images.githubusercontent.com/23487320/83100017-ffb0ba00-a102-11ea-9603-ac469f09e58b.png)
+![ICESat-2 ATL11 rate of height change over time in Antarctica](https://user-images.githubusercontent.com/23487320/83498673-4e4dc200-a510-11ea-8980-b71aa0f89a80.png)
 
-![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb])
+![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb],[Ice-Sheet-H(t)-Series]->[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb])
 
 # Getting started
 
@@ -20,6 +20,32 @@ in Antarctica using remote sensing and machine learning.
 Launch in [Pangeo Binder](https://pangeo-binder.readthedocs.io) (Interactive jupyter lab environment in the cloud).
 
 [![Binder](https://binder.pangeo.io/badge_logo.svg)](https://binder.pangeo.io/v2/gh/weiji14/deepicedrain/master)
+
+## Usage
+
+Once you've installed properly installed the [`deepicedrain` package](deepicedrain)
+(see installation instructions further below), you'll have access to a range
+of tools for downloading and performing quick calculations on ICESat-2 datasets.
+The example below shows how to calculate ice surface elevation change
+on a sample ATL11 dataset between ICESat's Cycle 3 and Cycle 4.
+
+    import deepicedrain
+    import xarray as xr
+
+    # Loads a sample ATL11 file from the intake catalog into xarray
+    atl11_dataset: xr.Dataset = deepicedrain.catalog.test_data.atl11_test_case.read()
+
+    # Calculate elevation change in metres from ICESat-2 Cycle 3 to Cycle 4
+    delta_height: xr.DataArray = deepicedrain.calculate_delta(
+          dataset=atl11_dataset, oldcyclenum=3, newcyclenum=4, variable="h_corr"
+    )
+
+    # Quick plot of delta_height along the ICESat-2 track
+    delta_height.plot()
+
+![ATL11 delta_height along ref_pt track](https://user-images.githubusercontent.com/23487320/83319030-bf7e4280-a28e-11ea-9bed-331e35dbc266.png)
+
+
 
 ## Installation
 
@@ -69,28 +95,6 @@ Finally, double-check that the libraries have been installed.
     jupyter kernelspec list --json                          # see if kernel is installed
     jupyter lab &
 
-## Usage
-
-Once you've installed properly installed the `deepicedrain` package,
-you can use it to do some quick calculations on ICESat-2 datasets.
-The example below shows how to calculate ice surface elevation change
-on a sample ATL11 dataset between ICESat's Cycle 3 and Cycle 4.
-
-    import deepicedrain
-    import xarray as xr
-
-    # Loads a sample ATL11 file from the intake catalog into xarray
-    atl11_dataset: xr.Dataset = deepicedrain.catalog.test_data.atl11_test_case.read()
-
-    # Calculate elevation change in metres from ICESat-2 Cycle 3 to Cycle 4
-    delta_height: xr.DataArray = deepicedrain.calculate_delta(
-          dataset=atl11_dataset, oldcyclenum=3, newcyclenum=4, variable="h_corr"
-    )
-
-    # Quick plot of delta_height along the ICESat-2 track
-    delta_height.plot()
-
-![ATL11 delta_height along ref_pt track](https://user-images.githubusercontent.com/23487320/83319030-bf7e4280-a28e-11ea-9bed-331e35dbc266.png)
 
 ## Related Projects
 

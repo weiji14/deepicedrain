@@ -5,7 +5,9 @@ Does bounding box region subsets, coordinate/time conversions, and more!
 import dataclasses
 import datetime
 
+import datashader
 import numpy as np
+import pandas as pd
 import pyproj
 import xarray as xr
 
@@ -13,8 +15,9 @@ import xarray as xr
 @dataclasses.dataclass(frozen=True)
 class Region:
     """
-    A nice region data structure that outputs a tuple of bounding box
-    coordinates, has xarray subsetting capabilities and a map scale property.
+    A nice bounding box data class structure that holds the coordinates of its
+    left, right, bottom and top extent, and features convenience functions for
+    performing spatial subsetting and visualization based on those boundaries.
     """
 
     name: str  # name of region
@@ -43,6 +46,32 @@ class Region:
             return (self.xmin, self.ymin, self.xmax, self.ymax)
         else:
             raise NotImplementedError(f"Unknown style type {style}")
+
+    def datashade(
+        self,
+        df: pd.DataFrame,
+        x_dim: str = "x",
+        y_dim: str = "y",
+        z_dim: str = "h_range",
+        plot_width: int = 1400,
+    ) -> xr.DataArray:
+        """
+        Convenience function to quickly datashade a table of x, y, z points
+        into a grid for visualization purposes, using a mean aggregate function
+        """
+        # Datashade our height values (vector points) onto a grid (raster image)
+        # Will maintain the correct aspect ratio according to the region bounds
+        canvas: datashader.core.Canvas = datashader.Canvas(
+            plot_width=plot_width,
+            plot_height=int(
+                plot_width * ((self.ymax - self.ymin) / (self.xmax - self.xmin))
+            ),
+            x_range=(self.xmin, self.xmax),
+            y_range=(self.ymin, self.ymax),
+        )
+        return canvas.points(
+            source=df, x=x_dim, y=y_dim, agg=datashader.mean(column=z_dim)
+        )
 
     def subset(
         self, ds: xr.Dataset, x_dim: str = "x", y_dim: str = "y", drop: bool = True
