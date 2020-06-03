@@ -12,10 +12,39 @@ import xarray as xr
 from deepicedrain import catalog, deltatime_to_utctime, lonlat_to_xy
 
 
-def test_deltatime_to_utctime():
+def test_deltatime_to_utctime_pandas_series():
     """
-    Test that converting from ICESat-2 delta_time to utc_time works,
-    and that the xarray dimensions are preserved in the process.
+    Test that converting from ICESat-2 delta_time to utc_time works on a
+    dask.dataframe.core.Series.
+    """
+    atl11_dataset: xr.Dataset = catalog.test_data.atl11_test_case.to_dask()
+    atl11_dataframe: pd.DataFrame = atl11_dataset.to_dataframe()
+
+    utc_time: pd.Series = deltatime_to_utctime(dataarray=atl11_dataframe.delta_time)
+
+    assert utc_time.shape == (2808,)
+
+    npt.assert_equal(
+        actual=utc_time.min(), desired=pd.Timestamp("2019-05-19T20:53:51.039891534"),
+    )
+
+    npt.assert_equal(
+        actual=utc_time.loc[3].mean(),
+        desired=pd.Timestamp("2019-05-19 20:54:00.925868800"),
+    )
+    npt.assert_equal(
+        actual=utc_time.loc[4].mean(),
+        desired=pd.Timestamp("2019-08-18 16:33:47.791226368"),
+    )
+    npt.assert_equal(
+        actual=utc_time.max(), desired=pd.Timestamp("2019-08-18T16:33:57.834610209"),
+    )
+
+
+def test_deltatime_to_utctime_xarray_dataarray():
+    """
+    Test that converting from ICESat-2 delta_time to utc_time works on an
+    xarray.DataArray, and that the dimensions are preserved in the process.
     """
     atl11_dataset: xr.Dataset = catalog.test_data.atl11_test_case.to_dask()
 
