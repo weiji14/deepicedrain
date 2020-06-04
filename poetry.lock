@@ -1686,7 +1686,7 @@ description = "Fast, Extensible Progress Meter"
 name = "tqdm"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
-version = "4.46.0"
+version = "4.46.1"
 
 [package.extras]
 dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
@@ -1836,7 +1836,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "4be3f639f87de8a4e026837231e193ced58369dc8ec7591ae35ba9253a70052d"
+content-hash = "986cf9c598684daf8efaca8bbc78d553cf6632860d8b4f4deec071e8dd8099df"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2857,8 +2857,8 @@ tornado = [
     {file = "tornado-6.0.4.tar.gz", hash = "sha256:0fe2d45ba43b00a41cd73f8be321a44936dc1aba233dee979f17a042b83eb6dc"},
 ]
 tqdm = [
-    {file = "tqdm-4.46.0-py2.py3-none-any.whl", hash = "sha256:acdafb20f51637ca3954150d0405ff1a7edde0ff19e38fb99a80a66210d2a28f"},
-    {file = "tqdm-4.46.0.tar.gz", hash = "sha256:4733c4a10d0f2a4d098d801464bdaf5240c7dadd2a7fde4ee93b0a0efd9fb25e"},
+    {file = "tqdm-4.46.1-py2.py3-none-any.whl", hash = "sha256:07c06493f1403c1380b630ae3dcbe5ae62abcf369a93bbc052502279f189ab8c"},
+    {file = "tqdm-4.46.1.tar.gz", hash = "sha256:cd140979c2bebd2311dfb14781d8f19bd5a9debb92dcab9f6ef899c987fcf71f"},
 ]
 traitlets = [
     {file = "traitlets-4.3.3-py2.py3-none-any.whl", hash = "sha256:70b4c6a1d9019d7b4f6846832288f86998aa3b9207c6821f3578a6a6a467fe44"},
