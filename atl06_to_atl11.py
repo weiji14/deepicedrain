@@ -46,22 +46,35 @@ client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
 client
 
 # %%
+def first_last_cycle_numbers(referencegroundtrack: int, orbitalsegment: int):
+    """
+    Obtain the first and last cycle numbers for an ATL06 track, given the
+    reference ground track and orbital segment number as input.
+    """
+    files = glob.glob(
+        f"ATL06.003/**/ATL06*_*_{referencegroundtrack:04d}??{orbitalsegment:02d}_*.h5"
+    )
+
+    first_cycle = min(files)[-14:-12]  # e.g. '02'
+    last_cycle = max(files)[-14:-12]  # e.g. '07'
+
+    return first_cycle, last_cycle
+
+
+# %%
 # Create ATL06_to_ATL11 processing script, if not already present
 if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
-    # find number of cycles for each reference ground track and each orbital segment
-    func = lambda ref_gt, orb_st: len(
-        glob.glob(f"ATL06.003/**/ATL06*_*_{ref_gt:04d}??{orb_st}_*.h5")
-    )
+    # find first and last cycles for each reference ground track and each orbital segment
     futures = []
     for referencegroundtrack in range(1387, 0, -1):
         for orbitalsegment in [10, 11, 12]:  # loop through Antarctic orbital segments
-            numcycles = client.submit(
-                func,
+            cyclenums = client.submit(
+                first_last_cycle_numbers,
                 referencegroundtrack,
                 orbitalsegment,
                 key=f"{referencegroundtrack:04d}-{orbitalsegment}",
             )
-            futures.append(numcycles)
+            futures.append(cyclenums)
 
     # Prepare string to write into ATL06_to_ATL11_Antarctica.sh bash script
     writelines = []
@@ -69,11 +82,11 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
         iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
     ):
         referencegroundtrack, orbitalsegment = f.key.split("-")
-        cycles = f.result()
+        first_cycle, last_cycle = f.result()
         writelines.append(
             f"python3 ATL11/ATL06_to_ATL11.py"
             f" {referencegroundtrack} {orbitalsegment}"
-            f" --cycles 01 {cycles:02d}"
+            f" --cycles {first_cycle} {last_cycle}"
             f" --Release 3"
             f" --directory 'ATL06.003/**/'"
             f" --out_dir ATL11.001\n",
