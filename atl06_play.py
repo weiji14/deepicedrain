@@ -73,7 +73,8 @@ client
 # (while making sure we have our Earthdata credentials set up properly),
 # and view it using [xarray](https://xarray.pydata.org) and [hvplot](https://hvplot.pyviz.org).
 
-# open the local intake data catalog file containing ICESat-2 stuff
+# %%
+# Open the local intake data catalog file containing ICESat-2 stuff
 catalog = intake.open_catalog("deepicedrain/atlas_catalog.yaml")
 # or if the deepicedrain python package is installed, you can use either of the below:
 # catalog = deepicedrain.catalog
