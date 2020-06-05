@@ -595,7 +595,7 @@ description = "Data load and catalog system"
 name = "intake"
 optional = false
 python-versions = ">=3.6"
-version = "0.5.5"
+version = "0.6.0"
 
 [package.dependencies]
 appdirs = "*"
@@ -1836,7 +1836,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "6e4566ff98ca26a76e37b052fd1e8c6b0fe58ca9bdba2ddcd49258884e815131"
+content-hash = "9e1f87d2febb49d3536ed37ef3b9799d0def0ccbcffe625f8012c5d17437ff3e"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2104,8 +2104,8 @@ idna = [
     {file = "idna-2.9.tar.gz", hash = "sha256:7588d1c14ae4c77d74036e8c22ff447b26d0fde8f007354fd48a7814db15b7cb"},
 ]
 intake = [
-    {file = "intake-0.5.5-py3-none-any.whl", hash = "sha256:080a4a7dafb716e229a0168548d287e9bff49b7039e6eba4265f59cb0ba54711"},
-    {file = "intake-0.5.5.tar.gz", hash = "sha256:bcb6558a9a7ccb1a3c5b7d1e3777ac8faed80894ef7826df119642430070ef7a"},
+    {file = "intake-0.6.0-py3-none-any.whl", hash = "sha256:32a6d77965f3b89a12894c29e8c7516391a0be4c42902af52f12747186920bcc"},
+    {file = "intake-0.6.0.tar.gz", hash = "sha256:0c284abeb74927a7366dcab6cefc010c4d050365b8af61c37326a2473a490a4e"},
 ]
 intake-xarray = []
 ipykernel = [
