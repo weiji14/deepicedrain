@@ -1,4 +1,4 @@
-name: Test DeepIceDrain package
+name: Test DeepIceDrain
 
 on:
   push:
@@ -8,14 +8,14 @@ on:
 
 jobs:
   test:
-    name: ${{ matrix.os }} - Python ${{ matrix.python_version }}
+    name: ${{ matrix.os }} - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
       fail-fast: false
       matrix:
-        python_version: [3.8]
-        os: [ubuntu-latest]
+        python-version: [3.8]
+        os: [ubuntu-20.04]
 
     steps:
       - name: Checkout current git repository
