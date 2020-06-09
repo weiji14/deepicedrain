@@ -89,7 +89,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
             f" --cycles {first_cycle} {last_cycle}"
             f" --Release 3"
             f" --directory 'ATL06.003/**/'"
-            f" --out_dir ATL11.001\n",
+            f" --out_dir ATL11.001\n"
         )
     writelines.sort()  # sort writelines in place
 
@@ -107,7 +107,11 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 # - O. Tange (2018): GNU Parallel 2018, Mar 2018, ISBN 9781387509881, DOI https://doi.org/10.5281/zenodo.1146014
 
 # %%
-# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --results logdir --joblog log --jobs 64 > /dev/null
+# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --resume-failed --results logdir --joblog log --jobs 64 > /dev/null
+
+# %%
+# df_log = pd.read_csv(filepath_or_buffer="log", sep="\t")
+# df_log.query(expr="Exitval > 0")
 
 # %% [markdown]
 # ## Convert from HDF5 to Zarr format
@@ -172,20 +176,16 @@ for rgt in tqdm.trange(1387):
     try:
         assert len(atl11files) == 3  # Should be 3 files for Orbital Segments 10,11,12
     except AssertionError:
-        if (len(atl11files) == 0 and rgt + 1 in [47, 214]) or (
-            len(atl11files) == 2
-            and rgt + 1 in [31, 54, 73, 100, 106, 161, 603, 915, 1045, 1106, 1151]
-        ):
+        if len(atl11files) == 2 and rgt + 1 in [208, 1036]:
             pass
         else:
             raise
-    # Note ["ATL11.001/ATL11_014512_0103_03_v001.h5", "ATL11.001/ATL11_115810_0104_03_v001.h5"]
-    # are missing pt2 and pt3 groups
+    # Note ["ATL11.001/ATL11_014512_0206_03_v001.h5"] is missing pt2 and pt3 groups
 
     if atl11files:
         pattern: dict = intake.source.utils.reverse_format(
             format_string="ATL11.001/ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{cycles:4}_{revision:2}_v{version:3}.h5",
-            resolved_string=sorted(atl11files)[1],
+            resolved_string=sorted(atl11files)[1],  # get the '11' one, not '10' or '12'
         )
         zarrfilepath: str = "ATL11.001z123/ATL11_{referencegroundtrack}1x_{cycles}_{revision}_v{version}.zarr".format(
             **pattern
@@ -213,10 +213,10 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
             )
 
             # Special exceptions to skip over
-            if atl11file in (
-                "ATL11.001/ATL11_014512_0103_03_v001.h5",
-                "ATL11.001/ATL11_115810_0104_03_v001.h5",
-            ) and pair in ("pt2", "pt3"):
+            if atl11file in ("ATL11.001/ATL11_014512_0206_03_v001.h5",) and pair in (
+                "pt2",
+                "pt3",
+            ):
                 continue
                 # print(atl11file, pair)
                 # xr.open_dataset(
@@ -229,7 +229,7 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
     stores.append(store_task)
 
 # %%
-# Do all the HDF5 to Zarr conversion!
+# Do all the HDF5 to Zarr conversion! Should take less than an hour to run.
 # Check conversion progress here, https://stackoverflow.com/a/37901797/6611055
 futures = [client.compute(store_task) for store_task in stores]
 for f in tqdm.tqdm(
@@ -238,9 +238,7 @@ for f in tqdm.tqdm(
     pass
 
 # %%
-ds = xr.open_dataset(
-    zarrfilepath, engine="zarr", backend_kwargs={"consolidated": True},
-)
+ds = xr.open_dataset(zarrfilepath, engine="zarr", backend_kwargs={"consolidated": True})
 ds.h_corr.__array__().shape
 
 
