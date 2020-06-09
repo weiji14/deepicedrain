@@ -67,7 +67,7 @@ print(f"{len(stores)} reference ground track Zarr stores")
 # Aligning chunks spatially along cycle_number (i.e. time)
 ds: xr.Dataset = xr.open_mfdataset(
     paths=stores,
-    chunks={"cycle_number": 6},
+    chunks={"cycle_number": 7},
     engine="zarr",
     combine="nested",
     concat_dim="ref_pt",
@@ -185,10 +185,10 @@ ds_subset.to_netcdf(
 )
 
 # %%
-# Look at Cycle Number 6 only for plotting
+# Look at Cycle Number 7 only for plotting
 points_subset = hv.Points(
-    data=ds_subset.sel(cycle_number=6)[[*essential_columns]],
-    label="Cycle_6",
+    data=ds_subset.sel(cycle_number=7)[[*essential_columns]],
+    label="Cycle_7",
     kdims=["x", "y"],
     vdims=["utc_time", "h_corr", "cycle_number"],
     datatype=["xarray"],
@@ -198,7 +198,7 @@ df_subset = points_subset.dframe()
 # %%
 # Plot our subset of points on an interactive map
 df_subset.hvplot.points(
-    title=f"Elevation (metres) at Cycle 6",
+    title=f"Elevation (metres) at Cycle 7",
     x="x",
     y="y",
     c="h_corr",
@@ -215,7 +215,7 @@ df_subset.hvplot.points(
 # let's flatten our n-dimensional `xarray.Dataset`
 # to a 2-dimensiontal `pandas.DataFrame` table format.
 #
-# There are currently 6 cycles (as of March 2020),
+# There are currently 7 cycles (as of April 2020),
 # and by selecting just one cycle at a time,
 # we can see what the height (`h_corr`)
 # of the ice is like at that time.
