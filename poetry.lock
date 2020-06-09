@@ -387,7 +387,7 @@ description = "Distributed scheduler for Dask"
 name = "distributed"
 optional = false
 python-versions = ">=3.6"
-version = "2.17.0"
+version = "2.18.0"
 
 [package.dependencies]
 click = ">=6.6"
@@ -595,7 +595,7 @@ description = "Data load and catalog system"
 name = "intake"
 optional = false
 python-versions = ">=3.6"
-version = "0.5.5"
+version = "0.6.0"
 
 [package.dependencies]
 appdirs = "*"
@@ -859,7 +859,7 @@ description = "Jupyter notebooks as Markdown documents, Julia, Python or R scrip
 name = "jupytext"
 optional = false
 python-versions = "*"
-version = "1.4.2"
+version = "1.5.0"
 
 [package.dependencies]
 nbformat = ">=4.0.0"
@@ -867,6 +867,7 @@ pyyaml = "*"
 
 [package.extras]
 myst = ["myst-parser (>=0.8,<1.0)"]
+toml = ["toml"]
 
 [[package]]
 category = "main"
@@ -1441,7 +1442,7 @@ description = "pytest: simple powerful testing with Python"
 name = "pytest"
 optional = false
 python-versions = ">=3.5"
-version = "5.4.2"
+version = "5.4.3"
 
 [package.dependencies]
 atomicwrites = ">=1.0"
@@ -1836,7 +1837,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "4be3f639f87de8a4e026837231e193ced58369dc8ec7591ae35ba9253a70052d"
+content-hash = "b8fac2e565a7b83f7ee79ba5ddd3c6bcaa244f87f0583baf534b98058e6833c5"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2013,8 +2014,8 @@ defusedxml = [
     {file = "defusedxml-0.6.0.tar.gz", hash = "sha256:f684034d135af4c6cbb949b8a4d2ed61634515257a67299e5f940fbaa34377f5"},
 ]
 distributed = [
-    {file = "distributed-2.17.0-py3-none-any.whl", hash = "sha256:cf70e7f8f6221ae508379d23218096381fea906a0082485d2355ef72c0c2b146"},
-    {file = "distributed-2.17.0.tar.gz", hash = "sha256:8b6f8a28eb32ad93f33bd34141fcaf2e437ef5bda900347e8384b332c7f233a3"},
+    {file = "distributed-2.18.0-py3-none-any.whl", hash = "sha256:7d951493d5264b93d8d888eb5df67c8090dc010c0ae34c2ead7a6729a9994405"},
+    {file = "distributed-2.18.0.tar.gz", hash = "sha256:902f098fb7558f035333804a5aeba2fb26a2a715388808205a17cbb2e02e0558"},
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
@@ -2104,8 +2105,8 @@ idna = [
     {file = "idna-2.9.tar.gz", hash = "sha256:7588d1c14ae4c77d74036e8c22ff447b26d0fde8f007354fd48a7814db15b7cb"},
 ]
 intake = [
-    {file = "intake-0.5.5-py3-none-any.whl", hash = "sha256:080a4a7dafb716e229a0168548d287e9bff49b7039e6eba4265f59cb0ba54711"},
-    {file = "intake-0.5.5.tar.gz", hash = "sha256:bcb6558a9a7ccb1a3c5b7d1e3777ac8faed80894ef7826df119642430070ef7a"},
+    {file = "intake-0.6.0-py3-none-any.whl", hash = "sha256:32a6d77965f3b89a12894c29e8c7516391a0be4c42902af52f12747186920bcc"},
+    {file = "intake-0.6.0.tar.gz", hash = "sha256:0c284abeb74927a7366dcab6cefc010c4d050365b8af61c37326a2473a490a4e"},
 ]
 intake-xarray = []
 ipykernel = [
@@ -2157,7 +2158,7 @@ jupyterlab-server = [
     {file = "jupyterlab_server-1.1.1.tar.gz", hash = "sha256:b5921872746b1ca109d1852196ed11e537f8aad67a1933c1d4a8ac63f8e61cca"},
 ]
 jupytext = [
-    {file = "jupytext-1.4.2.tar.gz", hash = "sha256:58b4c6bf48ba2e18bfc2d8358e852b6e3538ff664843398be09157c184ee1a27"},
+    {file = "jupytext-1.5.0.tar.gz", hash = "sha256:f4605d053c0cfc4562a936033d14355cd2fbc44d81afc90629e32c00e2d28615"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.1.0-cp27-cp27m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:7f4dd50874177d2bb060d74769210f3bce1af87a8c7cf5b37d032ebf94f0aca3"},
@@ -2647,8 +2648,8 @@ pyshp = [
     {file = "pyshp-2.1.0.tar.gz", hash = "sha256:e65c7f24d372b97d0920b864bbeb78322bb37b83f2606e2a2212631d5d51e5c0"},
 ]
 pytest = [
-    {file = "pytest-5.4.2-py3-none-any.whl", hash = "sha256:95c710d0a72d91c13fae35dce195633c929c3792f54125919847fdcdf7caa0d3"},
-    {file = "pytest-5.4.2.tar.gz", hash = "sha256:eb2b5e935f6a019317e455b6da83dd8650ac9ffd2ee73a7b657a30873d67a698"},
+    {file = "pytest-5.4.3-py3-none-any.whl", hash = "sha256:5c0db86b698e8f170ba4582a492248919255fcd4c79b1ee64ace34301fb589a1"},
+    {file = "pytest-5.4.3.tar.gz", hash = "sha256:7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
