@@ -291,12 +291,15 @@ description = "Parallel PyData with Task Scheduling"
 name = "dask"
 optional = false
 python-versions = ">=3.6"
-version = "2.13.0"
+version = "2.18.0"
+
+[package.dependencies]
+pyyaml = "*"
 
 [package.extras]
 array = ["numpy (>=1.13.0)", "toolz (>=0.8.2)"]
 bag = ["cloudpickle (>=0.2.2)", "fsspec (>=0.6.0)", "toolz (>=0.8.2)", "partd (>=0.3.10)"]
-complete = ["pyyaml", "bokeh (>=1.0.0)", "cloudpickle (>=0.2.2)", "distributed (>=2.0)", "fsspec (>=0.6.0)", "numpy (>=1.13.0)", "pandas (>=0.23.0)", "partd (>=0.3.10)", "toolz (>=0.8.2)"]
+complete = ["bokeh (>=1.0.0)", "cloudpickle (>=0.2.2)", "distributed (>=2.0)", "fsspec (>=0.6.0)", "numpy (>=1.13.0)", "pandas (>=0.23.0)", "partd (>=0.3.10)", "toolz (>=0.8.2)"]
 dataframe = ["numpy (>=1.13.0)", "pandas (>=0.23.0)", "toolz (>=0.8.2)", "partd (>=0.3.10)", "fsspec (>=0.6.0)"]
 delayed = ["cloudpickle (>=0.2.2)", "toolz (>=0.8.2)"]
 diagnostics = ["bokeh (>=1.0.0)"]
@@ -1837,7 +1840,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "5f5802ce8e0c3ecd2ef8f4daab535819e016f74e8c74b7237a111a7f3da51acd"
+content-hash = "eece5e571eb71d4310e86954919e365f1cc4c4083958c72bef154a2fe45a5cfa"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1992,8 +1995,8 @@ cython = [
     {file = "Cython-0.29.18.tar.gz", hash = "sha256:46e9ab055eb64595f160b61037c3e65ce0b01320d144a3a53eb807000078d53f"},
 ]
 dask = [
-    {file = "dask-2.13.0-py3-none-any.whl", hash = "sha256:9e1ee5ad0c88f4e38d28d1e6775c1479b0595d51406337f575312a7d66fe53c2"},
-    {file = "dask-2.13.0.tar.gz", hash = "sha256:e7096d77329ad872a82c8a22f5ec725190311e9b5eabf7df665a35c423514729"},
+    {file = "dask-2.18.0-py3-none-any.whl", hash = "sha256:e2b385cfa2b561b1ff003b19f4e4d1746f7273366ac06676e459191ebf66b768"},
+    {file = "dask-2.18.0.tar.gz", hash = "sha256:9f2d980923d7779872b5c2c6fce0903d86bf74c39ce5ec8a8e4991d43907ebd8"},
 ]
 dask-labextension = [
     {file = "dask_labextension-2.0.2.tar.gz", hash = "sha256:65119f989923c759f5ca51d1dad896a1ece57ac8fb4aab9229299bae085439c2"},
