@@ -55,7 +55,7 @@ client
 # Load ATL11 data from Zarr
 ds: xr.Dataset = xr.open_mfdataset(
     paths="ATL11.001z123/ATL11_*.zarr",
-    chunks={"cycle_number": 6},
+    chunks={"cycle_number": 7},
     engine="zarr",
     combine="nested",
     concat_dim="ref_pt",

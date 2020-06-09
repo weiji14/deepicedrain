@@ -93,7 +93,7 @@ except FileNotFoundError as error_msg:
 
 # data download will depend on having a .netrc file in home folder
 dataset = catalog.icesat2atl06.to_dask().unify_chunks()
-dataset
+print(dataset)
 
 # %%
 # dataset.hvplot.points(
@@ -122,8 +122,9 @@ catalog.icesat2atl06.hvplot.quickview()
 # Download all ICESAT2 ATLAS hdf files from start to end date
 dates1 = pd.date_range(start="2018.10.14", end="2018.12.08")  # 1st batch
 dates2 = pd.date_range(start="2018.12.10", end="2019.06.26")  # 2nd batch
-dates3 = pd.date_range(start="2019.07.26", end="2020.03.06")  # 3rd batch
+dates3 = pd.date_range(start="2019.07.26", end="2020.04.04")  # 3rd batch
 dates = dates1.append(other=dates2).append(other=dates3)
+# dates = pd.date_range(start="2020.03.07", end="2020.04.04")  # custom batch
 
 # %%
 # Submit download jobs to Client
@@ -368,9 +369,6 @@ dfs.hvplot.scatter(
 # %%
 # Plot cross section view
 dfs.hvplot.scatter(x="x", y="h_li", by="laser")
-
-# %%
-dfs.to_pickle(path="icesat2_sample.pkl")
 
 # %%
 

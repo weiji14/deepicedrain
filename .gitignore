@@ -27,5 +27,10 @@ MANIFEST
 # Jupyter Notebook
 .ipynb_checkpoints
 
-# Data files
+# Data files and folders
 **/*.h5
+ATL06.003
+ATL11.001
+ATL11.001z123
+ATLXI
+Quantarctica3
