@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.5.0
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -162,6 +162,14 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
     # Rename quality_summary variable to avoid name class when merging
     ds = ds.rename({"quality_summary": f"quality_summary_{subgroup}"})
 
+    # Convert variables to correct datatype, except for delta_time
+    for variable in list(ds.variables):
+        current_dtype = ds[variable].dtype
+        desired_dtype = ds[variable].datatype.lower()
+        if current_dtype != desired_dtype:
+            if variable != "delta_time":
+                ds[variable] = ds[variable].astype(desired_dtype)
+
     return ds
 
 
@@ -229,7 +237,7 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
     stores.append(store_task)
 
 # %%
-# Do all the HDF5 to Zarr conversion! Should take less than an hour to run.
+# Do all the HDF5 to Zarr conversion! Should take an hour or two to run
 # Check conversion progress here, https://stackoverflow.com/a/37901797/6611055
 futures = [client.compute(store_task) for store_task in stores]
 for f in tqdm.tqdm(
