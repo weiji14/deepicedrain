@@ -168,7 +168,13 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
         desired_dtype = ds[variable].datatype.lower()
         if current_dtype != desired_dtype:
             if variable != "delta_time":
-                ds[variable] = ds[variable].astype(desired_dtype)
+                # print(variable, current_dtype, desired_dtype)
+                try:
+                    ds[variable].data = ds[variable].data.astype(dtype=desired_dtype)
+                except ValueError:  # for coordinate variables (e.g. ref_pt)
+                    tmp_attrs = ds[variable].attrs
+                    ds[variable] = ds[variable].astype(desired_dtype)
+                    ds[variable].attrs = tmp_attrs
 
     return ds
 
