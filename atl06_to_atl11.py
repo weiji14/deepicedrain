@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.5.0
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -118,7 +118,9 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 #
 # For faster data access speeds!
 # We'll collect the data for each Reference Ground Track,
-# and store it inside a Zarr format.
+# and store it inside a Zarr format,
+# specifically one that can be used by xarray.
+# See also http://xarray.pydata.org/en/v0.15.1/io.html#zarr.
 #
 # Grouping hierarchy:
 #   - Reference Ground Track (1-1387)
@@ -194,6 +196,21 @@ for rgt in tqdm.trange(1387):
 
 
 # %%
+# Get proper data encoding from a sample ATL11 file
+atl11file = atl11files[0]
+corrected_height_ds = open_ATL11(
+    atl11file=atl11file, group=f"pt2/corrected_h"
+).compute()
+reference_surface_ds = open_ATL11(atl11file=atl11file, group=f"pt2/ref_surf").compute()
+ds = xr.combine_by_coords(datasets=[corrected_height_ds, reference_surface_ds])
+
+# Convert variables to correct datatype, except for delta_time
+encoding = {var: {"dtype": ds[var].datatype.lower()} for var in ds.variables}
+encoding["h_corr"]["dtype"] = "float32"
+encoding["h_corr_sigma"]["dtype"] = "float32"
+encoding["h_corr_sigma_systematic"]["dtype"] = "float32"
+
+# %%
 # Gather up all the dask.delayed conversion tasks to store data into Zarr!
 stores = []
 for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
@@ -225,11 +242,13 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
             datasets.append(ds)
 
     dataset = dask.delayed(obj=xr.concat)(objs=datasets, dim="ref_pt")
-    store_task = dataset.to_zarr(store=zarrfilepath, mode="w", consolidated=True)
+    store_task = dataset.to_zarr(
+        store=zarrfilepath, mode="w", encoding=encoding, consolidated=True
+    )
     stores.append(store_task)
 
 # %%
-# Do all the HDF5 to Zarr conversion! Should take less than an hour to run.
+# Do all the HDF5 to Zarr conversion! Should take about half an hour to run
 # Check conversion progress here, https://stackoverflow.com/a/37901797/6611055
 futures = [client.compute(store_task) for store_task in stores]
 for f in tqdm.tqdm(
