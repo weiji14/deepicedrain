@@ -118,7 +118,9 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 #
 # For faster data access speeds!
 # We'll collect the data for each Reference Ground Track,
-# and store it inside a Zarr format.
+# and store it inside a Zarr format,
+# specifically one that can be used by xarray.
+# See also http://xarray.pydata.org/en/v0.15.1/io.html#zarr.
 #
 # Grouping hierarchy:
 #   - Reference Ground Track (1-1387)
@@ -162,23 +164,6 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
     # Rename quality_summary variable to avoid name class when merging
     ds = ds.rename({"quality_summary": f"quality_summary_{subgroup}"})
 
-    # Convert variables to correct datatype, except for delta_time
-    for variable in list(ds.variables):
-        current_dtype = ds[variable].dtype
-        if "h_corr" in variable:  # cast height variables from float64 to float32
-            desired_dtype = "float32"
-        else:
-            desired_dtype = ds[variable].datatype.lower()
-        if current_dtype != desired_dtype:
-            if variable != "delta_time":
-                # print(variable, current_dtype, desired_dtype)
-                try:
-                    ds[variable].data = ds[variable].data.astype(dtype=desired_dtype)
-                except ValueError:  # for coordinate variables (e.g. ref_pt)
-                    tmp_attrs = ds[variable].attrs
-                    ds[variable] = ds[variable].astype(desired_dtype)
-                    ds[variable].attrs = tmp_attrs
-
     return ds
 
 
@@ -209,6 +194,21 @@ for rgt in tqdm.trange(1387):
         )
         atl11_dict[zarrfilepath] = atl11files
 
+
+# %%
+# Get proper data encoding from a sample ATL11 file
+atl11file = atl11files[0]
+corrected_height_ds = open_ATL11(
+    atl11file=atl11file, group=f"pt2/corrected_h"
+).compute()
+reference_surface_ds = open_ATL11(atl11file=atl11file, group=f"pt2/ref_surf").compute()
+ds = xr.combine_by_coords(datasets=[corrected_height_ds, reference_surface_ds])
+
+# Convert variables to correct datatype, except for delta_time
+encoding = {var: {"dtype": ds[var].datatype.lower()} for var in ds.variables}
+encoding["h_corr"]["dtype"] = "float32"
+encoding["h_corr_sigma"]["dtype"] = "float32"
+encoding["h_corr_sigma_systematic"]["dtype"] = "float32"
 
 # %%
 # Gather up all the dask.delayed conversion tasks to store data into Zarr!
@@ -242,11 +242,13 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
             datasets.append(ds)
 
     dataset = dask.delayed(obj=xr.concat)(objs=datasets, dim="ref_pt")
-    store_task = dataset.to_zarr(store=zarrfilepath, mode="w", consolidated=True)
+    store_task = dataset.to_zarr(
+        store=zarrfilepath, mode="w", encoding=encoding, consolidated=True
+    )
     stores.append(store_task)
 
 # %%
-# Do all the HDF5 to Zarr conversion! Should take an hour or so to run
+# Do all the HDF5 to Zarr conversion! Should take about half an hour to run
 # Check conversion progress here, https://stackoverflow.com/a/37901797/6611055
 futures = [client.compute(store_task) for store_task in stores]
 for f in tqdm.tqdm(
