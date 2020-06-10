@@ -165,7 +165,10 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
     # Convert variables to correct datatype, except for delta_time
     for variable in list(ds.variables):
         current_dtype = ds[variable].dtype
-        desired_dtype = ds[variable].datatype.lower()
+        if "h_corr" in variable:  # cast height variables from float64 to float32
+            desired_dtype = "float32"
+        else:
+            desired_dtype = ds[variable].datatype.lower()
         if current_dtype != desired_dtype:
             if variable != "delta_time":
                 # print(variable, current_dtype, desired_dtype)
@@ -243,7 +246,7 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
     stores.append(store_task)
 
 # %%
-# Do all the HDF5 to Zarr conversion! Should take an hour or two to run
+# Do all the HDF5 to Zarr conversion! Should take an hour or so to run
 # Check conversion progress here, https://stackoverflow.com/a/37901797/6611055
 futures = [client.compute(store_task) for store_task in stores]
 for f in tqdm.tqdm(
