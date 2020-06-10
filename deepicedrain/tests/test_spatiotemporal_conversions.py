@@ -12,6 +12,19 @@ import xarray as xr
 from deepicedrain import catalog, deltatime_to_utctime, lonlat_to_xy
 
 
+def test_deltatime_to_utctime_numpy_timedelta64():
+    """
+    Test that converting from ICESat-2 delta_time to utc_time works on a
+    single numpy.timedelta object.
+    """
+    delta_time = np.timedelta64(24731275413287379, "ns")
+    utc_time: np.datetime64 = deltatime_to_utctime(dataarray=delta_time)
+
+    npt.assert_equal(
+        actual=utc_time, desired=np.datetime64("2018-10-14T05:47:55.413287379")
+    )
+
+
 def test_deltatime_to_utctime_pandas_series():
     """
     Test that converting from ICESat-2 delta_time to utc_time works on a
@@ -25,7 +38,7 @@ def test_deltatime_to_utctime_pandas_series():
     assert utc_time.shape == (2808,)
 
     npt.assert_equal(
-        actual=utc_time.min(), desired=pd.Timestamp("2019-05-19T20:53:51.039891534"),
+        actual=utc_time.min(), desired=pd.Timestamp("2019-05-19T20:53:51.039891534")
     )
 
     npt.assert_equal(
@@ -37,7 +50,7 @@ def test_deltatime_to_utctime_pandas_series():
         desired=pd.Timestamp("2019-08-18 16:33:47.791226368"),
     )
     npt.assert_equal(
-        actual=utc_time.max(), desired=pd.Timestamp("2019-08-18T16:33:57.834610209"),
+        actual=utc_time.max(), desired=pd.Timestamp("2019-08-18T16:33:57.834610209")
     )
 
 
@@ -83,12 +96,10 @@ def test_lonlat_to_xy_dask_series():
     atl11_dataframe: dask.dataframe.core.DataFrame = atl11_dataset.to_dask_dataframe()
 
     x, y = lonlat_to_xy(
-        longitude=atl11_dataframe.longitude, latitude=atl11_dataframe.latitude,
+        longitude=atl11_dataframe.longitude, latitude=atl11_dataframe.latitude
     )
     npt.assert_equal(actual=x.mean(), desired=-56900105.00307033)
     npt.assert_equal(actual=y.mean(), desired=48141607.48486084)
-
-    atl11_dataset.close()
 
 
 def test_lonlat_to_xy_xarray_dataarray():

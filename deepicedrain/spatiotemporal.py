@@ -99,7 +99,10 @@ def deltatime_to_utctime(
     Note, does not account for leap seconds! There are none declared since the
     last one announced on 31/12/2016, so it should be fine for now as of 2020.
     """
-    start_epoch = dataarray.__class__(start_epoch).squeeze()
+    try:
+        start_epoch = dataarray.__class__(start_epoch).squeeze()
+    except ValueError:  # Could not convert object to NumPy timedelta
+        pass
 
     utc_time: xr.DataArray = start_epoch + dataarray
 
