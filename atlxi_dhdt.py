@@ -28,7 +28,7 @@
 #   - Done for points which are valid and in geographic region of interest
 #   - Uses the `deepicedrain.nanptp` function
 # 3. Calculate rate of height change over time (dhdt)
-#   - Done for points with `h_range > 0.5 metres`
+#   - Done for points with `h_range > 0.25 metres`
 #   - Uses the `deepicedrain.nan_linregress` function
 #
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/plotting_scripts/AA_dhdt_map.ipynb
@@ -262,9 +262,9 @@ fig.show(width=600)
 # on a Dask cluster.
 
 # %%
-# Take only the points where there is more than 0.5 metres of elevation change
-# Trim down ~100 million points to ~10 million
-ds = ds.where(cond=ds.h_range > 0.5, drop=True)
+# Take only the points where there is more than 0.25 metres of elevation change
+# Trim down ~220 million points to ~36 million
+ds = ds.where(cond=ds.h_range > 0.25, drop=True)
 print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %%
