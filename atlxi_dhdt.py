@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.5.0
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -28,7 +28,7 @@
 #   - Done for points which are valid and in geographic region of interest
 #   - Uses the `deepicedrain.nanptp` function
 # 3. Calculate rate of height change over time (dhdt)
-#   - Done for points with `h_range > 0.5 metres`
+#   - Done for points with `h_range > 0.25 metres`
 #   - Uses the `deepicedrain.nan_linregress` function
 #
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/plotting_scripts/AA_dhdt_map.ipynb
@@ -83,14 +83,14 @@ ds: xr.Dataset = ds.set_coords(names=["x", "y"])
 ds["h_corr"]: xr.DataArray = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
 
 # %% [markdown]
-# ## Trim out unnecessary values
+# ## Trim out unnecessary values (optional)
 #
-# There's ~150 million ATL11 points for the whole of Antarctica,
+# There's ~220 million ATL11 points for the whole of Antarctica,
 # and not all of them will be needed depending on what you want to do.
 # To cut down on the number of data points the computer needs to work on,
 # we can:
 #
-# - Subset to geographic region of interest (optional)
+# - Subset to geographic region of interest
 # - Ensure there are at least 2 height values to calculate trend over time
 
 # %%
@@ -118,7 +118,7 @@ regions: dict = {
 }
 
 # %%
-# Subset dataset to geographic region of interest (optional!)
+# Subset dataset to geographic region of interest
 placename: str = "antarctica"
 region: deepicedrain.Region = regions[placename]
 # ds = region.subset(ds=ds)
@@ -126,23 +126,46 @@ region: deepicedrain.Region = regions[placename]
 # %%
 # We need at least 2 points to draw a trend line or compute differences
 # So let's drop points with less than 2 valid values across all cycles
-# Will take maybe 5-10 min to trim down ~150 million points to ~100 million
-ds: xr.Dataset = ds.dropna(dim="ref_pt", thresh=2, subset=["h_corr"])
+# Will take maybe 10-15 min to trim down ~220 million points to ~190 million
+print(f"Originally {len(ds.ref_pt)} points")
+# ds: xr.Dataset = ds.dropna(dim="ref_pt", thresh=2, subset=["h_corr"])
 print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %% [markdown]
 # ### Optimize dataset for big calculations later
 #
 # We'll rechunk the dataset to a reasonable chunk size,
-# and persist the dataset in memory so that the parallel
+# and persist key dataset variables in memory so that the parallel
 # computations will be more efficient in later sections.
 
 # %%
 ds["h_corr"] = ds.h_corr.unify_chunks()
 
 # %%
-# Persist the height data in distributed memory
+# Persist the height and time data in distributed memory
 ds["h_corr"] = ds.h_corr.persist()
+ds["delta_time"] = ds.delta_time.persist()
+
+# %% [markdown]
+# ### Retrieve some basic information for plots later
+#
+# Simply getting the number of cycles and date range
+# to put into our plots later on
+
+# %%
+# Get number of ICESat-2 cycles used
+num_cycles: int = len(ds.cycle_number)
+
+# %%
+# Get first and last dates to put into our plots
+min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
+max_delta_time = np.nanmax(ds.delta_time.isel(cycle_number=-1).data).compute()
+min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
+max_utc_time = deepicedrain.deltatime_to_utctime(max_delta_time)
+min_date: str = np.datetime_as_string(arr=min_utc_time, unit="D")
+max_date: str = np.datetime_as_string(arr=max_utc_time, unit="D")
+print(f"Handling {num_cycles} ICESat-2 cycles from {min_date} to {max_date}")
+
 
 # %%
 
@@ -151,7 +174,7 @@ ds["h_corr"] = ds.h_corr.persist()
 #
 # A simple way of finding active subglacial lakes is to see where
 # there has been a noticeably rapid change in elevation over
-# a short period of time (e.g. 2-5 metres a year, or ~4 ICESat-2 cycles).
+# a short period of time such as 2-5 metres a year (or ~4x91-day ICESat-2 cycles).
 # 'Range of height' is quick way to do this,
 # basically just doing maximum height minus minimum height.
 
@@ -182,11 +205,11 @@ ds_ht: xr.Dataset = ds[["h_range", "h_corr", "delta_time"]].compute()
 # ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w", consolidated=True)
 ds_ht: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_hrange_time_{placename}.zarr",
-    chunks={"cycle_number": 6},
+    chunks={"cycle_number": 7},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
-# ds: xr.Dataset = ds_ht  # shortcut for later steps
+# ds: xr.Dataset = ds_ht  # shortcut for dhdt calculation later
 
 # %%
 df_hr: pd.DataFrame = ds_ht.h_range.to_dataframe()
@@ -197,7 +220,7 @@ df_hr.describe()
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
 agg_grid: xr.DataArray = region.datashade(df=df_hr, z_dim="h_range")
-agg_grid
+print(agg_grid)
 
 # %%
 # Plot our map!
@@ -212,7 +235,8 @@ fig.grdimage(
     Q=True,
 )
 fig.colorbar(
-    position="JCR+e", frame=["af", 'x+l"Elevation Range across 6 cycles"', "y+lm"],
+    position="JCR+e",
+    frame=["af", f'x+l"height range from {min_date} to {max_date}"', "y+lm"],
 )
 # for subglacial_lake in subglacial_lakes:
 #     fig.plot(data=subglacial_lake, L=True, pen="thin")
@@ -224,7 +248,7 @@ fig.coast(
     shorelines="0.5p",
     V="q",
 )
-fig.savefig(f"figures/plot_atl11_hrange_{placename}.png")
+fig.savefig(f"figures/plot_atl11_hrange_{placename}_{min_date}_{max_date}.png")
 fig.show(width=600)
 
 # %%
@@ -238,9 +262,9 @@ fig.show(width=600)
 # on a Dask cluster.
 
 # %%
-# Take only the points where there is more than 0.5 metres of elevation change
-# Trim down ~100 million points to ~10 million
-ds = ds.where(cond=ds.h_range > 0.5, drop=True)
+# Take only the points where there is more than 0.25 metres of elevation change
+# Trim down ~220 million points to ~36 million
+ds = ds.where(cond=ds.h_range > 0.25, drop=True)
 print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %%
@@ -289,7 +313,7 @@ ds_dhdt: xr.Dataset = ds_dhdt.compute()
 # ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
 ds_dhdt: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_dhdt_{placename}.zarr",
-    chunks={"cycle_number": 6},
+    chunks={"cycle_number": 7},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -300,7 +324,7 @@ df_slope: pd.DataFrame = ds_dhdt.dhdt_slope.to_dataframe()
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
 agg_grid: xr.DataArray = region.datashade(df=df_slope, z_dim="dhdt_slope")
-agg_grid
+print(agg_grid)
 
 # %%
 # Plot our map!
@@ -318,7 +342,8 @@ fig.grdimage(
     Q=True,
 )
 fig.colorbar(
-    position="JCR+e", frame=["af", 'x+l"dH/dt across 6 cycles"', "y+lm/yr"],
+    position="JCR+e",
+    frame=["af", f'x+l"dH/dt from {min_date} to {max_date}"', "y+lm/yr"],
 )
 # for subglacial_lake in subglacial_lakes:
 #    fig.plot(data=subglacial_lake, L=True, pen="thinnest")
@@ -330,7 +355,7 @@ fig.coast(
     shorelines="0.5p",
     V="q",
 )
-fig.savefig(f"figures/plot_atl11_dhdt_{placename}.png")
+fig.savefig(f"figures/plot_atl11_dhdt_{placename}_{min_date}_{max_date}.png")
 fig.show(width=600)
 
 # %%
