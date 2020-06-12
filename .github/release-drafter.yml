@@ -1,5 +1,5 @@
-name-template: 'v$NEXT_PATCH_VERSION'
-tag-template: 'v$NEXT_PATCH_VERSION'
+name-template: 'v$NEXT_MINOR_VERSION'
+tag-template: 'v$NEXT_MINOR_VERSION'
 categories:
   - title: ':sparkles: Features'
     label:
@@ -17,4 +17,4 @@ template: |
 
   $CHANGES
 
-  Full list of commits made since last release viewable at [compare view](https://github.com/weiji14/deepicedrain/compare/v0.0.0...v0.1.0).
+  Full list of commits made since last release viewable at [compare view](https://github.com/weiji14/deepicedrain/compare/v0.1.0...v0.2.0).
