@@ -74,8 +74,8 @@ ds: xr.Dataset = xr.open_mfdataset(
 ds["x"], ds["y"] = deepicedrain.lonlat_to_xy(
     longitude=ds.longitude, latitude=ds.latitude
 )
-# Set x and y as coordinates of the xarray.Dataset
-ds: xr.Dataset = ds.set_coords(names=["x", "y"])
+# Set x, y, x_atc and y_atc as coordinates of the xarray.Dataset
+ds: xr.Dataset = ds.set_coords(names=["x", "y", "x_atc", "y_atc"])
 
 
 # %%
@@ -158,12 +158,15 @@ num_cycles: int = len(ds.cycle_number)
 
 # %%
 # Get first and last dates to put into our plots
-min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
-max_delta_time = np.nanmax(ds.delta_time.isel(cycle_number=-1).data).compute()
-min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
-max_utc_time = deepicedrain.deltatime_to_utctime(max_delta_time)
-min_date: str = np.datetime_as_string(arr=min_utc_time, unit="D")
-max_date: str = np.datetime_as_string(arr=max_utc_time, unit="D")
+min_date, max_date = ("2018-10-14", "2020-04-04")
+if min_date is None:
+    min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
+    min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
+    min_date: str = np.datetime_as_string(arr=min_utc_time, unit="D")
+if max_date is None:
+    max_delta_time = np.nanmax(ds.delta_time.isel(cycle_number=-1).data).compute()
+    max_utc_time = deepicedrain.deltatime_to_utctime(max_delta_time)
+    max_date: str = np.datetime_as_string(arr=max_utc_time, unit="D")
 print(f"Handling {num_cycles} ICESat-2 cycles from {min_date} to {max_date}")
 
 
