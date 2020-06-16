@@ -980,7 +980,7 @@ description = "Numpy data serialization using msgpack"
 name = "msgpack-numpy"
 optional = false
 python-versions = "*"
-version = "0.4.4.3"
+version = "0.4.6.post0"
 
 [package.dependencies]
 msgpack = ">=0.5.2"
@@ -2347,8 +2347,8 @@ msgpack = [
     {file = "msgpack-1.0.0.tar.gz", hash = "sha256:9534d5cc480d4aff720233411a1f765be90885750b07df772380b34c10ecb5c0"},
 ]
 msgpack-numpy = [
-    {file = "msgpack-numpy-0.4.4.3.tar.gz", hash = "sha256:a02c0069fb580c6a2dda9b98d40d34fda3840863112a5465ba9b54fa2ee005a5"},
-    {file = "msgpack_numpy-0.4.4.3-py2.py3-none-any.whl", hash = "sha256:ae5f04d4a2274d14549dd057f3ae03a0523700a13dae3e906ddaf2a6d2844400"},
+    {file = "msgpack-numpy-0.4.6.post0.tar.gz", hash = "sha256:dfcb0c9cb5850e656344ac464a260e7b8b9b1c62d77c2e1d3d9ef15a88f1df6b"},
+    {file = "msgpack_numpy-0.4.6.post0-py2.py3-none-any.whl", hash = "sha256:3e66a7c9c76893ceabe0ce905e1d617f0468b71923db74aa69df02b44a96c7b7"},
 ]
 multidict = [
     {file = "multidict-4.7.6-cp35-cp35m-macosx_10_14_x86_64.whl", hash = "sha256:275ca32383bc5d1894b6975bb4ca6a7ff16ab76fa622967625baeebcf8079000"},
