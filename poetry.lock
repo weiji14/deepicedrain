@@ -542,17 +542,17 @@ description = "Stop plotting your data - annotate your data and let it visualize
 name = "holoviews"
 optional = false
 python-versions = ">=2.7"
-version = "1.13.1"
+version = "1.13.2"
 
 [package.dependencies]
 numpy = ">=1.0"
 pandas = "*"
 panel = ">=0.7.0"
-param = ">=1.8.0,<2.0"
-pyviz-comms = ">=0.7.2"
+param = ">=1.9.3,<2.0"
+pyviz-comms = ">=0.7.3"
 
 [package.extras]
-all = ["streamz (>=0.5.0)", "netcdf4", "datashader", "dask", "phantomjs", "notebook", "jsonschema (2.6.0)", "cftime", "nose", "coveralls", "cyordereddict", "deepdiff", "selenium", "pillow", "scipy", "awscli", "plotly (>=4.0)", "path.py", "nbconvert (5.3.1)", "flake8 (3.6.0)", "bzip2", "spatialpandas", "networkx", "mock", "xarray (>=0.10.4)", "pytest-cov (2.5.1)", "nbsmoke (>=0.2.0)", "matplotlib (>=2.2)", "ipython (>=5.4.0)", "bokeh (>=1.1.0)", "ipython (5.4.1)", "ffmpeg", "matplotlib (>=2.2,<3.1)"]
+all = ["nbsmoke (>=0.2.0)", "plotly (>=4.0)", "coveralls", "ffmpeg", "netcdf4", "phantomjs", "ipython (>=5.4.0)", "nose", "cyordereddict", "matplotlib (>=2.2)", "deepdiff", "bokeh (>=1.1.0)", "awscli", "matplotlib (>=2.2,<3.1)", "bzip2", "scipy", "dask", "mock", "cftime", "ipython (5.4.1)", "spatialpandas", "pytest-cov (2.5.1)", "notebook", "pillow", "networkx", "selenium", "flake8 (3.6.0)", "xarray (>=0.10.4)", "streamz (>=0.5.0)", "path.py", "datashader", "jsonschema (2.6.0)", "nbconvert (5.3.1)"]
 basic_tests = ["nose", "mock", "flake8 (3.6.0)", "coveralls", "path.py", "matplotlib (>=2.2,<3.1)", "nbsmoke (>=0.2.0)", "pytest-cov (2.5.1)", "matplotlib (>=2.1)", "bokeh (>=1.1.0)", "pandas", "ipython (>=5.4.0)", "notebook"]
 build = ["param (>=1.7.0)", "setuptools (>=30.3.0)", "pyct (>=0.4.4)", "python (<3.8)"]
 doc = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "datashader", "selenium", "phantomjs", "ffmpeg", "streamz (>=0.5.0)", "cftime", "netcdf4", "bzip2", "dask", "scipy", "spatialpandas", "nbsite (>0.5.2)", "sphinx", "sphinx-holoviz-theme", "mpl-sample-data", "awscli", "pscript"]
@@ -2091,8 +2091,8 @@ heapdict = [
     {file = "HeapDict-1.0.1.tar.gz", hash = "sha256:8495f57b3e03d8e46d5f1b2cc62ca881aca392fd5cc048dc0aa2e1a6d23ecdb6"},
 ]
 holoviews = [
-    {file = "holoviews-1.13.1-py2.py3-none-any.whl", hash = "sha256:54905160c86b414e50f78a3fe728b06068f58ccc945190a46adae9f6a035501b"},
-    {file = "holoviews-1.13.1.tar.gz", hash = "sha256:95e9ab429a16eff27ca17c4588c61f03cdd8f30eca5b3a4fd7e378c4850a0e04"},
+    {file = "holoviews-1.13.2-py2.py3-none-any.whl", hash = "sha256:d88e89ec6d040952b8774b5aaf666b346ec79739dddc563d8cbb57e12e35cc84"},
+    {file = "holoviews-1.13.2.tar.gz", hash = "sha256:cf2dd426cdc08bf2ca669268ca0432634574429e5b143314ee06ad88c5382802"},
 ]
 hvplot = [
     {file = "hvplot-0.5.2-py2.py3-none-any.whl", hash = "sha256:3a3c990c363266cf93e6785572fb6bc020a0eb1cd3819cf6c3e67b0037eb7805"},
