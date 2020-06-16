@@ -134,7 +134,7 @@ description = "Interactive plots and applications in the browser from Python"
 name = "bokeh"
 optional = false
 python-versions = ">=3.6"
-version = "2.0.2"
+version = "2.1.0"
 
 [package.dependencies]
 Jinja2 = ">=2.7"
@@ -143,7 +143,7 @@ numpy = ">=1.11.3"
 packaging = ">=16.8"
 pillow = ">=4.0"
 python-dateutil = ">=2.1"
-tornado = ">=5"
+tornado = ">=5.1"
 typing_extensions = ">=3.7.4"
 
 [[package]]
@@ -1894,7 +1894,7 @@ bleach = [
     {file = "bleach-3.1.5.tar.gz", hash = "sha256:3c4c520fdb9db59ef139915a5db79f8b51bc2a7257ea0389f30c846883430a4b"},
 ]
 bokeh = [
-    {file = "bokeh-2.0.2.tar.gz", hash = "sha256:d9248bdb0156797abf6d04b5eac581dcb121f5d1db7acbc13282b0609314893a"},
+    {file = "bokeh-2.1.0.tar.gz", hash = "sha256:632f2e372c103a8f3671a3211d7a45c204a8a896773d5f91c9f818c3b74e2590"},
 ]
 cartopy = [
     {file = "Cartopy-0.18.0.tar.gz", hash = "sha256:7ffa317e8f8011e0d965a3ef1179e57a049f77019867ed677d49dcc5c0744434"},
