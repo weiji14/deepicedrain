@@ -24,7 +24,7 @@ jobs:
       - name: Setup Miniconda
         uses: goanpeca/setup-miniconda@v1.5.0
         with:
-          miniconda-version: py38_4.8.2
+          miniconda-version: py38_4.8.3
           activate-environment: deepicedrain
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
