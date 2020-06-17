@@ -1119,7 +1119,7 @@ description = "A Python package providing buffer compression and transformation 
 name = "numcodecs"
 optional = false
 python-versions = "*"
-version = "0.6.3"
+version = "0.6.4"
 
 [package.dependencies]
 numpy = ">=1.7"
@@ -1837,7 +1837,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "50f0821ade54aeed7d65608e5f7240a44feaec5025c3432a2f17209759d31960"
+content-hash = "51ba85d3ebf9742e684cc276e607c14df7e962840a20dcce7b08f895cd0eaba4"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2416,7 +2416,7 @@ numba = [
     {file = "numba-0.47.0.tar.gz", hash = "sha256:c0703df0a0ea2e29fbef7937d9849cc4734253066cb5820c5d6e0851876e3b0a"},
 ]
 numcodecs = [
-    {file = "numcodecs-0.6.3.tar.gz", hash = "sha256:5e98413d5d1156def888acd131bed7f3c21313847521efbd7f3707103de5d820"},
+    {file = "numcodecs-0.6.4.tar.gz", hash = "sha256:ef4843d5db4d074e607e9b85156835c10d006afc10e175bda62ff5412fca6e4d"},
 ]
 numpy = [
     {file = "numpy-1.18.5-cp35-cp35m-macosx_10_9_intel.whl", hash = "sha256:e91d31b34fc7c2c8f756b4e902f901f856ae53a93399368d9a0dc7be17ed2ca0"},
