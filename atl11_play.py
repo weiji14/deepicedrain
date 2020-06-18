@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.5.0
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -34,7 +34,7 @@ import hvplot.dask
 import hvplot.pandas
 import hvplot.xarray
 
-# import intake
+import intake
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -63,6 +63,15 @@ stores = glob.glob(pathname="ATL11.001z123/ATL11_*.zarr")
 print(f"{len(stores)} reference ground track Zarr stores")
 
 # %%
+# Xarray open_dataset preprocessor to add fields based on input filename.
+# Adapted from the intake.open_netcdf._add_path_to_ds function.
+add_path_to_ds = lambda ds: ds.assign_coords(
+    coords=intake.source.utils.reverse_format(
+        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{version:03d}_v{revision:03d}.zarr",
+        resolved_string=ds.encoding["source"],
+    )
+)
+
 # Load dataset from all Zarr stores
 # Aligning chunks spatially along cycle_number (i.e. time)
 ds: xr.Dataset = xr.open_mfdataset(
@@ -72,6 +81,7 @@ ds: xr.Dataset = xr.open_mfdataset(
     combine="nested",
     concat_dim="ref_pt",
     parallel="True",
+    preprocess=add_path_to_ds,
     backend_kwargs={"consolidated": True},
 )
 # ds = ds.unify_chunks().compute()
@@ -178,11 +188,9 @@ ds_subset = ds_subset.compute()
 # %%
 # Save to Zarr/NetCDF formats for distribution
 ds_subset.to_zarr(
-    store=f"ATLXI/ds_subset_{placename}.zarr", mode="w", consolidated=True,
+    store=f"ATLXI/ds_subset_{placename}.zarr", mode="w", consolidated=True
 )
-ds_subset.to_netcdf(
-    path=f"ATLXI/ds_subset_{placename}.nc", engine="h5netcdf",
-)
+ds_subset.to_netcdf(path=f"ATLXI/ds_subset_{placename}.nc", engine="h5netcdf")
 
 # %%
 # Look at Cycle Number 7 only for plotting
@@ -190,7 +198,7 @@ points_subset = hv.Points(
     data=ds_subset.sel(cycle_number=7)[[*essential_columns]],
     label="Cycle_7",
     kdims=["x", "y"],
-    vdims=["utc_time", "h_corr", "cycle_number"],
+    vdims=["utc_time", "h_corr", "cycle_number", "referencegroundtrack"],
     datatype=["xarray"],
 )
 df_subset = points_subset.dframe()
@@ -201,10 +209,12 @@ df_subset.hvplot.points(
     title=f"Elevation (metres) at Cycle 7",
     x="x",
     y="y",
-    c="h_corr",
-    cmap="Blues",
-    rasterize=True,
+    c="referencegroundtrack",
+    cmap="Set3",
+    # rasterize=True,
     hover=True,
+    datashade=True,
+    dynspread=True,
 )
 
 
@@ -359,13 +369,13 @@ fig.grdimage(
     grid=agg_grid,
     region=region.bounds(),
     projection=f"x1:{scale}",
-    frame=["afg", f'WSne+t"ICESat-2 Ice Surface Change over {region.name}"',],
+    frame=["afg", f'WSne+t"ICESat-2 Ice Surface Change over {region.name}"'],
     Q=True,
 )
 for subglacial_lake in subglacial_lakes:
     fig.plot(data=subglacial_lake, L=True, pen="thinnest")
 fig.colorbar(
-    position="JCR+e", frame=["af", 'x+l"Elevation Change from Cycle 5 to 6"', "y+lm"],
+    position="JCR+e", frame=["af", 'x+l"Elevation Change from Cycle 5 to 6"', "y+lm"]
 )
 fig.savefig(f"figures/plot_atl11_dh56_{placename}.png")
 fig.show(width=600)
