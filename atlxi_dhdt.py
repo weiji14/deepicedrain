@@ -36,6 +36,7 @@
 # %%
 import dask
 import datashader
+import intake
 import numpy as np
 import pandas as pd
 import pygmt
@@ -52,6 +53,14 @@ client
 # # Select essential points
 
 # %%
+# Xarray open_dataset preprocessor to add fields based on input filename.
+add_path_to_ds = lambda ds: ds.assign_coords(
+    coords=intake.source.utils.reverse_format(
+        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{}_v{}.zarr",
+        resolved_string=ds.encoding["source"],
+    )
+)
+
 # Load ATL11 data from Zarr
 ds: xr.Dataset = xr.open_mfdataset(
     paths="ATL11.001z123/ATL11_*.zarr",
@@ -60,6 +69,7 @@ ds: xr.Dataset = xr.open_mfdataset(
     combine="nested",
     concat_dim="ref_pt",
     parallel="True",
+    preprocess=add_path_to_ds,
     backend_kwargs={"consolidated": True},
 )
 
@@ -360,5 +370,127 @@ fig.coast(
 )
 fig.savefig(f"figures/plot_atl11_dhdt_{placename}_{min_date}_{max_date}.png")
 fig.show(width=600)
+
+# %%
+
+# %% [markdown]
+# # Along track plots of subglacial lake drainage/filling events
+#
+# Let's take a closer look at one potential
+# subglacial lake filling event at Whillans Ice Stream.
+# We'll plot a cross-section view of
+# ice surface height changes over time,
+# along an ICESat-2 reference ground track.
+
+# %%
+import hvplot.pandas
+
+# %%
+# Subset dataset to geographic region of interest
+placename: str = "whillans2"
+region: deepicedrain.Region = regions[placename]
+ds_subset: xr.Dataset = region.subset(ds=ds_dhdt)
+
+# %%
+# Quick facet plot of height over different cycles
+# See https://xarray.pydata.org/en/stable/plotting.html#datasets
+ds_subset.plot.scatter(
+    x="x", y="y", hue="h_corr", cmap="gist_earth", col="cycle_number", col_wrap=4
+)
+
+# %%
+# Find reference ground tracks that have data up to cycle 7 (the most recent cycle)
+rgts = np.unique(
+    ar=ds_subset.sel(cycle_number=7).dropna(dim="ref_pt").referencegroundtrack
+)
+rgts
+
+# %%
+# Convert xarray.Dataset to pandas.DataFrame for easier analysis
+df_many: pd.DataFrame = ds_subset.to_dataframe().dropna()
+
+
+# %%
+# Interactive holviews scatter plot to find referencegroundtrack needed
+# Tip: Hover over the points, and find those with high 'dhdt_slope' values
+df_many.hvplot.scatter(
+    x="x",
+    y="y",
+    # c="h_corr",
+    by="cycle_number",
+    # datashade=True,
+    # dynspread=True,
+    hover=True,
+    hover_cols=["referencegroundtrack", "dhdt_slope", "h_corr"],
+)
+
+# %%
+# Select one Reference Ground track to look at
+rgt: int = 135
+assert rgt in rgts
+df_rgt: pd.DataFrame = df_many.query(expr="referencegroundtrack == @rgt")
+print(f"Looking at Reference Ground Track {rgt}")
+
+# %%
+# Select one laser pair (out of three) based on y_atc field
+# df = df_rgt.query(expr="y_atc < -100")  # left
+df = df_rgt.query(expr="abs(y_atc) < 100")  # centre
+# df = df_rgt.query(expr="y_atc > 100")  # right
+
+# %%
+# Interactive scatter plot of height along one laser pair track, over time
+df.hvplot.scatter(
+    x="x_atc",
+    y="h_corr",
+    by="cycle_number",
+    hover=True,
+    hover_cols=["x", "y", "dhdt_slope"],
+)
+
+# %%
+# Filter points to those with significant dhdt values > +/- 0.2 m/yr
+df = df.query(expr="abs(dhdt_slope) > 0.2")
+
+# %%
+# Plot 2D along track view of
+# Ice Surface Height Changes over Time
+fig = pygmt.Figure()
+# Setup map frame, title, axis annotations, etc
+fig.basemap(
+    projection="X20c/10c",
+    region=[df.x_atc.min(), df.x_atc.max(), df.h_corr.min(), df.h_corr.max()],
+    frame=[
+        rf'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {region.name}"',
+        'xaf+l"Along track x (m)"',
+        'yaf+l"Height (m)"',
+    ],
+)
+fig.text(
+    x=df.x_atc.mean(),
+    y=df.h_corr.max(),
+    text=f"Reference Ground Track {rgt:04d}",
+    justify="TC",
+    D="jTC-0c/0.2c",
+)
+
+# Colors from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=7
+cycle_colors = {3: "#ff7f00", 4: "#984ea3", 5: "#4daf4a", 6: "#377eb8", 7: "#e41a1c"}
+for cycle, color in cycle_colors.items():
+    df_ = df.query(expr="cycle_number == @cycle").copy()
+    if len(df_) > 0:
+        # Get x, y, time
+        data = np.column_stack(tup=(df_.x_atc, df_.h_corr))
+        time_nsec = deepicedrain.deltatime_to_utctime(dataarray=df_.delta_time.mean())
+        time_sec = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
+        label = f'"Cycle {cycle} at {time_sec}"'
+
+        # Plot data points
+        fig.plot(data=data, style="c0.05c", color=color, label=label)
+        # Plot line connecting points
+        # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
+
+fig.legend(S=3, position="jBR+jBR+o0.2c", box="+gwhite+p1p")
+fig.savefig(f"figures/alongtrack_atl11_dh_{placename}_{rgt}.png")
+fig.show()
 
 # %%

@@ -67,7 +67,7 @@ print(f"{len(stores)} reference ground track Zarr stores")
 # Adapted from the intake.open_netcdf._add_path_to_ds function.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{version:03d}_v{revision:03d}.zarr",
+        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{}_v{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
