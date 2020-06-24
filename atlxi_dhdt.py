@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -383,7 +384,9 @@ fig.show(width=600)
 # along an ICESat-2 reference ground track.
 
 # %%
+import holoviews as hv
 import hvplot.pandas
+import panel as pn
 
 # %%
 # Subset dataset to geographic region of interest
@@ -411,18 +414,68 @@ df_many: pd.DataFrame = ds_subset.to_dataframe().dropna()
 
 
 # %%
-# Interactive holviews scatter plot to find referencegroundtrack needed
+def dhdt_plot(
+    cycle: int = 7,
+    dhdt_variable: str = "dhdt_slope",
+    dhdt_range: tuple = (1, 10),
+    rasterize: bool = False,
+    datashade: bool = False,
+) -> hv.element.chart.Scatter:
+    """
+    ICESat-2 rate of height change over time (dhdt) interactive scatter plot.
+    Uses HvPlot, and intended to be used inside a Panel dashboard.
+    """
+    df_ = df_many.query(
+        expr="cycle_number == @cycle & "
+        "abs(dhdt_slope) > @dhdt_range[0] & abs(dhdt_slope) < @dhdt_range[1]"
+    )
+    return df_.hvplot.scatter(
+        title=f"ICESat-2 Cycle {cycle} {dhdt_variable}",
+        x="x",
+        y="y",
+        c=dhdt_variable,
+        cmap="gist_earth" if dhdt_variable == "h_corr" else "BrBG",
+        clim=None,
+        # by="cycle_number",
+        rasterize=rasterize,
+        datashade=datashade,
+        dynspread=datashade,
+        hover=True,
+        hover_cols=["referencegroundtrack", "dhdt_slope", "h_corr"],
+        colorbar=True,
+    )
+
+
+# %%
+# Interactive holoviews scatter plot to find referencegroundtrack needed
 # Tip: Hover over the points, and find those with high 'dhdt_slope' values
-df_many.hvplot.scatter(
-    x="x",
-    y="y",
-    # c="h_corr",
-    by="cycle_number",
-    # datashade=True,
-    # dynspread=True,
-    hover=True,
-    hover_cols=["referencegroundtrack", "dhdt_slope", "h_corr"],
+layout: pn.layout.Column = pn.interact(
+    dhdt_plot,
+    cycle=pn.widgets.IntSlider(name="Cycle Number", start=2, end=7, step=1, value=7),
+    dhdt_variable=pn.widgets.RadioButtonGroup(
+        name="dhdt_variables",
+        value="dhdt_slope",
+        options=["referencegroundtrack", "dhdt_slope", "h_corr"],
+    ),
+    dhdt_range=pn.widgets.RangeSlider(
+        name="dhdt range ±", start=0, end=20, value=(1, 10), step=0.5
+    ),
+    rasterize=pn.widgets.Checkbox(name="Rasterize"),
+    datashade=pn.widgets.Checkbox(name="Datashade"),
 )
+dashboard: pn.layout.Column = pn.Column(
+    pn.Row(
+        pn.Column(layout[0][1], align="center"),
+        pn.Column(layout[0][0], layout[0][2], align="center"),
+        pn.Column(layout[0][3], layout[0][4], align="center"),
+    ),
+    layout[1],
+)
+dashboard
+
+# %%
+# Show dashboard in another browser tab
+# dashboard.show()
 
 # %%
 # Select one Reference Ground track to look at
