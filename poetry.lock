@@ -1177,7 +1177,7 @@ description = "A high level app and dashboarding solution for Python."
 name = "panel"
 optional = false
 python-versions = ">=3.6"
-version = "0.9.6"
+version = "0.9.7"
 
 [package.dependencies]
 bokeh = ">=2.1"
@@ -2474,8 +2474,8 @@ pandocfilters = [
     {file = "pandocfilters-1.4.2.tar.gz", hash = "sha256:b3dd70e169bb5449e6bc6ff96aea89c5eea8c5f6ab5e207fc2f521a2cf4a0da9"},
 ]
 panel = [
-    {file = "panel-0.9.6-py2.py3-none-any.whl", hash = "sha256:062d881af1ed392bd6bd0e4fbb9a927c38c804061353b326eb6afbe256eaab83"},
-    {file = "panel-0.9.6.tar.gz", hash = "sha256:8a64c988f54c16ca3c9b4b94ec08ba5e26694eebff83d56d14b8e554c37b1243"},
+    {file = "panel-0.9.7-py2.py3-none-any.whl", hash = "sha256:f9e6ba69b4f8c93f83e3865187f5fef86667ad62d9f911190c50fb29f6cb46a9"},
+    {file = "panel-0.9.7.tar.gz", hash = "sha256:2e86d82bdd5e7664bf49558eedad62b664d5403ec9e422e5ddfcf69e3bd77318"},
 ]
 param = [
     {file = "param-1.9.3-py2.py3-none-any.whl", hash = "sha256:b9afbfda25be81bd763a399beaf8775fd79156e5897d4de50d3e091d15d72636"},
