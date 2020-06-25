@@ -474,7 +474,7 @@ description = "Geographic pandas extensions"
 name = "geopandas"
 optional = false
 python-versions = ">=3.5"
-version = "0.7.0"
+version = "0.8.0"
 
 [package.dependencies]
 fiona = "*"
@@ -1837,7 +1837,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "0915771b9bff559a68a13fe9b991d1cbc96534b54038fde9181caec170a03213"
+content-hash = "ea4dd28d42b7482e1b8604b076ee77b0039d89fb8f978260b825e168975b7cbe"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2046,8 +2046,8 @@ fsspec = [
     {file = "fsspec-0.7.4.tar.gz", hash = "sha256:7075fde6d617cd3a97eac633d230d868121a188a46d16a0dcb484eea0cf2b955"},
 ]
 geopandas = [
-    {file = "geopandas-0.7.0-py2.py3-none-any.whl", hash = "sha256:dd478cfb979c7aca529a61c05f26a4606852547a0d7e22ae9babe0c70f7d73f8"},
-    {file = "geopandas-0.7.0.tar.gz", hash = "sha256:19074b090ab928527193c50b383d31a259a9b84b18553562631295fa67f640bc"},
+    {file = "geopandas-0.8.0-py2.py3-none-any.whl", hash = "sha256:636db2d60342ca1055d115b9be504fcc2eebbc846a10dc2d0270979c3e1838ce"},
+    {file = "geopandas-0.8.0.tar.gz", hash = "sha256:e954dd2b5c1f694845f3c2e604c692a78a27aab74fc9297e8d119ace11f903dd"},
 ]
 geoviews = [
     {file = "geoviews-1.8.1-py2.py3-none-any.whl", hash = "sha256:bc944fde2c8ce8442d3a1c6a57c8f3958cdf5cdc1fbf12547a3a5fa86b079439"},
