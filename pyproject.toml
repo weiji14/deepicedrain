@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deepicedrain"
-version = "0.1.0"
+version = "0.2.1"
 description = ""
 authors = ["Wei Ji Leong <weiji.leong@vuw.ac.nz>"]
 license = "LGPL-3.0-or-later"

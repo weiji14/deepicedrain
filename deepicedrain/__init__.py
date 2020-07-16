@@ -7,7 +7,7 @@ import deepicedrain
 from deepicedrain.deltamath import calculate_delta, nanptp, nan_linregress
 from deepicedrain.spatiotemporal import Region, deltatime_to_utctime, lonlat_to_xy
 
-__version__: str = "0.2.0"
+__version__: str = "0.2.1"
 
 # Loads the ICESat-2 ATLAS intake data catalog
 _catalog_path = importlib.resources.path(
