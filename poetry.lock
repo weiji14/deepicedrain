@@ -470,6 +470,14 @@ version = "0.7.4"
 
 [[package]]
 category = "main"
+description = "GDAL: Geospatial Data Abstraction Library"
+name = "gdal"
+optional = false
+python-versions = "*"
+version = "3.0.4"
+
+[[package]]
+category = "main"
 description = "Geographic pandas extensions"
 name = "geopandas"
 optional = false
@@ -1267,6 +1275,27 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 category = "main"
+description = "Utilities for organizing and manipulating point data"
+name = "pointCollection"
+optional = false
+python-versions = "*"
+version = "1.0.0.0"
+
+[package.dependencies]
+gdal = "3.0.4"
+h5py = "*"
+matplotlib = "*"
+netCDF4 = "*"
+numpy = "*"
+pyproj = "*"
+scipy = "*"
+
+[package.source]
+reference = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"
+type = "git"
+url = "https://github.com/SmithB/pointCollection.git"
+[[package]]
+category = "main"
 description = "Python client for the Prometheus monitoring system."
 name = "prometheus-client"
 optional = false
@@ -1837,7 +1866,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "0915771b9bff559a68a13fe9b991d1cbc96534b54038fde9181caec170a03213"
+content-hash = "7f45f51d7517a715a3fae7aea67c97352a885671fed232cdc475c6d05970f67d"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2044,6 +2073,9 @@ fiona = [
 fsspec = [
     {file = "fsspec-0.7.4-py3-none-any.whl", hash = "sha256:1f9391c9b6e92a89949f0b0f7154b8b62a01f00b9c2767797d94ffa376dae9ab"},
     {file = "fsspec-0.7.4.tar.gz", hash = "sha256:7075fde6d617cd3a97eac633d230d868121a188a46d16a0dcb484eea0cf2b955"},
+]
+gdal = [
+    {file = "GDAL-3.0.4.tar.gz", hash = "sha256:a17eaa6872e4b7f7fa82f86aeccecc57d224bd054952a56db64368ecaf18509c"},
 ]
 geopandas = [
     {file = "geopandas-0.7.0-py2.py3-none-any.whl", hash = "sha256:dd478cfb979c7aca529a61c05f26a4606852547a0d7e22ae9babe0c70f7d73f8"},
@@ -2526,6 +2558,7 @@ pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
+pointCollection = []
 prometheus-client = [
     {file = "prometheus_client-0.8.0-py2.py3-none-any.whl", hash = "sha256:983c7ac4b47478720db338f1491ef67a100b474e3bc7dafcbaefb7d0b8f9b01c"},
     {file = "prometheus_client-0.8.0.tar.gz", hash = "sha256:c6e6b706833a6bd1fd51711299edee907857be10ece535126a158f911ee80915"},
