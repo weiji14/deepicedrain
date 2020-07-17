@@ -11,6 +11,8 @@ categories:
     label:
       - 'maintenance :toolbox:'
       - 'dependencies'
+exclude-labels:
+  - 'skip-changelog'
 change-template: '* $TITLE (#$NUMBER) @$AUTHOR'
 template: |
   # What's Changed
