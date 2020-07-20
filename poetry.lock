@@ -519,7 +519,7 @@ description = "netCDF4 via h5py"
 name = "h5netcdf"
 optional = false
 python-versions = ">=3.6"
-version = "0.8.0"
+version = "0.8.1"
 
 [package.dependencies]
 h5py = "*"
@@ -1867,7 +1867,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "efe7e9e4f8c67646ac388655ab27c8ece98346b58552860f26a63de6aefd7130"
+content-hash = "6c437a1b6a4e83f7ed4ee634bc486bee5533ea107c0256d71ae52eb1b9f623db"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2087,8 +2087,8 @@ geoviews = [
     {file = "geoviews-1.8.1.tar.gz", hash = "sha256:7cf0c43b01b4aa623520a233d5f82e58b69febd58e22af328128f699f1c745fe"},
 ]
 h5netcdf = [
-    {file = "h5netcdf-0.8.0-py2.py3-none-any.whl", hash = "sha256:3c06af4a8e049d2c0247dcc55101931974f9cdd84ffab8f4f60bd8f76ee3a331"},
-    {file = "h5netcdf-0.8.0.tar.gz", hash = "sha256:b0df12f4692817cf6d8e2fca95f689e61aa68f2f39aea90fd1790fe5ac8d2cbb"},
+    {file = "h5netcdf-0.8.1-py2.py3-none-any.whl", hash = "sha256:8c3de80cb1e547c39081e735a84dcdd0029dc2daee918a80098a41ab954a557f"},
+    {file = "h5netcdf-0.8.1.tar.gz", hash = "sha256:b94af698f99d57aac7828033f1c42ad014f5bda7ee5819f9014b4fbef5b56b25"},
 ]
 h5py = [
     {file = "h5py-2.10.0-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:ecf4d0b56ee394a0984de15bceeb97cbe1fe485f1ac205121293fc44dcf3f31f"},
