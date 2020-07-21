@@ -873,11 +873,12 @@ description = "Jupyter notebooks as Markdown documents, Julia, Python or R scrip
 name = "jupytext"
 optional = false
 python-versions = "*"
-version = "1.5.0"
+version = "1.5.1"
 
 [package.dependencies]
 nbformat = ">=4.0.0"
 pyyaml = "*"
+toml = "*"
 
 [package.extras]
 myst = ["myst-parser (>=0.8,<1.0)"]
@@ -1867,7 +1868,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "f31c5d31454a1f3d1e1894d190d657b179d22bb591495fad88d7bda42fd56273"
+content-hash = "34866f2b29a525bbaf9eea1d9cf32157679a3c0fd2316d4e68ccfaeeab4d8a3f"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2191,7 +2192,7 @@ jupyterlab-server = [
     {file = "jupyterlab_server-1.1.5.tar.gz", hash = "sha256:3398e401b95da868bc96bdaa44fa61252bf3e68fc9dd1645bd93293cce095f6c"},
 ]
 jupytext = [
-    {file = "jupytext-1.5.0.tar.gz", hash = "sha256:f4605d053c0cfc4562a936033d14355cd2fbc44d81afc90629e32c00e2d28615"},
+    {file = "jupytext-1.5.1.tar.gz", hash = "sha256:a5b084d71ec3931289db4206a694e5d6f151f949779fa0f2514a74aa67116ce9"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.2.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:443c2320520eda0a5b930b2725b26f6175ca4453c61f739fef7a5847bd262f74"},
