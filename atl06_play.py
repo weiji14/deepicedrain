@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.5.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -122,17 +122,18 @@ catalog.icesat2atl06.hvplot.quickview()
 # Download all ICESAT2 ATLAS hdf files from start to end date
 dates1 = pd.date_range(start="2018.10.14", end="2018.12.08")  # 1st batch
 dates2 = pd.date_range(start="2018.12.10", end="2019.06.26")  # 2nd batch
-dates3 = pd.date_range(start="2019.07.26", end="2020.04.04")  # 3rd batch
+dates3 = pd.date_range(start="2019.07.26", end="2020.05.13")  # 3rd batch
 dates = dates1.append(other=dates2).append(other=dates3)
-# dates = pd.date_range(start="2020.03.07", end="2020.04.04")  # custom batch
+# dates = pd.date_range(start="2020.04.04", end="2020.05.13")  # custom batch
 
 # %%
 # Submit download jobs to Client
 futures = []
 for date in dates:
-    source = catalog.icesat2atlasdownloader(date=date)
+    revision = 2 if date in pd.date_range(start="2020.04.22", end="2020.05.04") else 1
+    source = catalog.icesat2atlasdownloader(date=date, revision=revision)
     future = client.submit(
-        func=source.discover, key=f"download-{date}",
+        func=source.discover, key=f"download-{date}"
     )  # triggers download of the file(s), or loads from cache
     futures.append(future)
 

@@ -26,9 +26,9 @@ sources:
       date:
         description: Year, month, and day of data acquisition
         type: datetime
-        default: 2020.04.04
+        default: 2020.05.13
         min: 2018.10.14
-        max: 2020.04.04  # note gap from 2019.06.27 to 2019.07.25 (inclusive)
+        max: 2020.05.13  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
       orbitalsegment:
         description: Orbital Segment
         type: list
@@ -42,6 +42,7 @@ sources:
         description: Revision number
         type: int
         default: 1
+        allowed: [1, 2]  # note that 2020.04.22 to 2020.05.04 version 3 uses revision 2
     driver: intake_xarray.netcdf.NetCDFSource
   icesat2atl06:
     description: 'Reads in ICESat-2 ATL06 data into an xarray.Dataset, one date and one laser pair at a time'
@@ -50,7 +51,7 @@ sources:
         delta_time: 50000
       path_as_pattern: ATL06_{datetime:%Y%m%d%H%M%S}_{referencegroundtrack:4}{cyclenumber:2}{orbitalsegment:2}_{version:3}_{revision:2}.h5
       # urlpath: https://n5eil02u.ecs.nsidc.org/opendap/hyrax/ATLAS/ATL06.003/{{date.strftime("%Y.%m.%d")}}/ATL06_*_*{{orbitalsegment}}_003_01.h5
-      urlpath: simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL06.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL06_*_{{referencegroundtrack}}*{{orbitalsegment}}_00{{version}}_01.h5
+      urlpath: simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL06.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL06_*_{{referencegroundtrack}}*{{orbitalsegment}}_00{{version}}_0*.h5
       xarray_kwargs:
         combine: by_coords
         engine: h5netcdf
@@ -66,9 +67,9 @@ sources:
         date:
           description: Year, month, and day of data acquisition
           type: datetime
-          default: 2020.03.06
+          default: 2020.05.13
           min: 2018.10.14
-          max: 2020.04.04  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
+          max: 2020.05.13  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
         referencegroundtrack:
           description: ICESat-2 Reference Ground Track number
           type: str
