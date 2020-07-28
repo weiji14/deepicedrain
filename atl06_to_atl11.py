@@ -176,7 +176,7 @@ for rgt in tqdm.trange(1387):
         assert len(atl11files) == 3  # Should be 3 files for Orbital Segments 10,11,12
     except AssertionError:
         # Manually handle exceptional cases
-        if not len(atl11files) == 2 or not rgt + 1 in [1036]:
+        if len(atl11files) != 2 or rgt + 1 not in [1036]:
             raise ValueError(
                 f"{rgt+1} only has {len(atl11files)} ATL11 files instead of 3"
             )
