@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.0
+#       jupytext_version: 1.5.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -46,7 +46,7 @@ import xarray as xr
 import zarr
 
 # %%
-client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
 client
 
 # %% [markdown]
@@ -67,7 +67,7 @@ print(f"{len(stores)} reference ground track Zarr stores")
 # Adapted from the intake.open_netcdf._add_path_to_ds function.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{}_v{}.zarr",
+        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{}_{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
@@ -101,9 +101,9 @@ ds["x"], ds["y"] = deepicedrain.lonlat_to_xy(
 
 
 # %%
-# Also set x, y as coordinates in xarray.Dataset
-ds = ds.set_coords(names=["x", "y"])
-# ds = ds.set_index(x="x", y="y")
+# Also set x/y as coordinates in xarray.Dataset instead of longitude/latitude
+ds: xr.Dataset = ds.set_coords(names=["x", "y"])
+ds: xr.Dataset = ds.reset_coords(names=["longitude", "latitude"])
 
 
 # %% [markdown]
@@ -125,15 +125,15 @@ ds["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=ds.delta_time)
 # %% [markdown]
 # ## Mask out low quality height data
 #
-# Good quality data has value 0, not so good is 1-8.
-# Look at the 'quality_summary_ref_surf' attribute in `ds`
-# for more information on what the quality flags mean.
+# Good quality data has value 0, not so good is > 0.
+# Look at the 'fit_quality' attribute in `ds`
+# for more information on what this quality flag means.
 #
 # We'll mask out values other than 0 with NaN using xarray's
 # [where](http://xarray.pydata.org/en/v0.15.1/indexing.html#masking-with-where).
 
 # %%
-ds["h_corr"] = ds.h_corr.where(cond=ds.quality_summary_ref_surf == 0)
+ds["h_corr"] = ds.h_corr.where(cond=ds.fit_quality == 0)
 
 # %%
 
@@ -225,7 +225,7 @@ df_subset.hvplot.points(
 # let's flatten our n-dimensional `xarray.Dataset`
 # to a 2-dimensiontal `pandas.DataFrame` table format.
 #
-# There are currently 7 cycles (as of April 2020),
+# There are currently 7 cycles (as of May 2020),
 # and by selecting just one cycle at a time,
 # we can see what the height (`h_corr`)
 # of the ice is like at that time.
