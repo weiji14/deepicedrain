@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.0
+#       jupytext_version: 1.5.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -42,7 +42,7 @@ import zarr
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
-client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
 client
 
 # %%
@@ -107,7 +107,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 # - O. Tange (2018): GNU Parallel 2018, Mar 2018, ISBN 9781387509881, DOI https://doi.org/10.5281/zenodo.1146014
 
 # %%
-# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --resume-failed --results logdir --joblog log --jobs 64 > /dev/null
+# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --resume-failed --results logdir --joblog log --jobs 72 > /dev/null
 
 # %%
 # df_log = pd.read_csv(filepath_or_buffer="log", sep="\t")
@@ -132,7 +132,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 # for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
 #     name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
 
-max_cycles: int = max([int(f[-12:-11]) for f in glob.glob("ATL11.001/*.h5")])
+max_cycles: int = max(int(f[-11:-10]) for f in glob.glob("ATL11.001/*.h5"))
 print(f"{max_cycles} ICESat-2 cycles available")
 
 # %%
@@ -142,14 +142,9 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
     Opens up an ATL11 file using xarray and does some light pre-processing:
     - Mask values using _FillValue ??
     - Convert attribute format from binary to str
-    - Rename 'quality_summary' to f'quality_summary_{subgroup}'
     """
-    pair, subgroup = group.split("/")
     ds = xr.open_dataset(
-        filename_or_obj=atl11file,
-        group=f"{pair}/{subgroup}",
-        engine="h5netcdf",
-        mask_and_scale=True,
+        filename_or_obj=atl11file, group=group, engine="h5netcdf", mask_and_scale=True
     )
 
     # Change xarray.Dataset attributes from binary to str type
@@ -160,9 +155,12 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
         ds[key].attrs["DIMENSION_LABELS"] = (
             ds[key].attrs["DIMENSION_LABELS"].astype(str)
         )
-
-    # Rename quality_summary variable to avoid name class when merging
-    ds = ds.rename({"quality_summary": f"quality_summary_{subgroup}"})
+    try:
+        ds.attrs["ATL06_xover_field_list"] = ds.attrs["ATL06_xover_field_list"].astype(
+            str
+        )
+    except KeyError:
+        pass
 
     return ds
 
@@ -172,24 +170,23 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
 # Also consolidate all three laser pairs pt1, pt2, pt3 into one file
 atl11_dict = {}
 for rgt in tqdm.trange(1387):
-    atl11files: list = glob.glob(f"ATL11.001/ATL11_{rgt+1:04d}1?_????_??_v00?.h5")
+    atl11files: list = glob.glob(f"ATL11.001/ATL11_{rgt+1:04d}1?_????_00?_0?.h5")
 
-    # Manually handle exceptional cases
     try:
         assert len(atl11files) == 3  # Should be 3 files for Orbital Segments 10,11,12
     except AssertionError:
-        if len(atl11files) == 2 and rgt + 1 in [208, 1036]:
-            pass
-        else:
-            raise
-    # Note ["ATL11.001/ATL11_014512_0206_03_v001.h5"] is missing pt2 and pt3 groups
+        # Manually handle exceptional cases
+        if not len(atl11files) == 2 or not rgt + 1 in [1036]:
+            raise ValueError(
+                f"{rgt+1} only has {len(atl11files)} ATL11 files instead of 3"
+            )
 
     if atl11files:
         pattern: dict = intake.source.utils.reverse_format(
-            format_string="ATL11.001/ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{cycles:4}_{revision:2}_v{version:3}.h5",
+            format_string="ATL11.001/ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5",
             resolved_string=sorted(atl11files)[1],  # get the '11' one, not '10' or '12'
         )
-        zarrfilepath: str = "ATL11.001z123/ATL11_{referencegroundtrack}1x_{cycles}_{revision}_v{version}.zarr".format(
+        zarrfilepath: str = "ATL11.001z123/ATL11_{referencegroundtrack}1x_{cycles}_{version}_{revision}.zarr".format(
             **pattern
         )
         atl11_dict[zarrfilepath] = atl11files
@@ -197,18 +194,23 @@ for rgt in tqdm.trange(1387):
 
 # %%
 # Get proper data encoding from a sample ATL11 file
-atl11file = atl11files[0]
-corrected_height_ds = open_ATL11(
-    atl11file=atl11file, group=f"pt2/corrected_h"
-).compute()
-reference_surface_ds = open_ATL11(atl11file=atl11file, group=f"pt2/ref_surf").compute()
-ds = xr.combine_by_coords(datasets=[corrected_height_ds, reference_surface_ds])
+atl11file: str = atl11files[0]
+root_ds = open_ATL11(atl11file=atl11file, group="pt2").compute()
+reference_surface_ds = open_ATL11(atl11file=atl11file, group="pt2/ref_surf").compute()
+ds: xr.Dataset = xr.combine_by_coords(datasets=[root_ds, reference_surface_ds])
 
-# Convert variables to correct datatype, except for delta_time
-encoding = {var: {"dtype": ds[var].datatype.lower()} for var in ds.variables}
-encoding["h_corr"]["dtype"] = "float32"
-encoding["h_corr_sigma"]["dtype"] = "float32"
-encoding["h_corr_sigma_systematic"]["dtype"] = "float32"
+# Convert variables to correct datatype
+encoding: dict = {}
+df: pd.DataFrame = pd.read_csv("ATL11/ATL11_output_attrs.csv")[["field", "datatype"]]
+df = df.set_index("field")
+for var in ds.variables:
+    desired_dtype = str(df.datatype[var]).lower()
+    if ds[var].dtype.name != desired_dtype:
+        try:
+            desired_dtype = desired_dtype.split(var)[1].strip()
+        except IndexError:
+            pass
+    encoding[var] = {"dtype": desired_dtype}
 
 # %%
 # Gather up all the dask.delayed conversion tasks to store data into Zarr!
@@ -219,26 +221,13 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
     for atl11file in atl11files:  # Orbital Segments: 10, 11, 12
         for pair in ("pt1", "pt2", "pt3"):  # Laser pairs: pt1, pt2, pt3
             # Attributes: longitude, latitude, h_corr, delta_time, etc
-            corrected_height_ds = open_ATL11(
-                atl11file=atl11file, group=f"{pair}/corrected_h"
-            )
+            root_ds = open_ATL11(atl11file=atl11file, group=pair)
             reference_surface_ds = open_ATL11(
                 atl11file=atl11file, group=f"{pair}/ref_surf"
             )
             ds = dask.delayed(obj=xr.combine_by_coords)(
-                datasets=[corrected_height_ds, reference_surface_ds]
+                datasets=[root_ds, reference_surface_ds]
             )
-
-            # Special exceptions to skip over
-            if atl11file in ("ATL11.001/ATL11_014512_0206_03_v001.h5",) and pair in (
-                "pt2",
-                "pt3",
-            ):
-                continue
-                # print(atl11file, pair)
-                # xr.open_dataset(
-                #    atl11file, engine="h5netcdf", group=pair,
-                # )  # will fail as is missing
             datasets.append(ds)
 
     dataset = dask.delayed(obj=xr.concat)(objs=datasets, dim="ref_pt")
@@ -251,7 +240,7 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
 # Do all the HDF5 to Zarr conversion! Should take about half an hour to run
 # Check conversion progress here, https://stackoverflow.com/a/37901797/6611055
 futures = [client.compute(store_task) for store_task in stores]
-for f in tqdm.tqdm(
+for _ in tqdm.tqdm(
     iterable=dask.distributed.as_completed(futures=futures), total=len(stores)
 ):
     pass
@@ -272,3 +261,4 @@ ds.h_corr.__array__().shape
 #         if_exists="skip",
 #         without_attrs=True,
 #     )
+
