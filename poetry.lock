@@ -292,7 +292,7 @@ description = "Parallel PyData with Task Scheduling"
 name = "dask"
 optional = false
 python-versions = ">=3.6"
-version = "2.21.0"
+version = "2.22.0"
 
 [package.dependencies]
 pyyaml = "*"
@@ -1868,7 +1868,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "454dfc66dc0b1c63aa53e9ce521741913e649ffba4060f79ac56c8850b96cf29"
+content-hash = "a349d8a62311704a427af45c9436d6be5e6114f3ce9d190fd2d028f9485da9d0"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2023,8 +2023,8 @@ cython = [
     {file = "Cython-0.29.21.tar.gz", hash = "sha256:e57acb89bd55943c8d8bf813763d20b9099cc7165c0f16b707631a7654be9cad"},
 ]
 dask = [
-    {file = "dask-2.21.0-py3-none-any.whl", hash = "sha256:9e9397d9ca08fe0540ceb57bbda1fab8dad6f5f4c3e555e33d0d0bdd28d8d8bd"},
-    {file = "dask-2.21.0.tar.gz", hash = "sha256:c188195a7c73e0d27af5308e8ac7d62b6d1e95b670280db2c102d737bf711b55"},
+    {file = "dask-2.22.0-py3-none-any.whl", hash = "sha256:47b75b2a86ab1b17c80e26222ba7de02f200fb73e434ed7ea85282ee565e157d"},
+    {file = "dask-2.22.0.tar.gz", hash = "sha256:638d3901d58b45ba75a07183cc888e5fbc7e6cf21c2ed0d8c78649cc25dac68d"},
 ]
 dask-labextension = [
     {file = "dask_labextension-2.0.2.tar.gz", hash = "sha256:65119f989923c759f5ca51d1dad896a1ece57ac8fb4aab9229299bae085439c2"},
