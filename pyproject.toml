@@ -33,7 +33,7 @@ xrviz = "^0.1.4"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
-jupytext = "^1.5.1"
+jupytext = "^1.5.2"
 pytest = "^5.4.3"
 
 [tool.poetry.plugins."intake.catalogs"]
