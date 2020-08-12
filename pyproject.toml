@@ -28,7 +28,7 @@ python = "^3.8"
 pyproj = "^2.6.0"
 toolz = "^0.10.0"
 tqdm = "^4.48.2"
-xarray = {git = "https://github.com/weiji14/xarray.git", rev = "v0.16.1-97-g47f1e329"}
+xarray = {git = "https://github.com/weiji14/xarray.git", rev = "v0.16.0-131-gda42dab0"}
 xrviz = "^0.1.4"
 
 [tool.poetry.dev-dependencies]
