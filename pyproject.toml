@@ -17,7 +17,7 @@ geoviews = "^1.8.1"
 h5netcdf = "^0.8.1"
 intake = {extras = ["dataframe", "server"], version = "^0.6.0"}
 intake-xarray = { git = "https://github.com/intake/intake-xarray.git", rev = "bf98a3c69eea81be716b310e33aeefbf1a89b1d0" }
-jupyterlab = "^2.1.5"
+jupyterlab = "^2.2.4"
 lxml = "^4.5.2"
 matplotlib = "^3.2.2"
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"}
