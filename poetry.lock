@@ -1848,14 +1848,17 @@ category = "main"
 description = "An implementation of chunked, compressed, N-dimensional arrays for Python."
 name = "zarr"
 optional = false
-python-versions = "*"
-version = "2.3.2"
+python-versions = ">=3.5"
+version = "2.4.0"
 
 [package.dependencies]
 asciitree = "*"
 fasteners = "*"
-numcodecs = ">=0.6.2"
+numcodecs = ">=0.6.4"
 numpy = ">=1.7"
+
+[package.extras]
+jupyter = ["ipytree"]
 
 [[package]]
 category = "main"
@@ -2960,7 +2963,7 @@ yarl = [
     {file = "yarl-1.4.2.tar.gz", hash = "sha256:58cd9c469eced558cd81aa3f484b2924e8897049e06889e8ff2510435b7ef74b"},
 ]
 zarr = [
-    {file = "zarr-2.3.2.tar.gz", hash = "sha256:c62d0158fb287151c978904935a177b3d2d318dea3057cfbeac8541915dfa105"},
+    {file = "zarr-2.4.0.tar.gz", hash = "sha256:53aa21b989a47ddc5e916eaff6115b824c0864444b1c6f3aaf4f6cf9a51ed608"},
 ]
 zict = [
     {file = "zict-2.0.0-py3-none-any.whl", hash = "sha256:26aa1adda8250a78dfc6a78d200bfb2ea43a34752cf58980bca75dde0ba0c6e9"},
