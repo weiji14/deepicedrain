@@ -6,6 +6,7 @@ dependencies:
   - conda-forge::gmt=6.0.0[md5=aaaa6cf3f64bd4a9ea0a9e98f615ef55]
   - conda-forge::gxx_linux-64=7.5.0[md5=c6afca6a2bfe1ea0ff5566d300460501]
   - conda-forge::nodejs=13.13.0[md5=cf25f8cee7aad7f417980872d34d8fd6]
+  - conda-forge::numcodecs=0.6.4[md5=4873a5169bb684b4e120e7bcb287488e]
   - conda-forge::parallel=20200522[md5=8fa06db0afc1e7b1f136277557a4b65e]
   - conda-forge::pip=20.1.1[md5=5e42afe5672d5baf3d9d2260239aa923]
   - conda-forge::poetry=1.0.9[md5=8f0019c82ec6795bcc84fc711b1d72e4]
