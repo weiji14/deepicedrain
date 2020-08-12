@@ -20,7 +20,6 @@ intake-xarray = { git = "https://github.com/intake/intake-xarray.git", rev = "bf
 jupyterlab = "^2.1.5"
 lxml = "^4.5.2"
 matplotlib = "^3.2.2"
-numcodecs = "<=0.6.3"
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"}
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
