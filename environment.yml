@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
-  - conda-forge::gmt=6.0.0[md5=aaaa6cf3f64bd4a9ea0a9e98f615ef55]
+  - conda-forge/label/dev::gmt=6.2.0.dev0+a1a189c[md5=915cb603613887002b58e09859aaac82]
   - conda-forge::gxx_linux-64=7.5.0[md5=c6afca6a2bfe1ea0ff5566d300460501]
   - conda-forge::nodejs=13.13.0[md5=cf25f8cee7aad7f417980872d34d8fd6]
   - conda-forge::numcodecs=0.6.4[md5=4873a5169bb684b4e120e7bcb287488e]

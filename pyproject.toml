@@ -23,7 +23,7 @@ matplotlib = "^3.3.0"
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"}
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
-pygmt = "^0.1.2"
+pygmt = {git = "https://github.com/GenericMappingTools/pygmt.git", rev = "v0.1.2-35-g2ddbb0e1"}
 python = "^3.8"
 pyproj = "^2.6.0"
 toolz = "^0.10.0"

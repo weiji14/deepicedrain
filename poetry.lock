@@ -1424,7 +1424,7 @@ description = "A Python interface for the Generic Mapping Tools"
 name = "pygmt"
 optional = false
 python-versions = "*"
-version = "0.1.2"
+version = "0.1.2+35.g2ddbb0e"
 
 [package.dependencies]
 netCDF4 = "*"
@@ -1432,6 +1432,11 @@ numpy = "*"
 packaging = "*"
 pandas = "*"
 xarray = "*"
+
+[package.source]
+reference = "2ddbb0e1977af85bf6a6ac63d7cbac9da3d08f05"
+type = "git"
+url = "https://github.com/GenericMappingTools/pygmt.git"
 
 [[package]]
 category = "main"
@@ -1872,7 +1877,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "9bba4cea1eafbb931658d132076beb09cb860bf6d9a0ba775a3e3564332d7b31"
+content-hash = "9efb6b58db239315f0753e120e169846c89b55e18ede2c44138019cc2734378c"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2645,10 +2650,7 @@ pygments = [
     {file = "Pygments-2.6.1-py3-none-any.whl", hash = "sha256:ff7a40b4860b727ab48fad6360eb351cc1b33cbf9b15a0f689ca5353e9463324"},
     {file = "Pygments-2.6.1.tar.gz", hash = "sha256:647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44"},
 ]
-pygmt = [
-    {file = "pygmt-0.1.2-py3-none-any.whl", hash = "sha256:66514d903e31dc95ea45d21d09880edde9137eac2cf4f8e0d9d5de737ac52fc8"},
-    {file = "pygmt-0.1.2.tar.gz", hash = "sha256:2af8a6c54c6de1568d7e83d4542a14aef6c6bcf48d1d625623860e89790a4923"},
-]
+pygmt = []
 pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
