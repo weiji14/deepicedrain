@@ -312,7 +312,7 @@ description = "A Jupyter Notebook server extension manages Dask clusters."
 name = "dask-labextension"
 optional = false
 python-versions = ">=3.5"
-version = "2.0.2"
+version = "3.0.0"
 
 [package.dependencies]
 bokeh = ">=1.0.0,<2.0.0 || >2.0.0"
@@ -1868,7 +1868,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "836d0078dda30b0a10900048790bde3e0612465070557a77d59dc98f8ad7f028"
+content-hash = "3e7861e2cd7ff800262870250cc3c97b2db64823e0e7b883460453d374e55ad6"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2027,7 +2027,7 @@ dask = [
     {file = "dask-2.22.0.tar.gz", hash = "sha256:638d3901d58b45ba75a07183cc888e5fbc7e6cf21c2ed0d8c78649cc25dac68d"},
 ]
 dask-labextension = [
-    {file = "dask_labextension-2.0.2.tar.gz", hash = "sha256:65119f989923c759f5ca51d1dad896a1ece57ac8fb4aab9229299bae085439c2"},
+    {file = "dask_labextension-3.0.0.tar.gz", hash = "sha256:c613f5c76b8fce4fae167eeab3377e0706e5045a27da1200b3b173025a94d94b"},
 ]
 datashader = [
     {file = "datashader-0.11.0-py2.py3-none-any.whl", hash = "sha256:343bd28017f308f3eef2dff1480ac6f805a3d664d05796b32423ed46ef53fcc0"},
