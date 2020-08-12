@@ -34,7 +34,7 @@ xrviz = "^0.1.4"
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
 jupytext = "^1.5.2"
-pytest = "^5.4.3"
+pytest = "^6.0.0"
 
 [tool.poetry.plugins."intake.catalogs"]
 "atlas_cat" = "deepicedrain:catalog"
