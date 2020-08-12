@@ -1407,14 +1407,6 @@ version = "0.4.6"
 [package.dependencies]
 param = ">=1.7.0"
 
-[package.dependencies.pyyaml]
-optional = true
-version = "*"
-
-[package.dependencies.requests]
-optional = true
-version = "*"
-
 [package.extras]
 cmd = ["pyyaml", "requests"]
 doc = ["nbsite", "sphinx-ioam-theme"]
@@ -1854,7 +1846,7 @@ description = "N-D labeled arrays and datasets in Python"
 name = "xarray"
 optional = false
 python-versions = ">=3.6"
-version = "0.16.1.dev97+g47f1e329"
+version = "0.16.1.dev131+gda42dab0"
 
 [package.dependencies]
 numpy = ">=1.15"
@@ -1862,7 +1854,7 @@ pandas = ">=0.25"
 setuptools = ">=41.2"
 
 [package.source]
-reference = "47f1e3292f27544d1ca8c59dc092e3942a014a75"
+reference = "da42dab04d1e6dad22de01cb82adc93aa5c9ed00"
 type = "git"
 url = "https://github.com/weiji14/xarray.git"
 
@@ -1923,7 +1915,7 @@ version = "2.0.0"
 heapdict = "*"
 
 [metadata]
-content-hash = "9efb6b58db239315f0753e120e169846c89b55e18ede2c44138019cc2734378c"
+content-hash = "c719f0c5de5168299b2a12b4e40035e34040ffa3ba7dde3cd2716b042f4acee2"
 python-versions = "^3.8"
 
 [metadata.files]
