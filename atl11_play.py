@@ -158,11 +158,11 @@ regions: dict = {
     "siple_coast": deepicedrain.Region(
         "Siple Coast", -1000000, 250000, -1000000, -100000
     ),
-    "whillans": deepicedrain.Region(
-        "Whillans Ice Stream", -350000, -100000, -700000, -450000
+    "whillans_downstream": deepicedrain.Region(
+        "Whillans Ice Stream (Downstream)", -400000, 0, -800000, -400000
     ),
-    "whillans2": deepicedrain.Region(
-        "Whillans Ice Stream", -500000, -400000, -600000, -500000
+    "whillans_upstream": deepicedrain.Region(
+        "Whillans Ice Stream (Upstream)", -800000, -400000, -800000, -400000
     ),
 }
 # Subset to essential columns

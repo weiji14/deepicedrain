@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.1
+#       jupytext_version: 1.5.2
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -57,7 +57,7 @@ client
 # Xarray open_dataset preprocessor to add fields based on input filename.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{}_{}.zarr",
+        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
@@ -121,11 +121,11 @@ regions: dict = {
     "siple_coast": deepicedrain.Region(
         "Siple Coast", -1000000, 250000, -1000000, -100000
     ),
-    "whillans": deepicedrain.Region(
-        "Whillans Ice Stream", -350000, -100000, -700000, -450000
+    "whillans_downstream": deepicedrain.Region(
+        "Whillans Ice Stream (Downstream)", -400000, 0, -800000, -400000
     ),
-    "whillans2": deepicedrain.Region(
-        "Whillans Ice Stream", -500000, -400000, -600000, -500000
+    "whillans_upstream": deepicedrain.Region(
+        "Whillans Ice Stream (Upstream)", -800000, -400000, -800000, -400000
     ),
 }
 
@@ -279,7 +279,7 @@ fig.show(width=600)
 # %%
 # Take only the points where there is more than 0.25 metres of elevation change
 # Trim down ~220 million points to ~36 million
-ds = ds.where(cond=ds.h_range > 0.25, drop=True)
+# ds = ds.where(cond=ds.h_range > 0.25, drop=True)
 print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %%
@@ -391,27 +391,15 @@ import panel as pn
 
 # %%
 # Subset dataset to geographic region of interest
-placename: str = "whillans2"
+placename: str = "whillans_downstream"  # "whillans_upstream"
 region: deepicedrain.Region = regions[placename]
 ds_subset: xr.Dataset = region.subset(ds=ds_dhdt)
 
 # %%
-# Quick facet plot of height over different cycles
-# See https://xarray.pydata.org/en/stable/plotting.html#datasets
-ds_subset.plot.scatter(
-    x="x", y="y", hue="h_corr", cmap="gist_earth", col="cycle_number", col_wrap=4
-)
-
-# %%
-# Find reference ground tracks that have data up to cycle 7 (the most recent cycle)
-rgts = np.unique(
-    ar=ds_subset.sel(cycle_number=7).dropna(dim="ref_pt").referencegroundtrack
-)
-rgts
-
-# %%
 # Convert xarray.Dataset to pandas.DataFrame for easier analysis
 df_many: pd.DataFrame = ds_subset.to_dataframe().dropna()
+# Add a UTC_time column to the dataframe
+df_many["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=df_many.delta_time)
 
 
 # %%
@@ -444,6 +432,10 @@ def dhdt_plot(
         hover=True,
         hover_cols=["referencegroundtrack", "dhdt_slope", "h_corr"],
         colorbar=True,
+        grid=True,
+        frame_width=1000,
+        frame_height=600,
+        data_aspect=1,
     )
 
 
@@ -459,7 +451,7 @@ layout: pn.layout.Column = pn.interact(
         options=["referencegroundtrack", "dhdt_slope", "h_corr"],
     ),
     dhdt_range=pn.widgets.RangeSlider(
-        name="dhdt range ±", start=0, end=20, value=(1, 10), step=0.5
+        name="dhdt range ±", start=0, end=20, value=(1, 10), step=0.25
     ),
     rasterize=pn.widgets.Checkbox(name="Rasterize"),
     datashade=pn.widgets.Checkbox(name="Datashade"),
@@ -472,18 +464,27 @@ dashboard: pn.layout.Column = pn.Column(
     ),
     layout[1],
 )
-dashboard
+# dashboard
 
 # %%
 # Show dashboard in another browser tab
-# dashboard.show()
+dashboard.show()
 
 # %%
 # Select one Reference Ground track to look at
-rgt: int = 135
-assert rgt in rgts
-df_rgt: pd.DataFrame = df_many.query(expr="referencegroundtrack == @rgt")
-print(f"Looking at Reference Ground Track {rgt}")
+# rgts: list = [135] # Whillans downstream
+rgts: list = [236, 501]  # , 562, 1181]  # Whillans_upstream
+for rgt in rgts:
+    df_rgt: pd.DataFrame = df_many.query(expr="referencegroundtrack == @rgt")
+
+    # Save track data to CSV for crossover analysis later
+    df_rgt[["x", "y", "h_corr", "utc_time"]].to_csv(
+        f"X2SYS/track_{rgt}.tsv",
+        sep="\t",
+        index=False,
+        date_format="%Y-%m-%dT%H:%M:%S.%fZ",
+    )
+print(f"Looking at Reference Ground Tracks: {rgts}")
 
 # %%
 # Select one laser pair (out of three) based on y_atc field
@@ -503,7 +504,8 @@ df.hvplot.scatter(
 
 # %%
 # Filter points to those with significant dhdt values > +/- 0.2 m/yr
-df = df.query(expr="abs(dhdt_slope) > 0.2")
+# TODO Use Hausdorff Distance to get location of maximum change!!!
+df = df.query(expr="abs(dhdt_slope) > 0.2 & h_corr < 250")
 
 # %%
 # Plot 2D along track view of
@@ -511,7 +513,7 @@ df = df.query(expr="abs(dhdt_slope) > 0.2")
 fig = pygmt.Figure()
 # Setup map frame, title, axis annotations, etc
 fig.basemap(
-    projection="X20c/10c",
+    projection="X30c/10c",
     region=[df.x_atc.min(), df.x_atc.max(), df.h_corr.min(), df.h_corr.max()],
     frame=[
         rf'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {region.name}"',
@@ -520,13 +522,8 @@ fig.basemap(
     ],
 )
 fig.text(
-    x=df.x_atc.mean(),
-    y=df.h_corr.max(),
-    text=f"Reference Ground Track {rgt:04d}",
-    justify="TC",
-    D="jTC-0c/0.2c",
+    text=f"Reference Ground Track {rgt:04d}", position="TC", offset="jTC0c/0.2c", V="q"
 )
-
 # Colors from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=7
 cycle_colors = {3: "#ff7f00", 4: "#984ea3", 5: "#4daf4a", 6: "#377eb8", 7: "#e41a1c"}
 for cycle, color in cycle_colors.items():
@@ -543,7 +540,7 @@ for cycle, color in cycle_colors.items():
         # Plot line connecting points
         # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
 
-fig.legend(S=3, position="jBR+jBR+o0.2c", box="+gwhite+p1p")
+fig.legend(S=3, position="JMR+JMR+o0.2c", box="+gwhite+p1p")
 fig.savefig(f"figures/alongtrack_atl11_dh_{placename}_{rgt}.png")
 fig.show()
 
