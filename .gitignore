@@ -29,6 +29,7 @@ MANIFEST
 
 # Data files and folders
 **/*.h5
+**/*.tsv
 ATL06.003
 ATL11.001
 ATL11.001z123

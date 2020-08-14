@@ -545,3 +545,188 @@ fig.savefig(f"figures/alongtrack_atl11_dh_{placename}_{rgt}.png")
 fig.show()
 
 # %%
+
+
+# %% [markdown]
+# # Crossover Track Analysis
+#
+# To increase the temporal resolution of
+# our ice elevation change analysis
+# (i.e. at time periods less than
+# the 91 day repeat cycle of ICESat-2),
+# we can look at the locations where the
+# ICESat-2 tracks intersect and get the
+# height values there!
+# Uses [x2sys_cross](https://docs.generic-mapping-tools.org/6.1/supplements/x2sys/x2sys_cross).
+#
+# References:
+# - Wessel, P. (2010). Tools for analyzing intersecting tracks: The x2sys package.
+# Computers & Geosciences, 36(3), 348–354. https://doi.org/10.1016/j.cageo.2009.05.009
+
+
+# %%
+import os
+import numpy as np
+import pandas as pd
+import pygmt
+
+
+# %%
+# Initialize X2SYS database in the X2SYS/ICESAT2 folder
+tag = "X2SYS"
+os.environ["X2SYS_HOME"] = os.path.abspath(tag)
+os.getcwd()
+pygmt.x2sys_init(
+    tag="ICESAT2",
+    fmtfile=f"{tag}/ICESAT2/xyht",
+    suffix="tsv",
+    units=["de", "se"],  # distance in metres, speed in metres per second
+    gap="d250e",  # distance gap up to 250 metres allowed
+    force=True,
+    verbose="q",
+)
+
+# %%
+# Run crossover analysis on all tracks
+rgts: list = [236, 501, 562, 1181]
+tracks = [f"{tag}/track_{i}.tsv" for i in rgts]
+assert all(os.path.exists(k) for k in tracks)
+
+df_cross: pd.DataFrame = pygmt.x2sys_cross(
+    tracks=tracks,
+    tag="ICESAT2",
+    region=[-400000, -200000, -550000, -500000],
+    interpolation="l",  # linear interpolation
+    coe="e",  # external crossovers
+    trackvalues=True,  # Get track 1 height (h_1) and track 2 height (h_2)
+    # trackvalues=False,  # Get crossover error (h_X) and mean height value (h_M)
+    # outfile="xover_236_562.tsv"
+)
+df: pd.DataFrame = df_cross.dropna().reset_index(drop=True)  # drop rows with NaN values
+# Report on how many unique crossover intersections there were
+# df.plot.scatter(x="x", y="y")  # quick plot of our crossover points
+print(
+    f"{len(df.groupby(by=['x', 'y']))} crossover intersection point locations found "
+    f"with {len(df)} crossover height-time pairs "
+    f"over {len(tracks)} tracks"
+)
+
+
+# %%
+# Calculate crossover error
+df["h_X"]: pd.Series = df.h_2 - df.h_1  # crossover error (i.e. height difference)
+df["t_D"]: pd.Series = df.t_2 - df.t_1  # elapsed time in ns (i.e. time difference)
+ns_in_yr: int = (365.25 * 24 * 60 * 60 * 1_000_000_000)  # nanoseconds in a year
+df["dhdt"]: pd.Series = df.h_X / (df.t_D.astype(np.int64) / ns_in_yr)
+
+# %%
+# Get some summary statistics of our crossover errors
+sumstats: pd.DataFrame = df[["h_X", "t_D", "dhdt"]].describe()
+# Find location with highest absolute crossover error, and most sudden height change
+max_h_X: pd.Series = df.iloc[np.nanargmax(df.h_X.abs())]  # highest crossover error
+max_dhdt: pd.Series = df.iloc[df.dhdt.argmax()]  # most sudden change in height
+
+
+# %% [markdown]
+# ### 2D Map view of crossover points
+#
+# Bird's eye view of the crossover points
+# overlaid on top of the ICESat-2 tracks.
+
+# %%
+# 2D plot of crossover locations
+var: str = "h_X"
+fig = pygmt.Figure()
+# Setup basemap
+region = np.array([df.x.min(), df.x.max(), df.y.min(), df.y.max()])
+buffer = np.array([-2000, +2000, -2000, +2000])
+fig.basemap(frame=["WSne", "af"], region=region + buffer, projection="X5c")
+pygmt.makecpt(cmap="batlow", series=[sumstats[var]["25%"], sumstats[var]["75%"]])
+# Plot actual track points
+[fig.plot(data=track, color="green", style="c0.01c") for track in tracks]
+# Plot crossover point locations
+fig.plot(x=df.x, y=df.y, color=df.h_X, cmap=True, style="c0.1c", pen="thinnest")
+fig.colorbar(position="JMR", frame=['x+l"Crossover Error"', "y+lm"])
+fig.savefig("figures/crossover_area.png")
+fig.show()
+
+
+# %% [markdown]
+# ### 1D plots of height changing over time
+#
+# Plot height change over time at:
+#
+# 1. One single crossover point location
+# 2. Many crossover locations over an area
+
+# %%
+# Tidy up dataframe first using pd.wide_to_long
+# I.e. convert 't_1', 't_2', 'h_1', 'h_2' columns into just 't' and 'h'.
+df["id"] = df.index
+df_th: pd.DataFrame = pd.wide_to_long(
+    df=df[["id", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
+    stubnames=["t", "h"],
+    i="id",
+    j="track",
+    sep="_",
+)
+df_th = df_th.reset_index(level="track").drop_duplicates(ignore_index=True)
+
+# %%
+# 1D Plot at location with **maximum** absolute crossover height error (max_h_X)
+df_max = df_th.query(expr="x == @max_h_X.x & y == @max_h_X.y").sort_values(by="t")
+print(f"{round(max_h_X.h_X, 2)} metres height change at {max_h_X.x}, {max_h_X.y}")
+t_min = (df_max.t.min() - pd.Timedelta(2, unit="W")).isoformat()
+t_max = (df_max.t.max() + pd.Timedelta(2, unit="W")).isoformat()
+h_min = df_max.h.min() - 0.2
+h_max = df_max.h.max() + 0.4
+
+fig = pygmt.Figure()
+fig.basemap(
+    projection="X10c/10c",
+    region=[t_min, t_max, h_min, h_max],
+    frame=[f"WSne", "xaf+lDate", 'yaf+l"Elevation at crossover (m)"'],
+)
+# Plot data points
+fig.plot(x=df_max.t, y=df_max.h, style="c0.15c", color="darkblue", pen="thin")
+# Plot dashed line connecting points
+fig.plot(x=df_max.t, y=df_max.h, pen=f"faint,blue,-", label=f'"+g-1l+s0.15c"')
+fig.savefig("figures/crossover_one.png")
+fig.show()
+
+# %%
+# 1D plots of a crossover area, all the height points over time
+t_min = (df_th.t.min() - pd.Timedelta(2, unit="W")).isoformat()
+t_max = (df_th.t.max() + pd.Timedelta(2, unit="W")).isoformat()
+h_min = df_th.h.min() - 0.2
+h_max = df_th.h.max() + 0.2
+region = [t_min, t_max, h_min, h_max]
+
+fig = pygmt.Figure()
+fig.basemap(
+    projection="X10c/10c",
+    region=region,
+    frame=["WSne", "xaf+lDate", "yaf+lElevation(m)"],
+)
+crossovers = df_th.groupby(by=["x", "y"])
+pygmt.makecpt(cmap="hawaii", series=[1, len(crossovers) + 1, 1])
+for i, ((x_coord, y_coord), indexes) in enumerate(crossovers.indices.items()):
+    df_ = df_th.loc[indexes].sort_values(by="t")
+    fig.plot(
+        x=df_.t,
+        y=df_.h,
+        Z=i,
+        style="c0.15c",
+        # color=df_.index.get_level_values("track"),
+        cmap=True,
+        pen="thin+z",
+    )
+    # Plot line connecting points
+    fig.plot(
+        x=df_.t, y=df_.h, Z=i, pen=f"faint,+z,-", cmap=True
+    )  # , label=f'"+g-1l+s0.15c"')
+fig.colorbar()
+# fig.savefig("figures/crossover_many.png")
+fig.show()
+
+# %%
