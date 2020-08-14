@@ -35,16 +35,21 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/plotting_scripts/AA_dhdt_map.ipynb
 
 # %%
-import dask
-import datashader
-import intake
+import os
+
 import numpy as np
 import pandas as pd
-import pygmt
-import scipy.stats
 import xarray as xr
 
+import dask
+import datashader
 import deepicedrain
+import holoviews as hv
+import hvplot.pandas
+import intake
+import panel as pn
+import pygmt
+import scipy.stats
 
 # %%
 client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
@@ -384,10 +389,6 @@ fig.show(width=600)
 # ice surface height changes over time,
 # along an ICESat-2 reference ground track.
 
-# %%
-import holoviews as hv
-import hvplot.pandas
-import panel as pn
 
 # %%
 # Subset dataset to geographic region of interest
@@ -562,13 +563,6 @@ fig.show()
 # References:
 # - Wessel, P. (2010). Tools for analyzing intersecting tracks: The x2sys package.
 # Computers & Geosciences, 36(3), 348–354. https://doi.org/10.1016/j.cageo.2009.05.009
-
-
-# %%
-import os
-import numpy as np
-import pandas as pd
-import pygmt
 
 
 # %%
