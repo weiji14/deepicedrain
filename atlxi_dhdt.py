@@ -35,6 +35,7 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/plotting_scripts/AA_dhdt_map.ipynb
 
 # %%
+import itertools
 import os
 
 import numpy as np
@@ -50,6 +51,7 @@ import intake
 import panel as pn
 import pygmt
 import scipy.stats
+import tqdm
 
 # %%
 client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
@@ -333,7 +335,7 @@ ds_dhdt: xr.Dataset = ds_dhdt.compute()
 # ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
 ds_dhdt: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_dhdt_{placename}.zarr",
-    chunks={"cycle_number": 7},
+    chunks="auto",  # {"cycle_number": 7},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -391,16 +393,27 @@ fig.show(width=600)
 
 
 # %%
-# Subset dataset to geographic region of interest
-placename: str = "whillans_downstream"  # "whillans_upstream"
+# Save or load dhdt data from Parquet file
+placename: str = "whillans_upstream"  # "whillans_downstream"
 region: deepicedrain.Region = regions[placename]
-ds_subset: xr.Dataset = region.subset(ds=ds_dhdt)
-
-# %%
-# Convert xarray.Dataset to pandas.DataFrame for easier analysis
-df_many: pd.DataFrame = ds_subset.to_dataframe().dropna()
-# Add a UTC_time column to the dataframe
-df_many["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=df_many.delta_time)
+if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
+    # Subset dataset to geographic region of interest
+    ds_subset: xr.Dataset = region.subset(ds=ds_dhdt)
+    # Add a UTC_time column to the dataframe
+    ds_subset["utc_time"] = deepicedrain.deltatime_to_utctime(
+        dataarray=ds_subset.delta_ds_subsettime
+    )
+    # Convert xarray.Dataset to pandas.DataFrame for easier analysis
+    df_many: pd.DataFrame = ds_subset.to_dataframe().dropna()
+    # Drop delta_time column since timedelta64 dtype cannot be saved to parquet
+    # https://github.com/pandas-dev/pandas/issues/31909
+    df_many: pd.DataFrame = df_many.drop(columns="delta_time")
+    # Need to use_deprecated_int96_timestamps in order to save utc_time column
+    # https://issues.apache.org/jira/browse/ARROW-1957
+    df_many.to_parquet(
+        f"ATLXI/df_dhdt_{placename}.parquet", use_deprecated_int96_timestamps=True
+    )
+df_many = pd.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")
 
 
 # %%
@@ -417,7 +430,7 @@ def dhdt_plot(
     """
     df_ = df_many.query(
         expr="cycle_number == @cycle & "
-        "abs(dhdt_slope) > @dhdt_range[0] & abs(dhdt_slope) < @dhdt_range[1]"
+        "@dhdt_range[0] < abs(dhdt_slope) & abs(dhdt_slope) < @dhdt_range[1]"
     )
     return df_.hvplot.scatter(
         title=f"ICESat-2 Cycle {cycle} {dhdt_variable}",
@@ -472,9 +485,9 @@ dashboard: pn.layout.Column = pn.Column(
 dashboard.show()
 
 # %%
-# Select one Reference Ground track to look at
-# rgts: list = [135] # Whillans downstream
-rgts: list = [236, 501]  # , 562, 1181]  # Whillans_upstream
+# Select a few Reference Ground tracks to look at
+rgts: list = [135, 327, 388, 577, 1080, 1272]  # Whillans upstream
+# rgts: list = [236, 501 , 562, 1181]  # whillans_downstream
 for rgt in rgts:
     df_rgt: pd.DataFrame = df_many.query(expr="referencegroundtrack == @rgt")
 
@@ -506,7 +519,7 @@ df.hvplot.scatter(
 # %%
 # Filter points to those with significant dhdt values > +/- 0.2 m/yr
 # TODO Use Hausdorff Distance to get location of maximum change!!!
-df = df.query(expr="abs(dhdt_slope) > 0.2 & h_corr < 250")
+df = df.query(expr="abs(dhdt_slope) > 0.2 & h_corr < 300")
 
 # %%
 # Plot 2D along track view of
@@ -532,7 +545,7 @@ for cycle, color in cycle_colors.items():
     if len(df_) > 0:
         # Get x, y, time
         data = np.column_stack(tup=(df_.x_atc, df_.h_corr))
-        time_nsec = deepicedrain.deltatime_to_utctime(dataarray=df_.delta_time.mean())
+        time_nsec = df_.utc_time.mean()
         time_sec = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
         label = f'"Cycle {cycle} at {time_sec}"'
 
@@ -582,21 +595,39 @@ pygmt.x2sys_init(
 
 # %%
 # Run crossover analysis on all tracks
-rgts: list = [236, 501, 562, 1181]
+rgts: list = [135, 327, 388, 577, 1080, 1272]  # Whillans upstream
+# rgts: list = [236, 501, 562, 1181]  # Whillans_downstream
 tracks = [f"{tag}/track_{i}.tsv" for i in rgts]
 assert all(os.path.exists(k) for k in tracks)
 
-df_cross: pd.DataFrame = pygmt.x2sys_cross(
-    tracks=tracks,
-    tag="ICESAT2",
-    region=[-400000, -200000, -550000, -500000],
-    interpolation="l",  # linear interpolation
-    coe="e",  # external crossovers
-    trackvalues=True,  # Get track 1 height (h_1) and track 2 height (h_2)
-    # trackvalues=False,  # Get crossover error (h_X) and mean height value (h_M)
-    # outfile="xover_236_562.tsv"
-)
-df: pd.DataFrame = df_cross.dropna().reset_index(drop=True)  # drop rows with NaN values
+# Parallelized paired crossover analysis
+futures: list = []
+for track1, track2 in itertools.combinations(rgts, r=2):
+    future = client.submit(
+        key=f"{track1}_{track2}",
+        func=pygmt.x2sys_cross,
+        tracks=[f"{tag}/track_{track1}.tsv", f"{tag}/track_{track2}.tsv"],
+        tag="ICESAT2",
+        region=[-460000, -400000, -560000, -500000],
+        interpolation="l",  # linear interpolation
+        coe="e",  # external crossovers
+        trackvalues=True,  # Get track 1 height (h_1) and track 2 height (h_2)
+        # trackvalues=False,  # Get crossover error (h_X) and mean height value (h_M)
+        # outfile="xover_236_562.tsv"
+    )
+    futures.append(future)
+
+
+# %%
+crossovers: dict = {}
+for f in tqdm.tqdm(
+    iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
+):
+    if f.status != "error":  # skip those track pairs which don't intersect
+        crossovers[f.key] = f.result().dropna().reset_index(drop=True)
+
+df_cross: pd.DataFrame = pd.concat(objs=crossovers, names=["track1_track2", "id"])
+df: pd.DataFrame = df_cross.reset_index(level="track1_track2").reset_index(drop=True)
 # Report on how many unique crossover intersections there were
 # df.plot.scatter(x="x", y="y")  # quick plot of our crossover points
 print(
@@ -634,12 +665,24 @@ fig = pygmt.Figure()
 # Setup basemap
 region = np.array([df.x.min(), df.x.max(), df.y.min(), df.y.max()])
 buffer = np.array([-2000, +2000, -2000, +2000])
-fig.basemap(frame=["WSne", "af"], region=region + buffer, projection="X5c")
 pygmt.makecpt(cmap="batlow", series=[sumstats[var]["25%"], sumstats[var]["75%"]])
+# Map frame in metre units
+fig.basemap(frame="f", region=region + buffer, projection="X8c")
 # Plot actual track points
-[fig.plot(data=track, color="green", style="c0.01c") for track in tracks]
+for track in tracks:
+    fig.plot(data=track, color="green", style="c0.01c")
 # Plot crossover point locations
 fig.plot(x=df.x, y=df.y, color=df.h_X, cmap=True, style="c0.1c", pen="thinnest")
+# Map frame in kilometre units
+fig.basemap(
+    frame=[
+        "WSne",
+        'xaf+l"Polar Stereographic X (km)"',
+        'yaf+l"Polar Stereographic Y (km)"',
+    ],
+    region=(region + buffer) / 1000,
+    projection="X8c",
+)
 fig.colorbar(position="JMR", frame=['x+l"Crossover Error"', "y+lm"])
 fig.savefig("figures/crossover_area.png")
 fig.show()
@@ -658,7 +701,7 @@ fig.show()
 # I.e. convert 't_1', 't_2', 'h_1', 'h_2' columns into just 't' and 'h'.
 df["id"] = df.index
 df_th: pd.DataFrame = pd.wide_to_long(
-    df=df[["id", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
+    df=df[["id", "track1_track2", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
     stubnames=["t", "h"],
     i="id",
     j="track",
@@ -669,6 +712,7 @@ df_th = df_th.reset_index(level="track").drop_duplicates(ignore_index=True)
 # %%
 # 1D Plot at location with **maximum** absolute crossover height error (max_h_X)
 df_max = df_th.query(expr="x == @max_h_X.x & y == @max_h_X.y").sort_values(by="t")
+track1, track2 = df_max.track1_track2.iloc[0].split("_")
 print(f"{round(max_h_X.h_X, 2)} metres height change at {max_h_X.x}, {max_h_X.y}")
 t_min = (df_max.t.min() - pd.Timedelta(2, unit="W")).isoformat()
 t_max = (df_max.t.max() + pd.Timedelta(2, unit="W")).isoformat()
@@ -676,51 +720,68 @@ h_min = df_max.h.min() - 0.2
 h_max = df_max.h.max() + 0.4
 
 fig = pygmt.Figure()
-fig.basemap(
-    projection="X10c/10c",
-    region=[t_min, t_max, h_min, h_max],
-    frame=[f"WSne", "xaf+lDate", 'yaf+l"Elevation at crossover (m)"'],
+with pygmt.config(
+    FONT_ANNOT_PRIMARY="9p", FORMAT_TIME_PRIMARY_MAP="abbreviated", FORMAT_DATE_MAP="o"
+):
+    fig.basemap(
+        projection="X12c/8c",
+        region=[t_min, t_max, h_min, h_max],
+        frame=[
+            "WSne",
+            "pxa1Of1o+lDate",  # primary time axis, 1 mOnth annotation and minor axis
+            "sx1Y",  # secondary time axis, 1 Year intervals
+            'yaf+l"Elevation at crossover (m)"',
+        ],
+    )
+fig.text(
+    text=f"Track {track1} and {track2} crossover",
+    position="TC",
+    offset="jTC0c/0.2c",
+    V="q",
 )
 # Plot data points
 fig.plot(x=df_max.t, y=df_max.h, style="c0.15c", color="darkblue", pen="thin")
 # Plot dashed line connecting points
-fig.plot(x=df_max.t, y=df_max.h, pen=f"faint,blue,-", label=f'"+g-1l+s0.15c"')
-fig.savefig("figures/crossover_one.png")
+fig.plot(x=df_max.t, y=df_max.h, pen=f"faint,blue,-")
+fig.savefig(f"figures/crossover_{track1}_{track2}_{min_date}_{max_date}.png")
 fig.show()
 
 # %%
 # 1D plots of a crossover area, all the height points over time
-t_min = (df_th.t.min() - pd.Timedelta(2, unit="W")).isoformat()
-t_max = (df_th.t.max() + pd.Timedelta(2, unit="W")).isoformat()
+t_min = (df_th.t.min() - pd.Timedelta(1, unit="W")).isoformat()
+t_max = (df_th.t.max() + pd.Timedelta(1, unit="W")).isoformat()
 h_min = df_th.h.min() - 0.2
 h_max = df_th.h.max() + 0.2
-region = [t_min, t_max, h_min, h_max]
 
 fig = pygmt.Figure()
-fig.basemap(
-    projection="X10c/10c",
-    region=region,
-    frame=["WSne", "xaf+lDate", "yaf+lElevation(m)"],
-)
+with pygmt.config(
+    FONT_ANNOT_PRIMARY="9p", FORMAT_TIME_PRIMARY_MAP="abbreviated", FORMAT_DATE_MAP="o"
+):
+    fig.basemap(
+        projection="X12c/12c",
+        region=[t_min, t_max, h_min, h_max],
+        frame=[
+            "WSne",
+            "pxa1Of1o+lDate",  # primary time axis, 1 mOnth annotation and minor axis
+            "sx1Y",  # secondary time axis, 1 Year intervals
+            'yaf+l"Elevation at crossover (m)"',
+        ],
+    )
+
 crossovers = df_th.groupby(by=["x", "y"])
-pygmt.makecpt(cmap="hawaii", series=[1, len(crossovers) + 1, 1])
+pygmt.makecpt(cmap="categorical", series=[1, len(crossovers) + 1, 1])
 for i, ((x_coord, y_coord), indexes) in enumerate(crossovers.indices.items()):
     df_ = df_th.loc[indexes].sort_values(by="t")
-    fig.plot(
-        x=df_.t,
-        y=df_.h,
-        Z=i,
-        style="c0.15c",
-        # color=df_.index.get_level_values("track"),
-        cmap=True,
-        pen="thin+z",
-    )
+    # if df_.h.max() - df_.h.min() > 1.0:  # plot only > 1 metre height change
+    track1, track2 = df_.track1_track2.iloc[0].split("_")
+    label = f'"Track {track1} {track2}"'
+    fig.plot(x=df_.t, y=df_.h, Z=i, style="c0.1c", cmap=True, pen="thin+z", label=label)
     # Plot line connecting points
     fig.plot(
         x=df_.t, y=df_.h, Z=i, pen=f"faint,+z,-", cmap=True
     )  # , label=f'"+g-1l+s0.15c"')
-fig.colorbar()
-# fig.savefig("figures/crossover_many.png")
+fig.legend(position="JMR+JMR+o0.2c", box="+gwhite+p1p")
+fig.savefig(f"figures/crossover_many_{min_date}_{max_date}.png")
 fig.show()
 
 # %%
