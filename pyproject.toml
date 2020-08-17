@@ -12,7 +12,7 @@ cython = "^0.29.21"
 dask = "^2.22.0"
 dask-cuda = {version = "^0.14.1", optional = true}
 dask_labextension = "^3.0.0"
-datashader = "^0.11.0"
+datashader = "^0.11.1"
 distributed = "^2.22.0"
 geopandas = "^0.8.1"
 geoviews = "^1.8.1"
@@ -32,6 +32,7 @@ toolz = "^0.10.0"
 tqdm = "^4.48.2"
 xarray = {git = "https://github.com/weiji14/xarray.git", rev = "v0.16.0-131-gda42dab0"}
 xrviz = "^0.1.4"
+scikit-learn = "^0.23.2"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
