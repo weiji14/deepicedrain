@@ -1524,7 +1524,7 @@ description = "A Python interface for the Generic Mapping Tools"
 name = "pygmt"
 optional = false
 python-versions = "*"
-version = "0.1.2+35.g2ddbb0e"
+version = "0.1.2+36.g4939ee2"
 
 [package.dependencies]
 netCDF4 = "*"
@@ -1534,7 +1534,7 @@ pandas = "*"
 xarray = "*"
 
 [package.source]
-reference = "2ddbb0e1977af85bf6a6ac63d7cbac9da3d08f05"
+reference = "4939ee2a7ce1f80e6fcce63d48bc049aea72ca2e"
 type = "git"
 url = "https://github.com/GenericMappingTools/pygmt.git"
 
@@ -2013,7 +2013,7 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "a0123ef56e21c03fe6ae8d9e5540cb740f553f4aaa098d572d9cd646e356b8db"
+content-hash = "73db6f447e88e5c89b3ac6ade0a664ab2b03465b9684e3c0d0e15d890a45d65e"
 python-versions = "^3.8"
 
 [metadata.files]
