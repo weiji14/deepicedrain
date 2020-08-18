@@ -77,6 +77,11 @@ Then install the python libraries listed in the `pyproject.toml`/`poetry.lock` f
 
     poetry install
 
+If you have a [CUDA](https://en.wikipedia.org/wiki/CUDA)-capable GPU,
+you can also install the optional "cuda" packages to accelerate some calculations.
+
+    poetry install --extras cuda
+
 Finally, double-check that the libraries have been installed.
 
     poetry show
