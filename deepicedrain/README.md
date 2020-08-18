@@ -16,3 +16,6 @@ Contents:
   - Region - Bounding box data class structure that has xarray subsetting capabilities and more!
   - deltatime_to_utctime - Converts GPS time from an epoch (default is 2018 Jan 1st) to UTC time
   - lonlat_to_xy - Reprojects longitude/latitude EPSG:4326 coordinates to x/y EPSG:3031 coordinates
+
+- :card_file_box: extraload.py - Convenience functions for extracting, transforming and loading data
+  - array_to_dataframe - Turns a 1D/2D numpy/dask array into a tidy pandas/dask dataframe table
