@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 import xarray as xr
 
+import dask.dataframe
 from deepicedrain import Region, catalog, lonlat_to_xy
 
 
@@ -51,7 +52,7 @@ def test_region_datashade():
 
     atl11_dataset: xr.Dataset = catalog.test_data.atl11_test_case.to_dask()
     atl11_dataset["x"], atl11_dataset["y"] = lonlat_to_xy(
-        longitude=atl11_dataset.longitude, latitude=atl11_dataset.latitude, epsg=3995,
+        longitude=atl11_dataset.longitude, latitude=atl11_dataset.latitude, epsg=3995
     )
     atl11_dataset = atl11_dataset.set_coords(["x", "y"])
     df: pd.DataFrame = atl11_dataset.h_corr.to_dataframe()
@@ -64,7 +65,7 @@ def test_region_datashade():
     npt.assert_allclose(agg_grid.max(), 1798.066285)
 
 
-def test_region_subset():
+def test_region_subset_xarray_dataset():
     """
     Test that we can subset an xarray.Dataset based on the region's bounds
     """
@@ -76,6 +77,27 @@ def test_region_subset():
             "y": np.linspace(start=-160, stop=160, num=50),
         },
     )
-    ds_subset = region.subset(ds=dataset)
+    ds_subset = region.subset(data=dataset)
     assert isinstance(ds_subset, xr.Dataset)
     assert ds_subset.h_corr.shape == (24, 30)
+
+
+@pytest.mark.parametrize("dataframe_type", [pd.DataFrame, dask.dataframe.DataFrame])
+def test_region_subset_dataframe(dataframe_type):
+    """
+    Test that we can subset a pandas or dask DataFrame based on the region's
+    bounds
+    """
+    region = Region("South Pole", -100, 100, -100, 100)
+    dataframe = pd.DataFrame(
+        data={
+            "x": np.linspace(start=-200, stop=200, num=50),
+            "y": np.linspace(start=-160, stop=160, num=50),
+            "dhdt": np.random.rand(50),
+        }
+    )
+    if dataframe_type == dask.dataframe.core.DataFrame:
+        dataframe = dask.dataframe.from_pandas(data=dataframe, npartitions=2)
+    df_subset = region.subset(data=dataframe)
+    assert isinstance(df_subset, dataframe_type)
+    assert len(df_subset.dhdt) == 24
