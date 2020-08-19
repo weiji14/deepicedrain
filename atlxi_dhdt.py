@@ -140,7 +140,7 @@ regions: dict = {
 # Subset dataset to geographic region of interest
 placename: str = "antarctica"
 region: deepicedrain.Region = regions[placename]
-# ds = region.subset(ds=ds)
+# ds = region.subset(data=ds)
 
 # %%
 # We need at least 2 points to draw a trend line or compute differences
@@ -398,7 +398,7 @@ placename: str = "whillans_upstream"  # "whillans_downstream"
 region: deepicedrain.Region = regions[placename]
 if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
     # Subset dataset to geographic region of interest
-    ds_subset: xr.Dataset = region.subset(ds=ds_dhdt)
+    ds_subset: xr.Dataset = region.subset(data=ds_dhdt)
     # Add a UTC_time column to the dataframe
     ds_subset["utc_time"] = deepicedrain.deltatime_to_utctime(
         dataarray=ds_subset.delta_ds_subsettime

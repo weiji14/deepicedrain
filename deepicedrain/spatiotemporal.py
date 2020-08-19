@@ -74,18 +74,26 @@ class Region:
         )
 
     def subset(
-        self, ds: xr.Dataset, x_dim: str = "x", y_dim: str = "y", drop: bool = True
+        self, data: xr.Dataset, x_dim: str = "x", y_dim: str = "y", drop: bool = True
     ) -> xr.Dataset:
         """
-        Convenience function to find datapoints in an xarray.Dataset
-        that fit within the bounding boxes of this region
+        Convenience function to find datapoints in an xarray.Dataset or
+        pandas.DataFrame that fit within the bounding boxes of this region.
+        Note that the 'drop' boolean flag is only valid for xarray.Dataset.
         """
         cond = np.logical_and(
-            np.logical_and(ds[x_dim] > self.xmin, ds[x_dim] < self.xmax),
-            np.logical_and(ds[y_dim] > self.ymin, ds[y_dim] < self.ymax),
+            np.logical_and(data[x_dim] > self.xmin, data[x_dim] < self.xmax),
+            np.logical_and(data[y_dim] > self.ymin, data[y_dim] < self.ymax),
         )
 
-        return ds.where(cond=cond, drop=drop)
+        try:
+            # xarray.DataArray subset method
+            data_subset = data.where(cond=cond, drop=drop)
+        except TypeError:
+            # pandas.DataFrame subset method
+            data_subset = data.loc[cond]
+
+        return data_subset
 
 
 def deltatime_to_utctime(
