@@ -4,12 +4,16 @@ Does bounding box region subsets, coordinate/time conversions, and more!
 """
 import dataclasses
 import datetime
+import os
+import tempfile
 
-import datashader
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pyproj
 import xarray as xr
+
+import datashader
 
 
 @dataclasses.dataclass(frozen=True)
@@ -140,3 +144,87 @@ def lonlat_to_xy(
         )
     else:
         return x, y
+
+
+def point_in_polygon_gpu(
+    points_df,  # cudf.DataFrame with x and y columns of point coordinates
+    poly_df: gpd.GeoDataFrame,  # geopandas.GeoDataFrame with polygon shapes
+    points_x_col: str = "x",
+    points_y_col: str = "y",
+    poly_label_col: str = None,
+):
+    """
+    Find polygon labels for each of the input points.
+    This is a GPU accelerated version that requires cuspatial!
+
+    Parameters
+    ----------
+    points_df : cudf.DataFrame
+        A dataframe in GPU memory containing the x and y coordinates.
+    points_x_col : str
+        Name of the x coordinate column in points_df. Default is "x".
+    points_y_col : str
+        Name of the y coordinate column in points_df. Default is "y".
+
+    poly_df : geopandas.GeoDataFrame
+        A geodataframe in CPU memory containing polygons geometries in each
+        row.
+    poly_label_col : str
+        Name of the column in poly_df that will be used to label the points,
+        e.g. "placename". Default is to automatically use the first column
+        unless otherwise specified.
+
+    Returns
+    -------
+    point_labels : cudf.Series
+        A column of labels that indicates which polygon the points fall into.
+
+    """
+    import cudf
+    import cuspatial
+
+    poly_df_: gpd.GeoDataFrame = poly_df.reset_index()
+    if poly_label_col is None:
+        # Simply use first column of geodataframe as label if not provided
+        poly_label_col: str = poly_df.columns[0]
+    point_labels: cudf.Series = cudf.Series(index=points_df.index).astype(
+        poly_df[poly_label_col].dtype
+    )
+
+    # Load CPU-based GeoDataFrame into a GPU-based cuspatial friendly format
+    # This is a workaround until the related feature request at
+    # https://github.com/rapidsai/cuspatial/issues/165 is implemented
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Save geodataframe to a temporary shapefile,
+        # so that we can load it into GPU memory using cuspatial
+        tmpshpfile = os.path.join(tmpdir, "poly_df.shp")
+        poly_df_.to_file(filename=tmpshpfile, driver="ESRI Shapefile")
+
+        # Load polygon_offsets, ring_offsets and polygon xy points
+        # from temporary shapefile into GPU memory
+        poly_offsets, poly_ring_offsets, poly_points = cuspatial.read_polygon_shapefile(
+            filename=tmpshpfile
+        )
+
+    # Run the actual point in polygon algorithm!
+    # Note that cuspatial's point_in_polygon function has a 31 polygon limit,
+    # hence the for-loop code below. See also
+    # https://github.com/rapidsai/cuspatial/blob/branch-0.15/notebooks/nyc_taxi_years_correlation.ipynb
+    num_poly: int = len(poly_df_)
+    point_in_poly_iter: list = list(np.arange(0, num_poly, 31)) + [num_poly]
+    for i in range(len(point_in_poly_iter) - 1):
+        start, end = point_in_poly_iter[i], point_in_poly_iter[i + 1]
+        poly_labels: cudf.DataFrame = cuspatial.point_in_polygon(
+            test_points_x=points_df[points_x_col],
+            test_points_y=points_df[points_y_col],
+            poly_offsets=poly_offsets[start:end],
+            poly_ring_offsets=poly_ring_offsets,
+            poly_points_x=poly_points.x,
+            poly_points_y=poly_points.y,
+        )
+
+        # Label each point with polygon they fall in
+        for label in poly_labels.columns:
+            point_labels.loc[poly_labels[label]] = poly_df_.loc[label][poly_label_col]
+
+    return point_labels
