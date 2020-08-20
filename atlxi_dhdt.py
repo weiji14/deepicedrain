@@ -401,7 +401,7 @@ if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
     ds_subset: xr.Dataset = region.subset(data=ds_dhdt)
     # Add a UTC_time column to the dataframe
     ds_subset["utc_time"] = deepicedrain.deltatime_to_utctime(
-        dataarray=ds_subset.delta_ds_subsettime
+        dataarray=ds_subset.delta_time
     )
     # Convert xarray.Dataset to pandas.DataFrame for easier analysis
     df_many: pd.DataFrame = ds_subset.to_dataframe().dropna()
