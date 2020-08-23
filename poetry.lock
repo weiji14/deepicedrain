@@ -343,7 +343,7 @@ description = "Parallel PyData with Task Scheduling"
 name = "dask"
 optional = false
 python-versions = ">=3.6"
-version = "2.22.0"
+version = "2.24.0"
 
 [package.dependencies]
 pyyaml = "*"
@@ -2013,7 +2013,7 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "73db6f447e88e5c89b3ac6ade0a664ab2b03465b9684e3c0d0e15d890a45d65e"
+content-hash = "44e2d857f21045adc0f249dde3d49ab32bc371de0e9fae79a8be0bf840d88032"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2225,8 +2225,8 @@ cython = [
     {file = "Cython-0.29.21.tar.gz", hash = "sha256:e57acb89bd55943c8d8bf813763d20b9099cc7165c0f16b707631a7654be9cad"},
 ]
 dask = [
-    {file = "dask-2.22.0-py3-none-any.whl", hash = "sha256:47b75b2a86ab1b17c80e26222ba7de02f200fb73e434ed7ea85282ee565e157d"},
-    {file = "dask-2.22.0.tar.gz", hash = "sha256:638d3901d58b45ba75a07183cc888e5fbc7e6cf21c2ed0d8c78649cc25dac68d"},
+    {file = "dask-2.24.0-py3-none-any.whl", hash = "sha256:86c9b66f42d9107ac82210df19bab1211f00e59c82063f01fed7b9dcfa3c9e6c"},
+    {file = "dask-2.24.0.tar.gz", hash = "sha256:b4a40a3e4960700074a426d7759f53572621e8cd6358306f193e7e66ea6fd889"},
 ]
 dask-cuda = [
     {file = "dask-cuda-0.14.1.tar.gz", hash = "sha256:a92f2345a1f27768af398108083ad1b314144f312f2be668ba302df1cf459d3c"},
