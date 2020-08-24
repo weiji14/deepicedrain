@@ -28,10 +28,9 @@ class URSSession(requests.Session):
         self.original_url = None
 
     def get_redirect_target(self, resp):
-        if resp.is_redirect:
-            if resp.headers["location"] == self.original_url:
-                # Redirected back to original URL, so OAuth2 complete. Exit here
-                return None
+        if resp.is_redirect and resp.headers["location"] == self.original_url:
+            # Redirected back to original URL, so OAuth2 complete. Exit here
+            return None
         return super(URSSession, self).get_redirect_target(resp)
 
     def rebuild_auth(self, prepared_request, response):
