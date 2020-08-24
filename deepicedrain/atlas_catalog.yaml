@@ -104,6 +104,61 @@ sources:
           height: 500
           geo: True
           coastline: True
+  icesat2dhdt:
+    description: 'Preprocessed ICESat-2 height change over time (dhdt) data in columnar Parquet format'
+    args:
+      urlpath: ATLXI/df_dhdt_{{placename}}.parquet
+      engine: pyarrow
+    parameters:
+      placename:
+        description: Name of a geographic locality in Antarctica
+        type: str
+        default: siple_coast
+        allowed:
+          - siple_coast
+          - whillans_upstream
+          - whillans_downstream
+      cycle:
+        description: ICESat-2 Cycle number
+        type: int
+        default: 7
+        allowed: [1, 2, 3, 4, 5, 6, 7]
+    driver: intake_parquet.source.ParquetSource
+    metadata:
+      fields:
+        x:
+          label: Polar Stereographic X (m)
+        y:
+          label: Polar Stereographic Y (m)
+      plot:
+        kind: points
+        x: x
+        y: y
+        persist: True
+        rasterize: True
+        datashade: False
+        dynspread: False
+        hover: True
+        hover_cols:
+            - referencegroundtrack
+            - dhdt_slope
+            - h_corr_{{cycle}}
+            - utc_time_{{cycle}}
+        colorbar: True
+        grid: True
+        frame_width: 1000
+        frame_height: 600
+        data_aspect: 1
+      plots:
+        dhdt_slope:
+          c: dhdt_slope
+          cmap: BrBG
+        referencegroundtrack:
+          c: referencegroundtrack
+          cmap: glasbey
+        h_corr:
+          c: h_corr_{{cycle}}
+          cmap: gist_earth
   test_data:
     description: 'Sample ICESat-2 datasets for testing purposes'
     args:

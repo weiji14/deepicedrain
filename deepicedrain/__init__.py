@@ -11,6 +11,7 @@ from deepicedrain.spatiotemporal import (
     lonlat_to_xy,
     point_in_polygon_gpu,
 )
+from deepicedrain.vizplots import IceSat2Explorer
 
 __version__: str = "0.2.1"
 

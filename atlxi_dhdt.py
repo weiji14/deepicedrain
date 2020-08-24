@@ -407,13 +407,16 @@ if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
     ds_subset["utc_time"] = deepicedrain.deltatime_to_utctime(
         dataarray=ds_subset.delta_time
     )
-    # Save to parquet format
+    # Save to parquet format. If the dask workers get killed, reduce the number
+    # of workers (e.g. 72 to 32) so that each worker will have more memory
     deepicedrain.ndarray_to_parquet(
         ndarray=ds_subset,
         parquetpath=f"ATLXI/df_dhdt_{placename}.parquet",
         variables=[
             "x",
+            "x_atc",
             "y",
+            "y_atc",
             "dhdt_slope",
             "referencegroundtrack",
             "h_corr",
@@ -422,118 +425,14 @@ if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
         dropnacols=["dhdt_slope"],
         use_deprecated_int96_timestamps=True,
     )
-# df_many = pd.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")
-df_dhdt = cudf.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")
-
-# %%
-warnings.filterwarnings(
-    action="ignore",
-    message="The global colormaps dictionary is no longer considered public API.",
-)
-
-# %%
-class IceSat2Explorer(param.Parameterized):
-    """
-    ICESat-2 rate of height change over time (dhdt) interactive dashboard.
-    Built using HvPlot and Panel.
-
-    Adapted from the "Panel-based Datashader dashboard" at
-    https://examples.pyviz.org/datashader_dashboard/dashboard.html.
-    See also https://github.com/holoviz/datashader/pull/676.
-    """
-
-    variable_cmap: dict = {
-        "referencegroundtrack": "glasbey",
-        "dhdt_slope": "BrBG",
-        "h_corr": "gist_earth",
-    }
-    dhdt_variable = param.Selector(default="dhdt_slope", objects=variable_cmap.keys())
-    cycle = param.Integer(default=7, bounds=(2, 7))
-    dhdt_range = param.Range(default=(1.0, 10.0), bounds=(0.0, 20.0))
-    rasterize = param.Boolean(default=False)
-    datashade = param.Boolean(default=False)
-
-    df_ = df_dhdt
-    plot = df_.hvplot.points(x="x", y="y", c="dhdt_slope", cmap="BrBG")
-    startX, endX = plot.range("x")
-    startY, endY = plot.range("y")
-
-    def keep_zoom(self, x_range, y_range):
-        self.startX, self.endX = x_range
-        self.startY, self.endY = y_range
-
-    @param.depends("cycle", "dhdt_variable", "dhdt_range", "rasterize", "datashade")
-    def view(self):
-        cond = np.logical_and(
-            float(self.dhdt_range[0]) < abs(self.df_.dhdt_slope),
-            abs(self.df_.dhdt_slope) < float(self.dhdt_range[1]),
-        )
-        column: str = (
-            self.dhdt_variable
-            if self.dhdt_variable != "h_corr"
-            else f"h_corr_{self.cycle}"
-        )
-        if self.dhdt_variable == "h_corr":
-            df_subset = self.df_.loc[cond].dropna(subset=f"h_corr_{self.cycle}")
-        else:
-            df_subset = self.df_.loc[cond]
-        self.plot = df_subset.hvplot.points(
-            title=f"ICESat-2 Cycle {self.cycle} {self.dhdt_variable}",
-            x="x",
-            y="y",
-            c=column,
-            cmap=self.variable_cmap[self.dhdt_variable],
-            rasterize=self.rasterize,
-            datashade=self.datashade,
-            dynspread=self.datashade,
-            hover=True,
-            hover_cols=[
-                "referencegroundtrack",
-                "dhdt_slope",
-                f"h_corr_{self.cycle}",
-                f"utc_time_{self.cycle}",
-            ],
-            colorbar=True,
-            grid=True,
-            frame_width=1000,
-            frame_height=600,
-            data_aspect=1,
-        )
-        self.plot = self.plot.redim.range(
-            x=(self.startX, self.endX), y=(self.startY, self.endY)
-        )
-        self.plot = self.plot.opts(active_tools=["pan", "wheel_zoom"])
-        rangexy = hv.streams.RangeXY(
-            source=self.plot,
-            x_range=(self.startX, self.endX),
-            y_range=(self.startY, self.endY),
-        )
-        rangexy.add_subscriber(self.keep_zoom)
-        return self.plot
-
+# df_dhdt = pd.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")
+df_dhdt: cudf.DataFrame = cudf.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")
 
 # %%
 # Interactive holoviews scatter plot to find referencegroundtrack needed
 # Tip: Hover over the points, and find those with high 'dhdt_slope' values
-viewer = IceSat2Explorer()
-widgets: pn.param.Param = pn.Param(
-    viewer.param,
-    widgets={
-        "dhdt_variable": pn.widgets.RadioButtonGroup,
-        "cycle": pn.widgets.IntSlider,
-        "dhdt_range": pn.widgets.RangeSlider,
-        "rasterize": pn.widgets.Checkbox,
-        "datashade": pn.widgets.Checkbox,
-    },
-)
-dashboard: pn.layout.Column = pn.Column(
-    pn.Row(
-        pn.Column(widgets[0], widgets[1], align="center"),
-        pn.Column(widgets[2], widgets[3], align="center"),
-        pn.Column(widgets[4], widgets[5], align="center"),
-    ),
-    viewer.view,
-)
+viewer = deepicedrain.IceSat2Explorer(name="ICESat-2 Explorer")
+dashboard: pn.layout.Column = pn.Column(viewer.widgets, viewer.view)
 # dashboard
 
 # %%
@@ -545,7 +444,16 @@ dashboard.show()
 rgts: list = [135, 327, 388, 577, 1080, 1272]  # Whillans upstream
 # rgts: list = [236, 501 , 562, 1181]  # whillans_downstream
 for rgt in rgts:
-    df_rgt: pd.DataFrame = df_many.query(expr="referencegroundtrack == @rgt")
+    df_rgt: pd.DataFrame = df_dhdt.query(expr="referencegroundtrack == @rgt")
+    df_rgt["id"] = df_rgt.index
+    df_rgt = pd.wide_to_long(
+        df=df_rgt.to_pandas(),
+        stubnames=["h_corr", "utc_time"],
+        i="id",
+        j="cycle_number",
+        sep="_",
+    )
+    df_rgt = df_rgt.dropna()
 
     # Save track data to CSV for crossover analysis later
     df_rgt[["x", "y", "h_corr", "utc_time"]].to_csv(
