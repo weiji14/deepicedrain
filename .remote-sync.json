@@ -1,0 +1,27 @@
+{
+  "uploadOnSave": true,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "kahutea.geo.vuw.ac.nz",
+  "target": "/Users/home/leongwei1/Documents/github/deepicedrain",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**",
+    ".jupyter/",
+    "data/",
+    "**/.ipynb_checkpoints",
+    "**/*.csv",
+    "**/*.dbf",
+    "**/*.grd",
+    "**/*.npy",
+    "**/*.shp",
+    "**/*.shx",
+    "**/*.tgz",
+    "**/*.tif",
+    "**/*.zip"
+  ],
+  "username": "leongwei1",
+  "watch": [],
+  "useAgent": true,
+  "transport": "scp"
+}

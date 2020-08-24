@@ -140,10 +140,10 @@ sources:
         dynspread: False
         hover: True
         hover_cols:
-            - referencegroundtrack
-            - dhdt_slope
-            - h_corr_{{cycle}}
-            - utc_time_{{cycle}}
+          - referencegroundtrack
+          - dhdt_slope
+          - h_corr_{{cycle}}
+          - utc_time_{{cycle}}
         colorbar: True
         grid: True
         frame_width: 1000
