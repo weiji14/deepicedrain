@@ -506,6 +506,30 @@ six = "*"
 
 [[package]]
 category = "main"
+description = "Python support for Parquet file format"
+name = "fastparquet"
+optional = false
+python-versions = ">=3.6,"
+version = "0.4.1"
+
+[package.dependencies]
+numba = ">=0.28"
+numpy = ">=1.11"
+packaging = "*"
+pandas = ">=0.19"
+six = "*"
+thrift = ">=0.11.0"
+
+[package.extras]
+brotli = ["brotli"]
+lz4 = ["lz4 (>=0.19.1)"]
+lzo = ["python-lzo"]
+snappy = ["python-snappy"]
+zstandard = ["zstandard"]
+zstd = ["zstd"]
+
+[[package]]
+category = "main"
 description = "Fast, re-entrant optimistic lock implemented in Cython"
 name = "fastrlock"
 optional = true
@@ -725,6 +749,21 @@ complete = ["bokeh (<2.0)", "dask", "hvplot", "msgpack-numpy", "panel (>=0.7.0)"
 dataframe = ["dask", "msgpack-numpy", "pyarrow"]
 plot = ["hvplot", "panel (>=0.7.0)", "bokeh (<2.0)"]
 server = ["tornado", "python-snappy"]
+
+[[package]]
+category = "main"
+description = "Intake parquet plugin"
+name = "intake-parquet"
+optional = false
+python-versions = "*"
+version = "0.2.3"
+
+[package.dependencies]
+dask = "*"
+fastparquet = "*"
+intake = "*"
+pandas = "*"
+pyarrow = "*"
 
 [[package]]
 category = "main"
@@ -1828,6 +1867,22 @@ python-versions = ">=3.5"
 version = "2.1.0"
 
 [[package]]
+category = "main"
+description = "Python bindings for the Apache Thrift RPC system"
+name = "thrift"
+optional = false
+python-versions = "*"
+version = "0.13.0"
+
+[package.dependencies]
+six = ">=1.7.2"
+
+[package.extras]
+all = ["tornado (>=4.0)", "twisted"]
+tornado = ["tornado (>=4.0)"]
+twisted = ["twisted"]
+
+[[package]]
 category = "dev"
 description = "Python Library for Tom's Obvious, Minimal Language"
 name = "toml"
@@ -2013,7 +2068,7 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "73db6f447e88e5c89b3ac6ade0a664ab2b03465b9684e3c0d0e15d890a45d65e"
+content-hash = "2b3f82ed5a8f252d769be1e554a8f9ef03ac2f416aec9e6eb9992878c9d2dbfa"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2265,6 +2320,10 @@ fasteners = [
     {file = "fasteners-0.15-py2.py3-none-any.whl", hash = "sha256:007e4d2b2d4a10093f67e932e5166722d2eab83b77724156e92ad013c6226574"},
     {file = "fasteners-0.15.tar.gz", hash = "sha256:3a176da6b70df9bb88498e1a18a9e4a8579ed5b9141207762368a1017bf8f5ef"},
 ]
+fastparquet = [
+    {file = "fastparquet-0.4.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:c231110272c28d681a3cadbbe81a20f74c0a382c4b983107b3e7b625e8fd7251"},
+    {file = "fastparquet-0.4.1.tar.gz", hash = "sha256:a6501352c875416471c875ace0ff702a7889e14eeda4c12eaaed8307fd485f6a"},
+]
 fastrlock = [
     {file = "fastrlock-0.5-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:d92b85a8f609eea194a54978ccd97a385c6e78fb1ee86ae9dc07f1f50b225d9b"},
     {file = "fastrlock-0.5-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:0111bd05a6f7c2a4005b4a847351454b66536d8320295c5505d41c360862b332"},
@@ -2374,6 +2433,9 @@ idna = [
 intake = [
     {file = "intake-0.6.0-py3-none-any.whl", hash = "sha256:32a6d77965f3b89a12894c29e8c7516391a0be4c42902af52f12747186920bcc"},
     {file = "intake-0.6.0.tar.gz", hash = "sha256:0c284abeb74927a7366dcab6cefc010c4d050365b8af61c37326a2473a490a4e"},
+]
+intake-parquet = [
+    {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
 ]
 intake-xarray = []
 ipykernel = [
@@ -3114,6 +3176,9 @@ testpath = [
 threadpoolctl = [
     {file = "threadpoolctl-2.1.0-py3-none-any.whl", hash = "sha256:38b74ca20ff3bb42caca8b00055111d74159ee95c4370882bbff2b93d24da725"},
     {file = "threadpoolctl-2.1.0.tar.gz", hash = "sha256:ddc57c96a38beb63db45d6c159b5ab07b6bced12c45a1f07b2b92f272aebfa6b"},
+]
+thrift = [
+    {file = "thrift-0.13.0.tar.gz", hash = "sha256:9af1c86bf73433afc6010ed376a6c6aca2b54099cc0d61895f640870a9ae7d89"},
 ]
 toml = [
     {file = "toml-0.10.1-py2.py3-none-any.whl", hash = "sha256:bda89d5935c2eac546d648028b9901107a595863cb36bae0c73ac804a9b4ce88"},
