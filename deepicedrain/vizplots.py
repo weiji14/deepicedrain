@@ -42,17 +42,19 @@ class IceSat2Explorer(param.Parameterized):
     catalog: intake.catalog.local.YAMLFileCatalog = intake.open_catalog(
         os.path.join(os.path.dirname(__file__), "atlas_catalog.yaml")
     )
-    source = catalog.icesat2dhdt(placename="whillans_upstream")
-    try:
-        import cudf
-        import hvplot.cudf
+    placename: str = "whillans_upstream"
+    source = catalog.icesat2dhdt(placename=placename)
+    if os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
+        try:
+            import cudf
+            import hvplot.cudf
 
-        df_ = cudf.read_parquet(source._urlpath)
-    except:
-        df_ = source.to_dask()
-    plot: hv.core.spaces.DynamicMap = source.plot.dhdt_slope()  # default plot
-    startX, endX = plot.range("x")
-    startY, endY = plot.range("y")
+            df_ = cudf.read_parquet(source._urlpath)
+        except ImportError:
+            df_ = source.to_dask()
+        plot: hv.core.spaces.DynamicMap = source.plot.dhdt_slope()  # default plot
+        startX, endX = plot.range("x")
+        startY, endY = plot.range("y")
 
     def keep_zoom(self, x_range, y_range):
         self.startX, self.endX = x_range
