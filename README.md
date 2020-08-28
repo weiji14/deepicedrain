@@ -57,7 +57,7 @@ To just try out the scripts, download the `environment.yml` file from the reposi
     conda env create --name deepicedrain --file environment.yml
     pip install git+https://github.com/weiji14/deepicedrain.git
 
-### Advanced
+### Intermediate
 
 To help out with development, start by cloning this [repo-url](/../../)
 
@@ -77,11 +77,6 @@ Then install the python libraries listed in the `pyproject.toml`/`poetry.lock` f
 
     poetry install
 
-If you have a [CUDA](https://en.wikipedia.org/wiki/CUDA)-capable GPU,
-you can also install the optional "cuda" packages to accelerate some calculations.
-
-    poetry install --extras cuda
-
 Finally, double-check that the libraries have been installed.
 
     poetry show
@@ -92,6 +87,30 @@ Finally, double-check that the libraries have been installed.
     jupyter labextension install dask-labextension
 
     jupyter labextension list  # ensure that extensions are installed
+
+
+### Advanced
+
+This is for those who want full reproducibility of the conda environment,
+and more computing power by using Graphical Processing Units (GPU).
+
+Making an explicit conda-lock file
+(only needed if creating a new conda environment/refreshing an existing one).
+
+    conda env create -f environment.yml
+    conda list --explicit > environment-linux-64.lock
+
+Creating/Installing a virtual environment from a conda lock file.
+See also https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#building-identical-conda-environments.
+
+    conda create --name deepicedrain --file environment-linux-64.lock
+    conda install --name deepicedrain --file environment-linux-64.lock
+
+If you have a [CUDA](https://en.wikipedia.org/wiki/CUDA)-capable GPU,
+you can also install the optional "cuda" packages to accelerate some calculations.
+
+    poetry install --extras cuda
+
 
 ## Running jupyter lab
 
