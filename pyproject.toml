@@ -9,7 +9,7 @@ license = "LGPL-3.0-or-later"
 cartopy = "^0.18.0"
 cupy-cuda102 = {version = "^7.7.0", optional = true}
 cython = "^0.29.21"
-dask = "^2.22.0"
+dask = "^2.25.0"
 dask-cuda = {version = "^0.14.1", optional = true}
 dask_labextension = "^3.0.0"
 datashader = "^0.11.1"
