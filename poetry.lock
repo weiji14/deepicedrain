@@ -457,7 +457,7 @@ description = "Distributed scheduler for Dask"
 name = "distributed"
 optional = false
 python-versions = ">=3.6"
-version = "2.22.0"
+version = "2.25.0"
 
 [package.dependencies]
 click = ">=6.6"
@@ -2013,7 +2013,8 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "73db6f447e88e5c89b3ac6ade0a664ab2b03465b9684e3c0d0e15d890a45d65e"
+content-hash = "7ed8e257a8e20f7c83da34b35d203ce898adc67b48e8c89f247f298c9f00897e"
+lock-version = "1.0"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2251,8 +2252,8 @@ defusedxml = [
     {file = "defusedxml-0.6.0.tar.gz", hash = "sha256:f684034d135af4c6cbb949b8a4d2ed61634515257a67299e5f940fbaa34377f5"},
 ]
 distributed = [
-    {file = "distributed-2.22.0-py3-none-any.whl", hash = "sha256:7ef2a90affb49879d779272ca39796d4fe53ef6fbbc99b5e6f51acc20a3bde9b"},
-    {file = "distributed-2.22.0.tar.gz", hash = "sha256:4ebd68f9c15bff19e8b2a2b16ef8fd6640f5fcc3fcf65c14fbe88501d2637530"},
+    {file = "distributed-2.25.0-py3-none-any.whl", hash = "sha256:e9855657b04fcb7b106f0f55487f34973f0cd50ab2cfc7259b397713d62ae19a"},
+    {file = "distributed-2.25.0.tar.gz", hash = "sha256:2b3a6c9d82dcbe4b8757be2fcb3fbca731a57592e801caf06407a2a76cae2217"},
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},

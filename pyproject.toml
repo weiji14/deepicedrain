@@ -13,7 +13,7 @@ dask = "^2.22.0"
 dask-cuda = {version = "^0.14.1", optional = true}
 dask_labextension = "^3.0.0"
 datashader = "^0.11.1"
-distributed = "^2.22.0"
+distributed = "^2.25.0"
 geopandas = "^0.8.1"
 geoviews = "^1.8.1"
 h5netcdf = "^0.8.1"
