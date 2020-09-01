@@ -15,6 +15,202 @@
 # ---
 
 # %% [markdown]
+# # **ICESat-2 Active Subglacial Lakes in Antarctica**
+#
+# Finding subglacial lakes that are draining or filling under the ice!
+# They can be detected with ICESat-2 data, as significant changes in height
+# (> 1 metre) over a relatively short duration (< 1 year), i.e. a high rate of
+# elevation change over time (dhdt).
+#
+# In this notebook, we'll use some neat tools to help us examine the lakes:
+# - To find active subglacial lake boundaries,
+# use an *unsupervised clustering* technique
+# - To see ice surface elevation trends at a higher temporal resolution,
+# perform *crossover track error analysis* on intersecting ICESat-2 tracks
+#
+# To speed up analysis on millions of points,
+# we will use state of the art GPU algorithms enabled by RAPIDS AI libraries,
+# or parallelize the processing across our HPC's many CPU cores using Dask.
+
+# %%
+import os
+
+import numpy as np
+
+import cudf
+import cuml
+import dask
+import dask.array
+import deepicedrain
+import geopandas as gpd
+import hvplot.cudf
+import panel as pn
+import pygmt
+import scipy.spatial
+import shapely.geometry
+import tqdm
+import zarr
+
+# %% [markdown]
+# # Data Preparation
+
+# %%
+if not os.path.exists("ATLXI/df_dhdt_antarctica.parquet"):
+    zarrarray = zarr.open_consolidated(store=f"ATLXI/ds_dhdt_antarctica.zarr", mode="r")
+    _ = deepicedrain.zarr_to_parquet(
+        zarrarray=zarrarray,
+        parquetpath="ATLXI/df_dhdt_antarctica.parquet",
+        variables=["x", "y", "dhdt_slope", "referencegroundtrack", "h_corr"],
+        dropnacols=["dhdt_slope"],
+    )
+
+# %% [markdown]
+# ## Load in ICESat-2 data (x, y, dhdt) and do initial trimming
+
+# %%
+# Read in raw x, y, dhdt_slope and referencegroundtrack data into the GPU
+cudf_raw: cudf.DataFrame = cudf.read_parquet(
+    filepath_or_buffer="ATLXI/df_dhdt_antarctica.parquet",
+    columns=["x", "y", "dhdt_slope", "referencegroundtrack"],
+)
+# Filter to points with dhdt that is less than -1 m/yr or more than +1 m/yr
+cudf_many = cudf_raw.loc[abs(cudf_raw.dhdt_slope) > 1]
+print(f"Trimmed {len(cudf_raw)} -> {len(cudf_many)}")
+
+# %% [markdown]
+# ## Label ICESat-2 points according to their drainage basin
+#
+# Uses Point in Polygon.
+# For each point, find out which Antarctic Drainage Basin they are in.
+# This will also remove the points on floating (FR) ice shelves and islands (IS),
+# so that we keep only points on the grounded (GR) ice regions.
+
+
+# %%
+# Read in Antarctic Drainage Basin Boundaries shapefile into a GeoDataFrame
+ice_boundaries: gpd.GeoDataFrame = gpd.read_file(
+    filename="Quantarctica3/Glaciology/MEaSUREs Antarctic Boundaries/IceBoundaries_Antarctica_v2.shp"
+)
+drainage_basins: gpd.GeoDataFrame = ice_boundaries.query(expr="TYPE == 'GR'")
+
+
+# %%
+# Use point in polygon to label points according to the drainage basins they fall in
+cudf_many["drainage_basin"]: cudf.Series = deepicedrain.point_in_polygon_gpu(
+    points_df=cudf_many, poly_df=drainage_basins
+)
+X_many = cudf_many.dropna()  # drop points that are not in a drainage basin
+
+# %% [markdown]
+# # Find Active Subglacial Lake clusters
+#
+# Uses Density-based spatial clustering of applications with noise (DBSCAN).
+
+# %%
+def find_clusters(X: cudf.core.dataframe.DataFrame) -> cudf.core.series.Series:
+    """
+    Density-based spatial clustering of applications with noise (DBSCAN)
+    See also https://www.naftaliharris.com/blog/visualizing-dbscan-clustering
+    """
+    # Run DBSCAN using 2500 m distance, and minimum of 250 points
+    dbscan = cuml.DBSCAN(eps=2500, min_samples=250)
+    dbscan.fit(X=X)
+
+    return dbscan.labels_
+
+
+# %%
+# Subglacial lake finder
+activelakes: dict = {
+    "basin_name": [],
+    "maxabsdhdt": [],
+    "refgtracks": [],
+    "geometry": [],
+}
+for basin_index in tqdm.tqdm(iterable=drainage_basins.index):
+    # Initial data cleaning, filter to rows that are in the drainage basin
+    basin = drainage_basins.loc[basin_index]
+    X = X_many.loc[X_many.drainage_basin == basin.NAME]  # .reset_index(drop=True)
+    if len(X) <= 1000:  # don't run on too few points
+        continue
+    print(f"{len(X)} rows at {basin.NAME}")
+
+    # Run unsupervised clustering separately on draining and filling lakes
+    for activity, X_ in (
+        ("draining", X.loc[X.dhdt_slope < -1]),
+        ("filling", X.loc[X.dhdt_slope > 1]),
+    ):
+        labels_ = find_clusters(X=X_[["x", "y", "dhdt_slope"]])
+        n_clusters_ = len(labels_.unique()) - 1  # No. of clusters minus noise (-1)
+        print(f"{n_clusters_} {activity} lakes found")
+
+        # Store attribute and geometry information of each active lake
+        for i in range(n_clusters_):
+            lake_points: cudf.DataFrame = X_.loc[labels_ == i]
+
+            try:
+                assert len(lake_points) > 2
+            except AssertionError:
+                continue
+
+            multipoint: shapely.geometry.MultiPoint = shapely.geometry.MultiPoint(
+                points=lake_points[["x", "y"]].as_matrix()
+            )
+            convexhull: shapely.geometry.Polygon = multipoint.convex_hull
+
+            maxabsdhdt: float = (
+                lake_points.dhdt_slope.max()
+                if activity == "filling"
+                else lake_points.dhdt_slope.min()
+            )
+            refgtracks: str = "|".join(
+                map(str, lake_points.referencegroundtrack.unique().to_pandas())
+            )
+
+            activelakes["basin_name"].append(basin.NAME)
+            activelakes["maxabsdhdt"].append(maxabsdhdt)
+            activelakes["refgtracks"].append(refgtracks)
+            activelakes["geometry"].append(convexhull)
+
+if len(activelakes["geometry"]) >= 1:
+    gdf = gpd.GeoDataFrame(activelakes, crs="EPSG:3031")
+    gdf.to_file(filename="antarctic_subglacial_lakes.geojson", driver="GeoJSON")
+
+print(f"Total of {len(gdf)} subglacial lakes founds")
+
+# %% [markdown]
+# ## Visualize lakes
+
+# %%
+# Plot clusters on a map in colour, noise points/outliers as small dots
+X_cpu = X_.to_pandas()
+
+fig = pygmt.Figure()
+labels_cpu = labels_.to_pandas().astype(np.int32)
+sizes = (labels_cpu < 0).map(arg={True: 0.02, False: 0.2})
+if n_clusters_:
+    pygmt.makecpt(cmap="categorical", series=(-0.5, n_clusters_ - 0.5, 1))
+else:
+    pygmt.makecpt(cmap="gray")
+fig.plot(
+    x=X_cpu.x,
+    y=X_cpu.y,
+    sizes=sizes,
+    style="cc",
+    color=labels_cpu,
+    cmap=True,
+    frame=[
+        f'WSne+t"Estimated number of clusters at {basin.NAME}: {n_clusters_}"',
+        'xaf+l"Polar Stereographic X (km)"',
+        'yaf+l"Polar Stereographic Y (km)"',
+    ],
+)
+fig.colorbar(frame='af+l"Cluster Number"')
+fig.savefig(fname=f"figures/subglacial_lakes_at_{basin.NAME}.png")
+fig.show()
+
+
+# %% [markdown]
 # # Crossover Track Analysis
 #
 # To increase the temporal resolution of
