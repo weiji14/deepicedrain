@@ -47,6 +47,7 @@ import cudf  # comment out if no GPU
 import dask
 import datashader
 import deepicedrain
+import deepicedrain.vizplots
 import holoviews as hv
 import hvplot.cudf  # comment out if no GPU
 import hvplot.pandas
@@ -431,7 +432,7 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet"
 # %%
 # Interactive holoviews scatter plot to find referencegroundtrack needed
 # Tip: Hover over the points, and find those with high 'dhdt_slope' values
-viewer = deepicedrain.IceSat2Explorer(name="ICESat-2 Explorer")
+viewer = deepicedrain.vizplots.IceSat2Explorer(name="ICESat-2 Explorer")
 dashboard: pn.layout.Column = pn.Column(viewer.widgets, viewer.view)
 # dashboard
 

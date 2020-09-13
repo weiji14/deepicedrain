@@ -116,7 +116,11 @@ def find_clusters(X: cudf.core.dataframe.DataFrame) -> cudf.core.series.Series:
     dbscan = cuml.DBSCAN(eps=2500, min_samples=250)
     dbscan.fit(X=X)
 
-    return dbscan.labels_
+    cluster_labels = dbscan.labels_ + 1  # noise points -1 becomes 0
+    cluster_labels = cluster_labels.mask(cond=cluster_labels == 0)  # turn 0 to NaN
+    cluster_labels.index = X.index  # let labels have same index as input data
+
+    return cluster_labels
 
 
 # %%
@@ -127,6 +131,9 @@ activelakes: dict = {
     "refgtracks": [],
     "geometry": [],
 }
+# for basin_index in tqdm.tqdm(
+#     iterable=drainage_basins[drainage_basins.NAME.str.startswith("Whillans")].index
+# ):
 for basin_index in tqdm.tqdm(iterable=drainage_basins.index):
     # Initial data cleaning, filter to rows that are in the drainage basin
     basin = drainage_basins.loc[basin_index]
@@ -136,41 +143,47 @@ for basin_index in tqdm.tqdm(iterable=drainage_basins.index):
     print(f"{len(X)} rows at {basin.NAME}")
 
     # Run unsupervised clustering separately on draining and filling lakes
-    for activity, X_ in (
-        ("draining", X.loc[X.dhdt_slope < -1]),
-        ("filling", X.loc[X.dhdt_slope > 1]),
-    ):
-        labels_ = find_clusters(X=X_[["x", "y", "dhdt_slope"]])
-        n_clusters_ = len(labels_.unique()) - 1  # No. of clusters minus noise (-1)
-        print(f"{n_clusters_} {activity} lakes found")
+    # Draining lake points have negative labels (e.g. -1, -2, 3),
+    # Filling lake points have positive labels (e.g. 1, 2, 3),
+    # Noise points have NaN labels (i.e. NaN)
+    cluster_vars = ["x", "y", "dhdt_slope"]
+    draining_lake_labels = -find_clusters(X=X.loc[X.dhdt_slope < 0][cluster_vars])
+    filling_lake_labels = find_clusters(X=X.loc[X.dhdt_slope > 0][cluster_vars])
+    lake_labels = cudf.concat(objs=[draining_lake_labels, filling_lake_labels])
+    lake_labels.name = "cluster_label"
 
+    clusters: cudf.Series = lake_labels.unique()
+    print(
+        f"{(clusters < 0).sum()} draining and {(clusters > 0).sum()} filling lakes found"
+    )
+
+    for cluster_label in clusters.to_array():
         # Store attribute and geometry information of each active lake
-        for i in range(n_clusters_):
-            lake_points: cudf.DataFrame = X_.loc[labels_ == i]
+        lake_points: cudf.DataFrame = X.loc[lake_labels == cluster_label]
 
-            try:
-                assert len(lake_points) > 2
-            except AssertionError:
-                continue
+        try:
+            assert len(lake_points) > 2
+        except AssertionError:
+            continue
 
-            multipoint: shapely.geometry.MultiPoint = shapely.geometry.MultiPoint(
-                points=lake_points[["x", "y"]].as_matrix()
-            )
-            convexhull: shapely.geometry.Polygon = multipoint.convex_hull
+        multipoint: shapely.geometry.MultiPoint = shapely.geometry.MultiPoint(
+            points=lake_points[["x", "y"]].as_matrix()
+        )
+        convexhull: shapely.geometry.Polygon = multipoint.convex_hull
 
-            maxabsdhdt: float = (
-                lake_points.dhdt_slope.max()
-                if activity == "filling"
-                else lake_points.dhdt_slope.min()
-            )
-            refgtracks: str = "|".join(
-                map(str, lake_points.referencegroundtrack.unique().to_pandas())
-            )
+        maxabsdhdt: float = (
+            lake_points.dhdt_slope.max()
+            if cluster_label > 0  # positive label = filling
+            else lake_points.dhdt_slope.min()  # negative label = draining
+        )
+        refgtracks: str = "|".join(
+            map(str, lake_points.referencegroundtrack.unique().to_pandas())
+        )
 
-            activelakes["basin_name"].append(basin.NAME)
-            activelakes["maxabsdhdt"].append(maxabsdhdt)
-            activelakes["refgtracks"].append(refgtracks)
-            activelakes["geometry"].append(convexhull)
+        activelakes["basin_name"].append(basin.NAME)
+        activelakes["maxabsdhdt"].append(maxabsdhdt)
+        activelakes["refgtracks"].append(refgtracks)
+        activelakes["geometry"].append(convexhull)
 
 if len(activelakes["geometry"]) >= 1:
     gdf = gpd.GeoDataFrame(activelakes, crs="EPSG:3031")
@@ -182,31 +195,37 @@ print(f"Total of {len(gdf)} subglacial lakes founds")
 # ## Visualize lakes
 
 # %%
-# Plot clusters on a map in colour, noise points/outliers as small dots
-X_cpu = X_.to_pandas()
+# Concatenate XY points with labels, and move data from GPU to CPU
+X: cudf.DataFrame = cudf.concat(objs=[X, lake_labels], axis="columns")
+X_ = X.to_pandas()
 
+
+# %%
+# Plot clusters on a map in colour, noise points/outliers as small dots
 fig = pygmt.Figure()
-labels_cpu = labels_.to_pandas().astype(np.int32)
-sizes = (labels_cpu < 0).map(arg={True: 0.02, False: 0.2})
+n_clusters_ = len(X_.cluster_label.unique()) - 1  # No. of clusters minus noise (NaN)
+sizes = (X_.cluster_label.isna()).map(arg={True: 0.01, False: 0.1})
 if n_clusters_:
-    pygmt.makecpt(cmap="categorical", series=(-0.5, n_clusters_ - 0.5, 1))
+    pygmt.makecpt(cmap="polar+h0", series=(-1.5, 1.5, 1), reverse=True, D=True)
 else:
     pygmt.makecpt(cmap="gray")
 fig.plot(
-    x=X_cpu.x,
-    y=X_cpu.y,
+    x=X_.x,
+    y=X_.y,
     sizes=sizes,
     style="cc",
-    color=labels_cpu,
+    color=X_.cluster_label,
     cmap=True,
     frame=[
-        f'WSne+t"Estimated number of clusters at {basin.NAME}: {n_clusters_}"',
-        'xaf+l"Polar Stereographic X (km)"',
-        'yaf+l"Polar Stereographic Y (km)"',
+        f'WSne+t"Estimated number of lake clusters at {basin.NAME}: {n_clusters_}"',
+        'xaf+l"Polar Stereographic X (m)"',
+        'yaf+l"Polar Stereographic Y (m)"',
     ],
 )
-fig.colorbar(frame='af+l"Cluster Number"')
-fig.savefig(fname=f"figures/subglacial_lakes_at_{basin.NAME}.png")
+basinx, basiny = basin.geometry.exterior.coords.xy
+fig.plot(x=basinx, y=basiny, pen="thinnest,-")
+fig.colorbar(frame='af+l"Draining/Filling"', position='JBC+n"Unclassified"')
+fig.savefig(fname=f"figures/subglacial_lake_clusters_at_{basin.NAME}.png")
 fig.show()
 
 
