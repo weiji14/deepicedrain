@@ -181,7 +181,7 @@ essential_columns: list = [
 # Do the actual computation to find data points within region of interest
 placename: str = "kamb"  # Select Kamb Ice Stream region
 region: deepicedrain.Region = regions[placename]
-ds_subset: xr.Dataset = region.subset(ds=ds)
+ds_subset: xr.Dataset = region.subset(data=ds)
 ds_subset = ds_subset.unify_chunks()
 ds_subset = ds_subset.compute()
 

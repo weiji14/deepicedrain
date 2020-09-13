@@ -3,12 +3,12 @@ Tests various conversions between geospatial and temporal units
 """
 import datetime
 
-import dask
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import xarray as xr
 
+import dask
 from deepicedrain import catalog, deltatime_to_utctime, lonlat_to_xy
 
 
