@@ -1563,7 +1563,7 @@ description = "A Python interface for the Generic Mapping Tools"
 name = "pygmt"
 optional = false
 python-versions = "*"
-version = "0.1.2+36.g4939ee2"
+version = "0.2.0"
 
 [package.dependencies]
 netCDF4 = "*"
@@ -1571,11 +1571,6 @@ numpy = "*"
 packaging = "*"
 pandas = "*"
 xarray = "*"
-
-[package.source]
-reference = "4939ee2a7ce1f80e6fcce63d48bc049aea72ca2e"
-type = "git"
-url = "https://github.com/GenericMappingTools/pygmt.git"
 
 [[package]]
 category = "main"
@@ -2068,7 +2063,7 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "8a8e5c22ecf91e4d820c4228382295227fafcbf2ee6a20504d7667047b1cea4c"
+content-hash = "3e6edd2483263d09ddcbc61eae3b86c798abad1dbdab2b106cde51fbae268845"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2957,7 +2952,10 @@ pygments = [
     {file = "Pygments-2.6.1-py3-none-any.whl", hash = "sha256:ff7a40b4860b727ab48fad6360eb351cc1b33cbf9b15a0f689ca5353e9463324"},
     {file = "Pygments-2.6.1.tar.gz", hash = "sha256:647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44"},
 ]
-pygmt = []
+pygmt = [
+    {file = "pygmt-0.2.0-py3-none-any.whl", hash = "sha256:692680a6b56f9011680fde73dfe31a95bd4b15db1020b01abcc8723746fe0f18"},
+    {file = "pygmt-0.2.0.tar.gz", hash = "sha256:9fddefd8a101e5f22f49d6ed0c0aee6079791e62d2c9f24d7d2e370ec1b80924"},
+]
 pynvml = [
     {file = "pynvml-8.0.4-py3-none-any.whl", hash = "sha256:00c1a54fd3462a0774ec08add0d9fbb5f051214a85f782ca7d55b85eb8d54e53"},
     {file = "pynvml-8.0.4.tar.gz", hash = "sha256:c8d4eadc648c7e12a3c9182a9750afd8481b76412f83747bcc01e2aa829cde5d"},

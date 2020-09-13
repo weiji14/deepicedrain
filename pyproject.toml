@@ -27,7 +27,7 @@ numcodecs = "^0.7.1"
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"}
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
-pygmt = {git = "https://github.com/GenericMappingTools/pygmt.git", rev = "v0.1.2-36-g4939ee2a"}
+pygmt = "^0.2.0"
 python = "^3.8"
 pyproj = "^2.6.0"
 scikit-learn = "^0.23.2"
