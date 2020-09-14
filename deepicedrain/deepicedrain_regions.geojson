@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3031" } },
+"features": [
+{ "type": "Feature", "properties": { "placename": "kamb", "fullname": "Kamb Ice Stream" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -365489.6822096751, -739741.7702261859 ], [ -365489.6822096751, -699564.516934089 ], [ -411054.19240523444, -699564.516934089 ], [ -411054.19240523444, -739741.7702261859 ], [ -365489.6822096751, -739741.7702261859 ] ] ] } },
+{ "type": "Feature", "properties": { "placename": "antarctica", "fullname": "Antarctica" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 2800000.0, -2200000.0 ], [ 2800000.0, 2300000.0 ], [ -2700000.0, 2300000.0 ], [ -2700000.0, -2200000.0 ], [ 2800000.0, -2200000.0 ] ] ] } },
+{ "type": "Feature", "properties": { "placename": "siple_coast", "fullname": "Siple Coast" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 250000.0, -1000000.0 ], [ 250000.0, -100000.0 ], [ -1000000.0, -100000.0 ], [ -1000000.0, -1000000.0 ], [ 250000.0, -1000000.0 ] ] ] } },
+{ "type": "Feature", "properties": { "placename": "whillans_downstream", "fullname": "Whillans Ice Stream (Downstream)" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 0.0, -800000.0 ], [ 0.0, -400000.0 ], [ -400000.0, -400000.0 ], [ -400000.0, -800000.0 ], [ 0.0, -800000.0 ] ] ] } },
+{ "type": "Feature", "properties": { "placename": "whillans_upstream", "fullname": "Whillans Ice Stream (Upstream)" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -400000.0, -800000.0 ], [ -400000.0, -400000.0 ], [ -800000.0, -400000.0 ], [ -800000.0, -800000.0 ], [ -400000.0, -800000.0 ] ] ] } }
+]
+}

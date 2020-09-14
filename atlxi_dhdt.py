@@ -39,24 +39,25 @@ import itertools
 import os
 import warnings
 
-import numpy as np
-import pandas as pd
-import xarray as xr
-
 import cudf  # comment out if no GPU
 import dask
 import datashader
-import deepicedrain
-import deepicedrain.vizplots
+import geopandas as gpd
 import holoviews as hv
 import hvplot.cudf  # comment out if no GPU
 import hvplot.pandas
 import intake
+import numpy as np
+import pandas as pd
 import panel as pn
 import param
 import pygmt
 import scipy.stats
 import tqdm
+import xarray as xr
+
+import deepicedrain
+import deepicedrain.vizplots
 
 # %%
 client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
@@ -118,33 +119,14 @@ ds["h_corr"]: xr.DataArray = ds.h_corr.where(cond=ds.fit_quality == 0)
 # - Ensure there are at least 2 height values to calculate trend over time
 
 # %%
-# Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
-regions: dict = {
-    "kamb": deepicedrain.Region(
-        name="Kamb Ice Stream",
-        xmin=-411054.19240523444,
-        xmax=-365489.6822096751,
-        ymin=-739741.7702261859,
-        ymax=-699564.516934089,
-    ),
-    "antarctica": deepicedrain.Region(
-        "Antarctica", -2700000, 2800000, -2200000, 2300000
-    ),
-    "siple_coast": deepicedrain.Region(
-        "Siple Coast", -1000000, 250000, -1000000, -100000
-    ),
-    "whillans_downstream": deepicedrain.Region(
-        "Whillans Ice Stream (Downstream)", -400000, 0, -800000, -400000
-    ),
-    "whillans_upstream": deepicedrain.Region(
-        "Whillans Ice Stream (Upstream)", -800000, -400000, -800000, -400000
-    ),
-}
+# Antarctic bounding box locations with EPSG:3031 coordinates
+regions = gpd.read_file(filename="deepicedrain/deepicedrain_regions.geojson")
+regions: gpd.GeoDataFrame = regions.set_index(keys="placename")
 
 # %%
 # Subset dataset to geographic region of interest
 placename: str = "antarctica"
-region: deepicedrain.Region = regions[placename]
+region: deepicedrain.Region = deepicedrain.Region.from_gdf(gdf=regions.loc[placename])
 # ds = region.subset(data=ds)
 
 # %%
@@ -400,7 +382,7 @@ fig.show(width=600)
 # %%
 # Save or load dhdt data from Parquet file
 placename: str = "whillans_upstream"  # "whillans_downstream"
-region: deepicedrain.Region = regions[placename]
+region: deepicedrain.Region = deepicedrain.Region.from_gdf(gdf=regions.loc[placename])
 if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
     # Subset dataset to geographic region of interest
     ds_subset: xr.Dataset = region.subset(data=ds_dhdt)

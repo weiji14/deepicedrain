@@ -228,6 +228,45 @@ fig.colorbar(frame='af+l"Draining/Filling"', position='JBC+n"Unclassified"')
 fig.savefig(fname=f"figures/subglacial_lake_clusters_at_{basin.NAME}.png")
 fig.show()
 
+# %% [markdown]
+# # Select a lake to examine
+
+# %%
+# Save or load dhdt data from Parquet file
+placename: str = "Recovery"  # "Whillans"
+drainage_basins: gpd.GeoDataFrame = drainage_basins.set_index(keys="NAME")
+region: deepicedrain.Region = deepicedrain.Region.from_gdf(
+    gdf=drainage_basins.loc[placename], name="Recovery Basin"
+)
+df_dhdt: cudf.DataFrame = cudf.read_parquet(
+    f"ATLXI/df_dhdt_{placename.lower()}.parquet"
+)
+
+# %%
+# Antarctic subglacial lake polygons with EPSG:3031 coordinates
+antarctic_lakes: gpd.GeoDataFrame = gpd.read_file(
+    filename="antarctic_subglacial_lakes.geojson"
+)
+
+# %%
+# Choose one draining/filling lake
+draining: bool = True  # False
+placename: str = "Slessor"  # "Whillans"
+lakes: gpd.GeoDataFrame = antarctic_lakes.query(expr="basin_name == @placename")
+lake = lakes.loc[lakes.maxabsdhdt.idxmin() if draining else lakes.maxabsdhdt.idxmax()]
+lakedict = {
+    76: "Subglacial Lake Conway",  # draining lake
+    78: "Whillans IX",  # filling lake
+    103: "Slessor 45",  # draining lake
+    108: "Slessor 23",  # filling lake
+}
+region = deepicedrain.Region.from_gdf(gdf=lake, name=lakedict[lake.name])
+
+# %%
+# Subset data to lake of interest
+placename: str = region.name.lower().replace(" ", "_")
+df_lake: cudf.DataFrame = region.subset(data=df_dhdt)
+
 
 # %% [markdown]
 # # Crossover Track Analysis

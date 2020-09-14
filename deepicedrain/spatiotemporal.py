@@ -30,6 +30,60 @@ class Region:
     ymin: float  # bottom coordinate
     ymax: float  # top coordinate
 
+    @classmethod
+    def from_gdf(
+        cls,
+        gdf: gpd.GeoDataFrame,
+        name_col: str = None,
+        spacing: float = 1000.0,
+        **kwargs,
+    ):
+        """
+        Create a deepicedrain.Region instance from a geopandas GeoDataFrame
+        (single row only). The bounding box will be automatically calculated
+        from the geometry, rounded up and down as necessary if `spacing` is set.
+
+        Parameters
+        ----------
+        gdf : geopandas.GeoDataFrame
+            A single row geodataframe with a Polygon or Polyline type geometry.
+
+        name_col : str
+            Name of the column in the geodataframe to use for setting the name
+            of the Region. If  unset, the name of the region will be
+            automatically based on the first column of the geodataframe.
+            Alternatively, pass in `name="Some Name"` to directly set the name.
+
+        spacing : float
+            Number to round coordinates up and down such that the bounding box
+            are in nice intervals (requires PyGMT). Set to None to use exact
+            bounds of input shape instead (uses Shapely only). Default is 1000m
+            for rounding bounding box coordinates to nearest kilometre.
+
+        Returns
+        -------
+        region : deepicedrain.Region
+
+        """
+        if "name" not in kwargs:
+            try:
+                kwargs["name"] = gdf[name_col]
+            except KeyError:
+                kwargs["name"] = gdf.iloc[0]
+
+        try:
+            import pygmt
+
+            xmin, xmax, ymin, ymax = pygmt.info(
+                table=np.vstack(gdf.geometry.exterior.coords.xy).T,
+                spacing=float(spacing),
+            )
+        except (ImportError, TypeError):
+            xmin, ymin, xmax, ymax = gdf.geometry.bounds
+        kwargs.update({"xmin": xmin, "xmax": xmax, "ymin": ymin, "ymax": ymax})
+
+        return cls(**kwargs)
+
     @property
     def scale(self) -> int:
         """

@@ -1,13 +1,14 @@
 """
 Tests behaviour of the Region class's bounding box based functionality
 """
+import dask.dataframe
+import geopandas as gpd
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pytest
 import xarray as xr
 
-import dask.dataframe
 from deepicedrain import Region, catalog, lonlat_to_xy
 
 
@@ -63,6 +64,20 @@ def test_region_datashade():
     npt.assert_allclose(agg_grid.min(), 1426.336637)
     npt.assert_allclose(agg_grid.mean(), 1668.94741)
     npt.assert_allclose(agg_grid.max(), 1798.066285)
+
+
+def test_region_from_geodataframe():
+    """
+    Test that we can create a deepicedrain.Region object from a single
+    geodataframe row.
+    """
+    geodataframe: gpd.GeoDataFrame = gpd.read_file(
+        filename="deepicedrain/deepicedrain_regions.geojson"
+    ).iloc[0]
+    region = Region.from_gdf(gdf=geodataframe, name_col="fullname", spacing=1000)
+
+    assert region.name == "Kamb Ice Stream"
+    assert region.bounds() == (-412000.0, -365000.0, -740000.0, -699000.0)
 
 
 def test_region_subset_xarray_dataset():
