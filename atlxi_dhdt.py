@@ -454,40 +454,9 @@ df.hvplot.scatter(
 df = df.query(expr="abs(dhdt_slope) > 0.2 & h_corr < 300")
 
 # %%
-# Plot 2D along track view of
-# Ice Surface Height Changes over Time
-fig = pygmt.Figure()
-# Setup map frame, title, axis annotations, etc
-fig.basemap(
-    projection="X30c/10c",
-    region=[df.x_atc.min(), df.x_atc.max(), df.h_corr.min(), df.h_corr.max()],
-    frame=[
-        rf'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {region.name}"',
-        'xaf+l"Along track x (m)"',
-        'yaf+l"Height (m)"',
-    ],
-)
-fig.text(
-    text=f"Reference Ground Track {rgt:04d}", position="TC", offset="jTC0c/0.2c", V="q"
-)
-# Colors from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=7
-cycle_colors = {3: "#ff7f00", 4: "#984ea3", 5: "#4daf4a", 6: "#377eb8", 7: "#e41a1c"}
-for cycle, color in cycle_colors.items():
-    df_ = df.query(expr="cycle_number == @cycle").copy()
-    if len(df_) > 0:
-        # Get x, y, time
-        data = np.column_stack(tup=(df_.x_atc, df_.h_corr))
-        time_nsec = df_.utc_time.mean()
-        time_sec = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
-        label = f'"Cycle {cycle} at {time_sec}"'
-
-        # Plot data points
-        fig.plot(data=data, style="c0.05c", color=color, label=label)
-        # Plot line connecting points
-        # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
-
-fig.legend(S=3, position="JMR+JMR+o0.2c", box="+gwhite+p1p")
-fig.savefig(f"figures/alongtrack_atl11_dh_{placename}_{rgt}.png")
+# Plot 2D along track view of Ice Surface Height Changes over Time
+fig = deepicedrain.plot_alongtrack(df=df, rgtpair=f"{rgt:04d}", regionname=region.name)
+fig.savefig(fname=f"figures/alongtrack_{placename}_{rgt}.png")
 fig.show()
 
 # %%

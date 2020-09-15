@@ -1,8 +1,9 @@
 import importlib.resources
 import logging
 
-import deepicedrain
 import intake
+
+import deepicedrain
 from deepicedrain.deltamath import calculate_delta, nan_linregress, nanptp
 from deepicedrain.extraload import array_to_dataframe, ndarray_to_parquet, wide_to_long
 from deepicedrain.spatiotemporal import (
@@ -11,7 +12,7 @@ from deepicedrain.spatiotemporal import (
     lonlat_to_xy,
     point_in_polygon_gpu,
 )
-from deepicedrain.vizplots import IceSat2Explorer
+from deepicedrain.vizplots import IceSat2Explorer, plot_alongtrack
 
 __version__: str = "0.2.1"
 

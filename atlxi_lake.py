@@ -32,24 +32,27 @@
 # we will use state of the art GPU algorithms enabled by RAPIDS AI libraries,
 # or parallelize the processing across our HPC's many CPU cores using Dask.
 
+
 # %%
 import os
 
-import numpy as np
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 import cudf
 import cuml
 import dask
 import dask.array
-import deepicedrain
 import geopandas as gpd
-import hvplot.cudf
+import numpy as np
+import pandas as pd
 import panel as pn
 import pygmt
 import scipy.spatial
 import shapely.geometry
 import tqdm
 import zarr
+
+import deepicedrain
 
 # %% [markdown]
 # # Data Preparation
@@ -242,6 +245,7 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(
     f"ATLXI/df_dhdt_{placename.lower()}.parquet"
 )
 
+
 # %%
 # Antarctic subglacial lake polygons with EPSG:3031 coordinates
 antarctic_lakes: gpd.GeoDataFrame = gpd.read_file(
@@ -267,6 +271,37 @@ region = deepicedrain.Region.from_gdf(gdf=lake, name=lakedict[lake.name])
 placename: str = region.name.lower().replace(" ", "_")
 df_lake: cudf.DataFrame = region.subset(data=df_dhdt)
 
+
+# %%
+# Select a few Reference Ground tracks to look at
+rgts: list = [int(rgt) for rgt in lake.refgtracks.split("|")]
+print(f"Looking at Reference Ground Tracks: {rgts}")
+os.makedirs(name=f"figures/{placename}", exist_ok=True)
+
+track_dict: dict = {}
+rgt_groups = df_lake.groupby(by="referencegroundtrack")
+for rgt, df_rgt_wide in tqdm.tqdm(rgt_groups, total=len(rgt_groups.groups.keys())):
+    df_rgt: pd.DataFrame = deepicedrain.wide_to_long(
+        df=df_rgt_wide.to_pandas(), stubnames=["h_corr", "utc_time"], j="cycle_number"
+    )
+
+    # Split one referencegroundtrack into 3 laser pair tracks pt1, pt2, pt3
+    df_rgt["pairtrack"]: pd.Series = pd.cut(
+        x=df_rgt.y_atc, bins=[-np.inf, -100, 100, np.inf], labels=("pt1", "pt2", "pt3")
+    )
+    pt_groups = df_rgt.groupby(by="pairtrack")
+    for pairtrack, df_ in pt_groups:
+        if len(df_) > 0:
+            rgtpair = f"{rgt:04d}_{pairtrack}"
+            track_dict[rgtpair] = df_
+
+            # Transect plot along a reference ground track
+            fig = deepicedrain.plot_alongtrack(
+                df=df_, rgtpair=rgtpair, regionname=region.name, oldtonew=draining
+            )
+            fig.savefig(
+                fname=f"figures/{placename}/alongtrack_{placename}_{rgtpair}.png"
+            )
 
 # %% [markdown]
 # # Crossover Track Analysis
@@ -348,7 +383,7 @@ print(
 # Calculate crossover error
 df["h_X"]: pd.Series = df.h_2 - df.h_1  # crossover error (i.e. height difference)
 df["t_D"]: pd.Series = df.t_2 - df.t_1  # elapsed time in ns (i.e. time difference)
-ns_in_yr: int = (365.25 * 24 * 60 * 60 * 1_000_000_000)  # nanoseconds in a year
+ns_in_yr: int = 365.25 * 24 * 60 * 60 * 1_000_000_000  # nanoseconds in a year
 df["dhdt"]: pd.Series = df.h_X / (df.t_D.astype(np.int64) / ns_in_yr)
 
 # %%
@@ -406,7 +441,6 @@ fig.show()
 # %%
 # Tidy up dataframe first using pd.wide_to_long
 # I.e. convert 't_1', 't_2', 'h_1', 'h_2' columns into just 't' and 'h'.
-df["id"] = df.index
 df_th: pd.DataFrame = deepicedrain.wide_to_long(
     df=df[["track1_track2", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
     stubnames=["t", "h"],

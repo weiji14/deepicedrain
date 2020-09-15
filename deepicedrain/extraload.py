@@ -135,7 +135,7 @@ def wide_to_long(
     index (the 'j' variable), while dropping NaN values too!
 
     Documentation for input arguments are the same as pd.wide_to_long. This
-    convenience functions just uses different default arguments for 'i' and
+    convenience function just uses different default arguments for 'i' and
     'sep'.
     """
     df[i] = df.index

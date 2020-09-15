@@ -6,12 +6,13 @@ and produce publication quality figures using PyGMT!
 import os
 import warnings
 
-import numpy as np
-
 import holoviews as hv
 import intake
+import numpy as np
+import pandas as pd
 import panel as pn
 import param
+import pygmt
 
 warnings.filterwarnings(
     action="ignore",
@@ -132,3 +133,106 @@ class IceSat2Explorer(param.Parameterized):
             pn.Column(_widgets[2], _widgets[3], align="center"),
             pn.Column(_widgets[4], _widgets[5], align="center"),
         )
+
+
+def plot_alongtrack(
+    df: pd.DataFrame,
+    rgtpair: str,
+    regionname: str,
+    x_var: str = "x_atc",
+    y_var: str = "h_corr",
+    time_var: str = "utc_time",
+    cycle_var: str = "cycle_number",
+    spacing: str = "1000/5",
+    oldtonew: bool = True,
+) -> pygmt.Figure:
+    """
+    Plot 2D along track view of Ice Surface Height Changes over Time.
+    Uses PyGMT to produce the figure.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        A table containing the ICESat-2 track data from multiple cycles. It
+        should ideally have columns called 'x_atc', 'h_corr', 'utc_time' and
+        'cycle_number'.
+    x_var : str
+        The x-dimension column name to use from the table data, plotted
+        on the horizontal x-axis. Default is 'x_atc'.
+    y_var : str
+        The y-dimension column name to use from the table data, plotted
+        on the vertical x-axis. Default is 'h_corr'.
+    time_var : str
+        The time-dimension column name to use from the table data, used to
+        calculate the mean datetime for each track in every cycle. Default is
+        'utc_time'.
+    cycle_var : str
+        The column name from the table which is used to determine which time
+        cycle each row/observation falls into. Default is 'cycle_number'.
+    spacing : str
+        Provide as 'dx/dy' increments, this is passed directly to `pygmt.info`
+        and used to round up and down the x and y axis limits for a nicer plot
+        frame. Default is '1000/5'.
+    oldtonew : bool
+        Determine the plot order (True: Cycle 1 -> Cycle n; False: Cycle n ->
+        Cycle 1), useful when you want the legend to go one way or the other.
+        For example, the default `oldtonew=True` is recommended when plotting
+        decreasing elevation over time (i.e. lake draining). Set to False
+        instead to reverse the order, recommended when plotting increasing
+        elevation over time (i.e. lake filling).
+
+    Returns
+    -------
+    fig : pygmt.Figure
+        A pygmt Figure instance containing the along track plot which can be
+        viewed using fig.show() or saved to a file using fig.savefig()
+    """
+    fig = pygmt.Figure()
+    # Setup map frame, title, axis annotations, etc
+    fig.basemap(
+        projection="X30c/10c",
+        region=pygmt.info(table=df[[x_var, y_var]], spacing=spacing),
+        frame=[
+            rf'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {regionname}"',
+            'xaf+l"Along track x (m)"',
+            'yaf+l"Height (m)"',
+        ],
+    )
+    fig.text(
+        text=f"Reference Ground Track {rgtpair}",
+        position="TC",
+        offset="jTC0c/0.2c",
+        V="q",
+    )
+    # Colors from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9
+    cycle_colors: dict = {
+        1: "#999999",
+        2: "#f781bf",
+        3: "#a65628",
+        4: "#ffff33",
+        5: "#ff7f00",
+        6: "#984ea3",
+        7: "#4daf4a",
+        8: "#377eb8",
+        9: "#e41a1c",
+    }
+    # Choose only cycles that need to be plotted, reverse order if requested
+    cycles: list = sorted(df[cycle_var].unique(), reverse=not oldtonew)
+    cycle_colors: dict = {cycle: cycle_colors[cycle] for cycle in cycles}
+
+    # For each cycle, plot the height values (y_var) along the track (x_var)
+    for cycle, color in cycle_colors.items():
+        df_ = df.query(expr=f"{cycle_var} == @cycle").copy()
+        # Get x, y, time
+        data = np.column_stack(tup=(df_[x_var], df_[y_var]))
+        time_nsec = df_[time_var].mean()
+        time_sec = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
+        label = f'"Cycle {cycle} at {time_sec}"'
+
+        # Plot data points
+        fig.plot(data=data, style="c0.05c", color=color, label=label)
+        # Plot line connecting points
+        # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
+
+    fig.legend(S=3, position="JMR+JMR+o0.2c", box="+gwhite+p1p")
+    return fig

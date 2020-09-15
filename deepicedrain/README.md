@@ -5,6 +5,7 @@ Contents:
 - :artificial_satellite: atlas_catalog.yaml - [intake](https://intake.readthedocs.io) data catalog for accessing ICESat-2 ATLAS datasets
   - icesat2atlasdownloader - Download Antarctic ICESat-2 ATLAS products from [NSIDC](https://nsidc.org/data/ICESat-2)
   - icesat2atl06 - Reads in ICESat-2 ATL06 data into an xarray.Dataset
+  - icesat2dhdt - Preprocessed ICESat-2 height change over time (dhdt) data in a columnar format
   - test_data - Sample ICESat-2 datasets for testing purposes
 
 - :1234: deltamath.py - Mathematical functions for calculating delta changes of some physical unit
@@ -20,6 +21,8 @@ Contents:
 - :card_file_box: extraload.py - Convenience functions for extracting, transforming and loading data
   - array_to_dataframe - Turns a 1D/2D numpy/dask array into a tidy pandas/dask dataframe table
   - ndarray_to_parquet - Turns an n-dimensional xarray/zarr array into an a parquet columnar format
+  - wide_to_long - Turns a pandas dataframe table with many columns into one with many rows
 
 - :world_map: vizplots.py - Makes interactive dashboard plots and publication quality figures
   - IceSat2Explorer - Dashboard for interacting with ICESat-2 point clouds on a 2D map
+  - plot_alongtrack - Makes a 2D along track figure of height measurements taken at different cycle times
