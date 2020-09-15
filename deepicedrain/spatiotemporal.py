@@ -238,9 +238,10 @@ def point_in_polygon_gpu(
     import cuspatial
 
     poly_df_: gpd.GeoDataFrame = poly_df.reset_index()
-    if poly_label_col is None:
-        # Simply use first column of geodataframe as label if not provided
-        poly_label_col: str = poly_df.columns[0]
+
+    # Simply use first column of geodataframe as label if not provided (None)
+    # See https://stackoverflow.com/a/22736342/6611055
+    poly_label_col: str = poly_label_col or poly_df.columns[0]
     point_labels: cudf.Series = cudf.Series(index=points_df.index).astype(
         poly_df[poly_label_col].dtype
     )
