@@ -2,9 +2,10 @@
 Extract, Tranform and Load (ETL) functions for handling ICESat-2 point clouds.
 Copies data seamlessly between different array structures and file formats!
 """
-import pandas as pd
+import functools
 
 import dask
+import pandas as pd
 import zarr
 
 
@@ -117,3 +118,30 @@ def ndarray_to_parquet(
     df.to_parquet(path=parquetpath, engine=engine, **kwargs)
 
     return df
+
+
+@functools.wraps(wrapped=pd.wide_to_long)
+def wide_to_long(
+    df: pd.DataFrame,
+    stubnames: list,
+    i: str = "id",
+    j: str = None,
+    sep: str = "_",
+    suffix: str = "\\d+",
+) -> pd.DataFrame:
+    """
+    A wrapper around pandas.wide_to_long that wraps around pandas.melt!
+    Handles setting an index (Default to "id") and resetting the second level
+    index (the 'j' variable), while dropping NaN values too!
+
+    Documentation for input arguments are the same as pd.wide_to_long. This
+    convenience functions just uses different default arguments for 'i' and
+    'sep'.
+    """
+    df[i] = df.index
+    df_long = pd.wide_to_long(
+        df=df, stubnames=stubnames, i=i, j=j, sep=sep, suffix=suffix
+    )
+    df_long = df_long.reset_index(level=j)
+
+    return df_long.dropna()

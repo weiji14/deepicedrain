@@ -4,7 +4,7 @@ import logging
 import deepicedrain
 import intake
 from deepicedrain.deltamath import calculate_delta, nan_linregress, nanptp
-from deepicedrain.extraload import array_to_dataframe, ndarray_to_parquet
+from deepicedrain.extraload import array_to_dataframe, ndarray_to_parquet, wide_to_long
 from deepicedrain.spatiotemporal import (
     Region,
     deltatime_to_utctime,

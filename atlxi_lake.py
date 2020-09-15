@@ -407,14 +407,12 @@ fig.show()
 # Tidy up dataframe first using pd.wide_to_long
 # I.e. convert 't_1', 't_2', 'h_1', 'h_2' columns into just 't' and 'h'.
 df["id"] = df.index
-df_th: pd.DataFrame = pd.wide_to_long(
-    df=df[["id", "track1_track2", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
+df_th: pd.DataFrame = deepicedrain.wide_to_long(
+    df=df[["track1_track2", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
     stubnames=["t", "h"],
-    i="id",
     j="track",
-    sep="_",
 )
-df_th = df_th.reset_index(level="track").drop_duplicates(ignore_index=True)
+df_th = df_th.drop_duplicates(ignore_index=True)
 
 # %%
 # 1D Plot at location with **maximum** absolute crossover height error (max_h_X)

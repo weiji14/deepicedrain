@@ -428,22 +428,8 @@ rgts: list = [135, 327, 388, 577, 1080, 1272]  # Whillans upstream
 # rgts: list = [236, 501 , 562, 1181]  # whillans_downstream
 for rgt in rgts:
     df_rgt: pd.DataFrame = df_dhdt.query(expr="referencegroundtrack == @rgt")
-    df_rgt["id"] = df_rgt.index
-    df_rgt = pd.wide_to_long(
-        df=df_rgt.to_pandas(),
-        stubnames=["h_corr", "utc_time"],
-        i="id",
-        j="cycle_number",
-        sep="_",
-    )
-    df_rgt = df_rgt.dropna()
-
-    # Save track data to CSV for crossover analysis later
-    df_rgt[["x", "y", "h_corr", "utc_time"]].to_csv(
-        f"X2SYS/track_{rgt}.tsv",
-        sep="\t",
-        index=False,
-        date_format="%Y-%m-%dT%H:%M:%S.%fZ",
+    df_rgt = deepicedrain.wide_to_long(
+        df=df_rgt.to_pandas(), stubnames=["h_corr", "utc_time"], j="cycle_number"
     )
 print(f"Looking at Reference Ground Tracks: {rgts}")
 
