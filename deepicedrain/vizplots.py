@@ -29,6 +29,7 @@ class IceSat2Explorer(param.Parameterized):
     See also https://github.com/holoviz/datashader/pull/676.
     """
 
+    # Param Widgets that interactively control plot settings
     plot_variable = param.Selector(
         default="dhdt_slope", objects=["referencegroundtrack", "dhdt_slope", "h_corr"]
     )
@@ -37,24 +38,29 @@ class IceSat2Explorer(param.Parameterized):
     rasterize = param.Boolean(default=True)
     datashade = param.Boolean(default=False)
 
-    # Load from intake data source
-    # catalog = intake.cat.atlas_cat
-    catalog: intake.catalog.local.YAMLFileCatalog = intake.open_catalog(
-        os.path.join(os.path.dirname(__file__), "atlas_catalog.yaml")
-    )
-    placename: str = "whillans_upstream"
-    source = catalog.icesat2dhdt(placename=placename)
-    if os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
+    def __init__(self, placename: str = "whillans_upstream", **kwargs):
+        super().__init__(**kwargs)
+        self.placename = placename
+
+        # Load from intake data source
+        # catalog = intake.cat.atlas_cat
+        self.catalog: intake.catalog.local.YAMLFileCatalog = intake.open_catalog(
+            os.path.join(os.path.dirname(__file__), "atlas_catalog.yaml")
+        )
+        self.source = self.catalog.icesat2dhdt(placename=self.placename)
+
         try:
             import cudf
             import hvplot.cudf
 
-            df_ = cudf.read_parquet(source._urlpath)
+            self.df_ = cudf.read_parquet(self.source._urlpath)
         except ImportError:
-            df_ = source.to_dask()
-        plot: hv.core.spaces.DynamicMap = source.plot.dhdt_slope()  # default plot
-        startX, endX = plot.range("x")
-        startY, endY = plot.range("y")
+            self.df_ = self.source.to_dask()
+
+        # Setup default plot (dhdt_slope) and x/y axis limits
+        self.plot: hv.core.spaces.DynamicMap = self.source.plot.dhdt_slope()
+        self.startX, self.endX = self.plot.range("x")
+        self.startY, self.endY = self.plot.range("y")
 
     def keep_zoom(self, x_range, y_range):
         self.startX, self.endX = x_range
@@ -79,7 +85,9 @@ class IceSat2Explorer(param.Parameterized):
 
         # Create the plot! Uses plot_kwargs from catalog metdata
         # self.plot = getattr(source.plot, self.plot_variable)()
-        self.source = self.catalog.icesat2dhdt(cycle=self.cycle_number)
+        self.source = self.catalog.icesat2dhdt(
+            cycle=self.cycle_number, placename=self.placename
+        )
         plot_kwargs = {
             "xlabel": self.source.metadata["fields"]["x"]["label"],
             "ylabel": self.source.metadata["fields"]["y"]["label"],

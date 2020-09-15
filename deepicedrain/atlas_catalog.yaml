@@ -115,6 +115,7 @@ sources:
         type: str
         default: siple_coast
         allowed:
+          - kamb
           - siple_coast
           - whillans_upstream
           - whillans_downstream

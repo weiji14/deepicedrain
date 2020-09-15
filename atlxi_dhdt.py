@@ -57,7 +57,6 @@ import tqdm
 import xarray as xr
 
 import deepicedrain
-import deepicedrain.vizplots
 
 # %%
 client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
@@ -414,7 +413,7 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet"
 # %%
 # Interactive holoviews scatter plot to find referencegroundtrack needed
 # Tip: Hover over the points, and find those with high 'dhdt_slope' values
-viewer = deepicedrain.vizplots.IceSat2Explorer(name="ICESat-2 Explorer")
+viewer = deepicedrain.IceSat2Explorer(name="ICESat-2 Explorer", placename=placename)
 dashboard: pn.layout.Column = pn.Column(viewer.widgets, viewer.view)
 # dashboard
 
