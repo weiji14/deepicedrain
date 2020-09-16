@@ -20,22 +20,19 @@
 
 # %%
 import dataclasses
-import os
 import glob
-
-import deepicedrain
+import os
 
 import dask
 import dask.array
 import datashader
+import geopandas as gpd
 import holoviews as hv
 import holoviews.operation
 import hvplot.dask
 import hvplot.pandas
 import hvplot.xarray
-
 import intake
-import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pygmt
@@ -44,6 +41,8 @@ import shapely
 import tqdm
 import xarray as xr
 import zarr
+
+import deepicedrain
 
 # %%
 client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
@@ -143,28 +142,10 @@ ds["h_corr"] = ds.h_corr.where(cond=ds.fit_quality == 0)
 # Take a geographical subset and save to a NetCDF/Zarr format for distribution.
 
 # %%
-# Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
-regions: dict = {
-    "kamb": deepicedrain.Region(
-        name="Kamb Ice Stream",
-        xmin=-411054.19240523444,
-        xmax=-365489.6822096751,
-        ymin=-739741.7702261859,
-        ymax=-699564.516934089,
-    ),
-    "antarctica": deepicedrain.Region(
-        "Antarctica", -2700000, 2800000, -2200000, 2300000
-    ),
-    "siple_coast": deepicedrain.Region(
-        "Siple Coast", -1000000, 250000, -1000000, -100000
-    ),
-    "whillans": deepicedrain.Region(
-        "Whillans Ice Stream", -350000, -100000, -700000, -450000
-    ),
-    "whillans2": deepicedrain.Region(
-        "Whillans Ice Stream", -500000, -400000, -600000, -500000
-    ),
-}
+# Antarctic bounding box locations with EPSG:3031 coordinates
+regions = gpd.read_file(filename="deepicedrain/deepicedrain_regions.geojson")
+regions: gpd.GeoDataFrame = regions.set_index(keys="placename")
+
 # Subset to essential columns
 essential_columns: list = [
     "x",
@@ -180,8 +161,8 @@ essential_columns: list = [
 # %%
 # Do the actual computation to find data points within region of interest
 placename: str = "kamb"  # Select Kamb Ice Stream region
-region: deepicedrain.Region = regions[placename]
-ds_subset: xr.Dataset = region.subset(ds=ds)
+region: deepicedrain.Region = deepicedrain.Region.from_gdf(gdf=regions.loc[placename])
+ds_subset: xr.Dataset = region.subset(data=ds)
 ds_subset = ds_subset.unify_chunks()
 ds_subset = ds_subset.compute()
 
@@ -318,9 +299,9 @@ df_dh.head()
 # from [Smith et al., 2009](https://doi.org/10.3189/002214309789470879).
 
 # %%
-# Select region here, see dictionary of regions at top
+# Select region here, see also geodataframe of regions at top
 placename: str = "antarctica"
-region: deepicedrain.Region = regions[placename]
+region: deepicedrain.Region = deepicedrain.Region.from_gdf(gdf=regions.loc[placename])
 
 # %%
 # Find subglacial lakes (Smith et al., 2009) within region of interest

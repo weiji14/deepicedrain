@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.1
+#       jupytext_version: 1.5.2
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -35,13 +35,25 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/plotting_scripts/AA_dhdt_map.ipynb
 
 # %%
+import itertools
+import os
+import warnings
+
+import cudf  # comment out if no GPU
 import dask
 import datashader
+import geopandas as gpd
+import holoviews as hv
+import hvplot.cudf  # comment out if no GPU
+import hvplot.pandas
 import intake
 import numpy as np
 import pandas as pd
+import panel as pn
+import param
 import pygmt
 import scipy.stats
+import tqdm
 import xarray as xr
 
 import deepicedrain
@@ -57,7 +69,7 @@ client
 # Xarray open_dataset preprocessor to add fields based on input filename.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{}_{}.zarr",
+        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
@@ -106,34 +118,15 @@ ds["h_corr"]: xr.DataArray = ds.h_corr.where(cond=ds.fit_quality == 0)
 # - Ensure there are at least 2 height values to calculate trend over time
 
 # %%
-# Dictionary of Antarctic bounding box locations with EPSG:3031 coordinates
-regions: dict = {
-    "kamb": deepicedrain.Region(
-        name="Kamb Ice Stream",
-        xmin=-411054.19240523444,
-        xmax=-365489.6822096751,
-        ymin=-739741.7702261859,
-        ymax=-699564.516934089,
-    ),
-    "antarctica": deepicedrain.Region(
-        "Antarctica", -2700000, 2800000, -2200000, 2300000
-    ),
-    "siple_coast": deepicedrain.Region(
-        "Siple Coast", -1000000, 250000, -1000000, -100000
-    ),
-    "whillans": deepicedrain.Region(
-        "Whillans Ice Stream", -350000, -100000, -700000, -450000
-    ),
-    "whillans2": deepicedrain.Region(
-        "Whillans Ice Stream", -500000, -400000, -600000, -500000
-    ),
-}
+# Antarctic bounding box locations with EPSG:3031 coordinates
+regions = gpd.read_file(filename="deepicedrain/deepicedrain_regions.geojson")
+regions: gpd.GeoDataFrame = regions.set_index(keys="placename")
 
 # %%
 # Subset dataset to geographic region of interest
 placename: str = "antarctica"
-region: deepicedrain.Region = regions[placename]
-# ds = region.subset(ds=ds)
+region: deepicedrain.Region = deepicedrain.Region.from_gdf(gdf=regions.loc[placename])
+# ds = region.subset(data=ds)
 
 # %%
 # We need at least 2 points to draw a trend line or compute differences
@@ -279,7 +272,7 @@ fig.show(width=600)
 # %%
 # Take only the points where there is more than 0.25 metres of elevation change
 # Trim down ~220 million points to ~36 million
-ds = ds.where(cond=ds.h_range > 0.25, drop=True)
+# ds = ds.where(cond=ds.h_range > 0.25, drop=True)
 print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %%
@@ -328,7 +321,7 @@ ds_dhdt: xr.Dataset = ds_dhdt.compute()
 # ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
 ds_dhdt: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_dhdt_{placename}.zarr",
-    chunks={"cycle_number": 7},
+    chunks="auto",  # {"cycle_number": 7},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -384,106 +377,60 @@ fig.show(width=600)
 # ice surface height changes over time,
 # along an ICESat-2 reference ground track.
 
-# %%
-import holoviews as hv
-import hvplot.pandas
-import panel as pn
 
 # %%
-# Subset dataset to geographic region of interest
-placename: str = "whillans2"
-region: deepicedrain.Region = regions[placename]
-ds_subset: xr.Dataset = region.subset(ds=ds_dhdt)
-
-# %%
-# Quick facet plot of height over different cycles
-# See https://xarray.pydata.org/en/stable/plotting.html#datasets
-ds_subset.plot.scatter(
-    x="x", y="y", hue="h_corr", cmap="gist_earth", col="cycle_number", col_wrap=4
-)
-
-# %%
-# Find reference ground tracks that have data up to cycle 7 (the most recent cycle)
-rgts = np.unique(
-    ar=ds_subset.sel(cycle_number=7).dropna(dim="ref_pt").referencegroundtrack
-)
-rgts
-
-# %%
-# Convert xarray.Dataset to pandas.DataFrame for easier analysis
-df_many: pd.DataFrame = ds_subset.to_dataframe().dropna()
-
-
-# %%
-def dhdt_plot(
-    cycle: int = 7,
-    dhdt_variable: str = "dhdt_slope",
-    dhdt_range: tuple = (1, 10),
-    rasterize: bool = False,
-    datashade: bool = False,
-) -> hv.element.chart.Scatter:
-    """
-    ICESat-2 rate of height change over time (dhdt) interactive scatter plot.
-    Uses HvPlot, and intended to be used inside a Panel dashboard.
-    """
-    df_ = df_many.query(
-        expr="cycle_number == @cycle & "
-        "abs(dhdt_slope) > @dhdt_range[0] & abs(dhdt_slope) < @dhdt_range[1]"
+# Save or load dhdt data from Parquet file
+placename: str = "whillans_upstream"  # "whillans_downstream"
+region: deepicedrain.Region = deepicedrain.Region.from_gdf(gdf=regions.loc[placename])
+if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
+    # Subset dataset to geographic region of interest
+    ds_subset: xr.Dataset = region.subset(data=ds_dhdt)
+    # Add a UTC_time column to the dataset
+    ds_subset["utc_time"] = deepicedrain.deltatime_to_utctime(
+        dataarray=ds_subset.delta_time
     )
-    return df_.hvplot.scatter(
-        title=f"ICESat-2 Cycle {cycle} {dhdt_variable}",
-        x="x",
-        y="y",
-        c=dhdt_variable,
-        cmap="gist_earth" if dhdt_variable == "h_corr" else "BrBG",
-        clim=None,
-        # by="cycle_number",
-        rasterize=rasterize,
-        datashade=datashade,
-        dynspread=datashade,
-        hover=True,
-        hover_cols=["referencegroundtrack", "dhdt_slope", "h_corr"],
-        colorbar=True,
+    # Save to parquet format. If the dask workers get killed, reduce the number
+    # of workers (e.g. 72 to 32) so that each worker will have more memory
+    deepicedrain.ndarray_to_parquet(
+        ndarray=ds_subset,
+        parquetpath=f"ATLXI/df_dhdt_{placename}.parquet",
+        variables=[
+            "x",
+            "x_atc",
+            "y",
+            "y_atc",
+            "dhdt_slope",
+            "referencegroundtrack",
+            "h_corr",
+            "utc_time",
+        ],
+        dropnacols=["dhdt_slope"],
+        use_deprecated_int96_timestamps=True,
     )
-
+# df_dhdt = pd.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")
+df_dhdt: cudf.DataFrame = cudf.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")
 
 # %%
 # Interactive holoviews scatter plot to find referencegroundtrack needed
 # Tip: Hover over the points, and find those with high 'dhdt_slope' values
-layout: pn.layout.Column = pn.interact(
-    dhdt_plot,
-    cycle=pn.widgets.IntSlider(name="Cycle Number", start=2, end=7, step=1, value=7),
-    dhdt_variable=pn.widgets.RadioButtonGroup(
-        name="dhdt_variables",
-        value="dhdt_slope",
-        options=["referencegroundtrack", "dhdt_slope", "h_corr"],
-    ),
-    dhdt_range=pn.widgets.RangeSlider(
-        name="dhdt range ±", start=0, end=20, value=(1, 10), step=0.5
-    ),
-    rasterize=pn.widgets.Checkbox(name="Rasterize"),
-    datashade=pn.widgets.Checkbox(name="Datashade"),
-)
-dashboard: pn.layout.Column = pn.Column(
-    pn.Row(
-        pn.Column(layout[0][1], align="center"),
-        pn.Column(layout[0][0], layout[0][2], align="center"),
-        pn.Column(layout[0][3], layout[0][4], align="center"),
-    ),
-    layout[1],
-)
-dashboard
+viewer = deepicedrain.IceSat2Explorer(name="ICESat-2 Explorer", placename=placename)
+dashboard: pn.layout.Column = pn.Column(viewer.widgets, viewer.view)
+# dashboard
 
 # %%
 # Show dashboard in another browser tab
-# dashboard.show()
+dashboard.show()
 
 # %%
-# Select one Reference Ground track to look at
-rgt: int = 135
-assert rgt in rgts
-df_rgt: pd.DataFrame = df_many.query(expr="referencegroundtrack == @rgt")
-print(f"Looking at Reference Ground Track {rgt}")
+# Select a few Reference Ground tracks to look at
+rgts: list = [135, 327, 388, 577, 1080, 1272]  # Whillans upstream
+# rgts: list = [236, 501 , 562, 1181]  # whillans_downstream
+for rgt in rgts:
+    df_rgt: pd.DataFrame = df_dhdt.query(expr="referencegroundtrack == @rgt")
+    df_rgt = deepicedrain.wide_to_long(
+        df=df_rgt.to_pandas(), stubnames=["h_corr", "utc_time"], j="cycle_number"
+    )
+print(f"Looking at Reference Ground Tracks: {rgts}")
 
 # %%
 # Select one laser pair (out of three) based on y_atc field
@@ -503,48 +450,13 @@ df.hvplot.scatter(
 
 # %%
 # Filter points to those with significant dhdt values > +/- 0.2 m/yr
-df = df.query(expr="abs(dhdt_slope) > 0.2")
+# TODO Use Hausdorff Distance to get location of maximum change!!!
+df = df.query(expr="abs(dhdt_slope) > 0.2 & h_corr < 300")
 
 # %%
-# Plot 2D along track view of
-# Ice Surface Height Changes over Time
-fig = pygmt.Figure()
-# Setup map frame, title, axis annotations, etc
-fig.basemap(
-    projection="X20c/10c",
-    region=[df.x_atc.min(), df.x_atc.max(), df.h_corr.min(), df.h_corr.max()],
-    frame=[
-        rf'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {region.name}"',
-        'xaf+l"Along track x (m)"',
-        'yaf+l"Height (m)"',
-    ],
-)
-fig.text(
-    x=df.x_atc.mean(),
-    y=df.h_corr.max(),
-    text=f"Reference Ground Track {rgt:04d}",
-    justify="TC",
-    D="jTC-0c/0.2c",
-)
-
-# Colors from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=7
-cycle_colors = {3: "#ff7f00", 4: "#984ea3", 5: "#4daf4a", 6: "#377eb8", 7: "#e41a1c"}
-for cycle, color in cycle_colors.items():
-    df_ = df.query(expr="cycle_number == @cycle").copy()
-    if len(df_) > 0:
-        # Get x, y, time
-        data = np.column_stack(tup=(df_.x_atc, df_.h_corr))
-        time_nsec = deepicedrain.deltatime_to_utctime(dataarray=df_.delta_time.mean())
-        time_sec = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
-        label = f'"Cycle {cycle} at {time_sec}"'
-
-        # Plot data points
-        fig.plot(data=data, style="c0.05c", color=color, label=label)
-        # Plot line connecting points
-        # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
-
-fig.legend(S=3, position="jBR+jBR+o0.2c", box="+gwhite+p1p")
-fig.savefig(f"figures/alongtrack_atl11_dh_{placename}_{rgt}.png")
+# Plot 2D along track view of Ice Surface Height Changes over Time
+fig = deepicedrain.plot_alongtrack(df=df, rgtpair=f"{rgt:04d}", regionname=region.name)
+fig.savefig(fname=f"figures/alongtrack_{placename}_{rgt}.png")
 fig.show()
 
 # %%

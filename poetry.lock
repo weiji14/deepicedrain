@@ -506,6 +506,30 @@ six = "*"
 
 [[package]]
 category = "main"
+description = "Python support for Parquet file format"
+name = "fastparquet"
+optional = false
+python-versions = ">=3.6,"
+version = "0.4.1"
+
+[package.dependencies]
+numba = ">=0.28"
+numpy = ">=1.11"
+packaging = "*"
+pandas = ">=0.19"
+six = "*"
+thrift = ">=0.11.0"
+
+[package.extras]
+brotli = ["brotli"]
+lz4 = ["lz4 (>=0.19.1)"]
+lzo = ["python-lzo"]
+snappy = ["python-snappy"]
+zstandard = ["zstandard"]
+zstd = ["zstd"]
+
+[[package]]
+category = "main"
 description = "Fast, re-entrant optimistic lock implemented in Cython"
 name = "fastrlock"
 optional = true
@@ -725,6 +749,21 @@ complete = ["bokeh (<2.0)", "dask", "hvplot", "msgpack-numpy", "panel (>=0.7.0)"
 dataframe = ["dask", "msgpack-numpy", "pyarrow"]
 plot = ["hvplot", "panel (>=0.7.0)", "bokeh (<2.0)"]
 server = ["tornado", "python-snappy"]
+
+[[package]]
+category = "main"
+description = "Intake parquet plugin"
+name = "intake-parquet"
+optional = false
+python-versions = "*"
+version = "0.2.3"
+
+[package.dependencies]
+dask = "*"
+fastparquet = "*"
+intake = "*"
+pandas = "*"
+pyarrow = "*"
 
 [[package]]
 category = "main"
@@ -1213,7 +1252,7 @@ description = "A Python package providing buffer compression and transformation 
 name = "numcodecs"
 optional = false
 python-versions = "*"
-version = "0.6.4"
+version = "0.7.1"
 
 [package.dependencies]
 numpy = ">=1.7"
@@ -1524,7 +1563,7 @@ description = "A Python interface for the Generic Mapping Tools"
 name = "pygmt"
 optional = false
 python-versions = "*"
-version = "0.1.2+36.g4939ee2"
+version = "0.2.0"
 
 [package.dependencies]
 netCDF4 = "*"
@@ -1532,11 +1571,6 @@ numpy = "*"
 packaging = "*"
 pandas = "*"
 xarray = "*"
-
-[package.source]
-reference = "4939ee2a7ce1f80e6fcce63d48bc049aea72ca2e"
-type = "git"
-url = "https://github.com/GenericMappingTools/pygmt.git"
 
 [[package]]
 category = "main"
@@ -1828,6 +1862,22 @@ python-versions = ">=3.5"
 version = "2.1.0"
 
 [[package]]
+category = "main"
+description = "Python bindings for the Apache Thrift RPC system"
+name = "thrift"
+optional = false
+python-versions = "*"
+version = "0.13.0"
+
+[package.dependencies]
+six = ">=1.7.2"
+
+[package.extras]
+all = ["tornado (>=4.0)", "twisted"]
+tornado = ["tornado (>=4.0)"]
+twisted = ["twisted"]
+
+[[package]]
 category = "dev"
 description = "Python Library for Tom's Obvious, Minimal Language"
 name = "toml"
@@ -2013,7 +2063,7 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "73db6f447e88e5c89b3ac6ade0a664ab2b03465b9684e3c0d0e15d890a45d65e"
+content-hash = "3e6edd2483263d09ddcbc61eae3b86c798abad1dbdab2b106cde51fbae268845"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2265,6 +2315,10 @@ fasteners = [
     {file = "fasteners-0.15-py2.py3-none-any.whl", hash = "sha256:007e4d2b2d4a10093f67e932e5166722d2eab83b77724156e92ad013c6226574"},
     {file = "fasteners-0.15.tar.gz", hash = "sha256:3a176da6b70df9bb88498e1a18a9e4a8579ed5b9141207762368a1017bf8f5ef"},
 ]
+fastparquet = [
+    {file = "fastparquet-0.4.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:c231110272c28d681a3cadbbe81a20f74c0a382c4b983107b3e7b625e8fd7251"},
+    {file = "fastparquet-0.4.1.tar.gz", hash = "sha256:a6501352c875416471c875ace0ff702a7889e14eeda4c12eaaed8307fd485f6a"},
+]
 fastrlock = [
     {file = "fastrlock-0.5-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:d92b85a8f609eea194a54978ccd97a385c6e78fb1ee86ae9dc07f1f50b225d9b"},
     {file = "fastrlock-0.5-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:0111bd05a6f7c2a4005b4a847351454b66536d8320295c5505d41c360862b332"},
@@ -2374,6 +2428,9 @@ idna = [
 intake = [
     {file = "intake-0.6.0-py3-none-any.whl", hash = "sha256:32a6d77965f3b89a12894c29e8c7516391a0be4c42902af52f12747186920bcc"},
     {file = "intake-0.6.0.tar.gz", hash = "sha256:0c284abeb74927a7366dcab6cefc010c4d050365b8af61c37326a2473a490a4e"},
+]
+intake-parquet = [
+    {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
 ]
 intake-xarray = []
 ipykernel = [
@@ -2681,7 +2738,35 @@ numba = [
     {file = "numba-0.51.0.tar.gz", hash = "sha256:da57ef00bc814bf54446fb3f8c0374557a7476e40279ceabefd9f12b05cc3c0c"},
 ]
 numcodecs = [
-    {file = "numcodecs-0.6.4.tar.gz", hash = "sha256:ef4843d5db4d074e607e9b85156835c10d006afc10e175bda62ff5412fca6e4d"},
+    {file = "numcodecs-0.7.1-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:b8c6fb222d5185b4885cef80fe474474c02304969695eaa6557e82b7e5d94fef"},
+    {file = "numcodecs-0.7.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:f5569f0f13a2a93444f5e5f20276d567bce32fc9fbb869780b95d12830026d4f"},
+    {file = "numcodecs-0.7.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:16e224cdac4ee7afc650640ae7d5528386bddd5556319fc2b22f3026e0fc5e0d"},
+    {file = "numcodecs-0.7.1-cp35-cp35m-manylinux2010_i686.whl", hash = "sha256:cdaf19f6b48409e337da696a119c0cfd9b07501857ab5816265d720527f33e32"},
+    {file = "numcodecs-0.7.1-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:971bb7f69702f85536e7e091e0d7b17bd2cf221f0165f45b5970f0bde8b74cf4"},
+    {file = "numcodecs-0.7.1-cp35-cp35m-win32.whl", hash = "sha256:2dcae93a532ebc4e3c4accd58345bf743ca3f3e0c526ccf50ebd5c9ed795c3fe"},
+    {file = "numcodecs-0.7.1-cp35-cp35m-win_amd64.whl", hash = "sha256:b28314e06c94515ec2e49feb9d6b45340a0f6c88d80eef3fc78a6a8a0cec9be2"},
+    {file = "numcodecs-0.7.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:80065a0a7883a1d6a7e90ee9828792e2a96b5fb17bafe5b83ee5274967ec73db"},
+    {file = "numcodecs-0.7.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:b35195c9df4098b69175855165617a668711606ee7891a3a2e53de54528eac8a"},
+    {file = "numcodecs-0.7.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:c7d1032383b61b0345816bfbec345d0d94b07d2f6fa409c79daa22c9f3581c13"},
+    {file = "numcodecs-0.7.1-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:00230ca93ada847ebcea129893aa8892761d27836ab13a6f00e691fa879b8917"},
+    {file = "numcodecs-0.7.1-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:5511b78adbb1e87095ecbf4619dbf254d8145ce3732452c6fb5d3ac8f8ae29b5"},
+    {file = "numcodecs-0.7.1-cp36-cp36m-win32.whl", hash = "sha256:1cc16bce023738e3fcffa992ed8a44f635947648da9d4b954da02588c740aaed"},
+    {file = "numcodecs-0.7.1-cp36-cp36m-win_amd64.whl", hash = "sha256:b177a0b5dfa5b4eceaec782b4faf40ab5c7f388c15d84503d2f5e223d8922aa9"},
+    {file = "numcodecs-0.7.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:ecfd97135142ab8d318676dacc1a15c9bf95869a06488f8e1cea1497603e01bc"},
+    {file = "numcodecs-0.7.1-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:7da2162883c1aac0e360a9bbae50375ee0c6f5e4d2f72e01ea8f153efc14e77c"},
+    {file = "numcodecs-0.7.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:3b1cccb908b4d18c84a57d6645e1bd6610279943278b0c79aa684035fbd4c675"},
+    {file = "numcodecs-0.7.1-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:7e63542a04124ce89358d53ae049f07efb36a531156f58b700d04ac2204844a1"},
+    {file = "numcodecs-0.7.1-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:143d4af2dbeaad41353c87d1bbf9083b7674be866c9a697ffcdd3e779d336c37"},
+    {file = "numcodecs-0.7.1-cp37-cp37m-win32.whl", hash = "sha256:6d43e93094a4f16229f265e678464bf43cfb243d803b49571eef16107555e737"},
+    {file = "numcodecs-0.7.1-cp37-cp37m-win_amd64.whl", hash = "sha256:f27a480d3f7f7666640b92b413cc5730921b39fadad796bf243de7bf7d787dbc"},
+    {file = "numcodecs-0.7.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:55352ec88737e76a0c10f5709704c46995ce7274c1d95e76e6d80e001324fe69"},
+    {file = "numcodecs-0.7.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:89a39afefdc14536f645d805facc244908400bd98f64d4116127f77a8834727f"},
+    {file = "numcodecs-0.7.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:26f5169958657f51343511d2fb059c4adcbeb8870682f315d6989d7faf6fd009"},
+    {file = "numcodecs-0.7.1-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:29154c953d2ec70912c97bd2eddec690ae9a4414a13afa1337af6ad348fa52b8"},
+    {file = "numcodecs-0.7.1-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:a1d842f23e5cb6b8a7556f735610aeebeb9c258b77d7443d8c785ddb9653df5f"},
+    {file = "numcodecs-0.7.1-cp38-cp38-win32.whl", hash = "sha256:d0965309d67d2c7593cd7da322fd90bab4d8cd42343b94e35352dc49e82c0e33"},
+    {file = "numcodecs-0.7.1-cp38-cp38-win_amd64.whl", hash = "sha256:385fc19ecb448c0c8a29777b6b8e0b41ee6e277391e823f543b53792d9edb8f3"},
+    {file = "numcodecs-0.7.1.tar.gz", hash = "sha256:aada03d13f1c118c0a331e2832e95c1adaed30391eeb2cb5a09875482a95ac76"},
 ]
 numpy = [
     {file = "numpy-1.19.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:b1cca51512299841bf69add3b75361779962f9cee7d9ee3bb446d5982e925b69"},
@@ -2867,7 +2952,10 @@ pygments = [
     {file = "Pygments-2.6.1-py3-none-any.whl", hash = "sha256:ff7a40b4860b727ab48fad6360eb351cc1b33cbf9b15a0f689ca5353e9463324"},
     {file = "Pygments-2.6.1.tar.gz", hash = "sha256:647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44"},
 ]
-pygmt = []
+pygmt = [
+    {file = "pygmt-0.2.0-py3-none-any.whl", hash = "sha256:692680a6b56f9011680fde73dfe31a95bd4b15db1020b01abcc8723746fe0f18"},
+    {file = "pygmt-0.2.0.tar.gz", hash = "sha256:9fddefd8a101e5f22f49d6ed0c0aee6079791e62d2c9f24d7d2e370ec1b80924"},
+]
 pynvml = [
     {file = "pynvml-8.0.4-py3-none-any.whl", hash = "sha256:00c1a54fd3462a0774ec08add0d9fbb5f051214a85f782ca7d55b85eb8d54e53"},
     {file = "pynvml-8.0.4.tar.gz", hash = "sha256:c8d4eadc648c7e12a3c9182a9750afd8481b76412f83747bcc01e2aa829cde5d"},
@@ -3114,6 +3202,9 @@ testpath = [
 threadpoolctl = [
     {file = "threadpoolctl-2.1.0-py3-none-any.whl", hash = "sha256:38b74ca20ff3bb42caca8b00055111d74159ee95c4370882bbff2b93d24da725"},
     {file = "threadpoolctl-2.1.0.tar.gz", hash = "sha256:ddc57c96a38beb63db45d6c159b5ab07b6bced12c45a1f07b2b92f272aebfa6b"},
+]
+thrift = [
+    {file = "thrift-0.13.0.tar.gz", hash = "sha256:9af1c86bf73433afc6010ed376a6c6aca2b54099cc0d61895f640870a9ae7d89"},
 ]
 toml = [
     {file = "toml-0.10.1-py2.py3-none-any.whl", hash = "sha256:bda89d5935c2eac546d648028b9901107a595863cb36bae0c73ac804a9b4ce88"},

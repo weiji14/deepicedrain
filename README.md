@@ -9,9 +9,9 @@ in Antarctica using remote sensing and machine learning.
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=weiji14/deepicedrain)](https://dependabot.com)
 ![License](https://img.shields.io/github/license/weiji14/deepicedrain)
 
-![ICESat-2 ATL11 rate of height change over time in Antarctica 2018-10-14 to 2020-04-04](https://user-images.githubusercontent.com/23487320/84338773-140bb100-abf1-11ea-96eb-5ccfd7b378e4.png)
+![ICESat-2 ATL11 rate of height change over time in Antarctica 2018-10-14 to 2020-05-13](https://user-images.githubusercontent.com/23487320/90118294-2601ff80-ddac-11ea-8b93-7bc9b15f2be0.png)
 
-![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb],[Ice-Sheet-H(t)-Series]->[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb])
+![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb],[Ice-Sheet-H(t)-Series]->[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb],[Height-Change-over-Time-(dhdt)]->[Subglacial-Lake-Finder|atlxi_lake.ipynb])
 
 # Getting started
 
@@ -57,7 +57,7 @@ To just try out the scripts, download the `environment.yml` file from the reposi
     conda env create --name deepicedrain --file environment.yml
     pip install git+https://github.com/weiji14/deepicedrain.git
 
-### Advanced
+### Intermediate
 
 To help out with development, start by cloning this [repo-url](/../../)
 
@@ -77,11 +77,6 @@ Then install the python libraries listed in the `pyproject.toml`/`poetry.lock` f
 
     poetry install
 
-If you have a [CUDA](https://en.wikipedia.org/wiki/CUDA)-capable GPU,
-you can also install the optional "cuda" packages to accelerate some calculations.
-
-    poetry install --extras cuda
-
 Finally, double-check that the libraries have been installed.
 
     poetry show
@@ -92,6 +87,30 @@ Finally, double-check that the libraries have been installed.
     jupyter labextension install dask-labextension
 
     jupyter labextension list  # ensure that extensions are installed
+
+
+### Advanced
+
+This is for those who want full reproducibility of the conda environment,
+and more computing power by using Graphical Processing Units (GPU).
+
+Making an explicit conda-lock file
+(only needed if creating a new conda environment/refreshing an existing one).
+
+    conda env create -f environment.yml
+    conda list --explicit > environment-linux-64.lock
+
+Creating/Installing a virtual environment from a conda lock file.
+See also https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#building-identical-conda-environments.
+
+    conda create --name deepicedrain --file environment-linux-64.lock
+    conda install --name deepicedrain --file environment-linux-64.lock
+
+If you have a [CUDA](https://en.wikipedia.org/wiki/CUDA)-capable GPU,
+you can also install the optional "cuda" packages to accelerate some calculations.
+
+    poetry install --extras cuda
+
 
 ## Running jupyter lab
 
