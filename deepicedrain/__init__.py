@@ -14,7 +14,7 @@ from deepicedrain.spatiotemporal import (
 )
 from deepicedrain.vizplots import IceSat2Explorer, plot_alongtrack, plot_crossovers
 
-__version__: str = "0.2.1"
+__version__: str = "0.3.0"
 
 # Loads the ICESat-2 ATLAS intake data catalog
 _catalog_path = importlib.resources.path(
