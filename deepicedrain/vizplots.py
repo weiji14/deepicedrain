@@ -13,6 +13,7 @@ import pandas as pd
 import panel as pn
 import param
 import pygmt
+import tqdm
 
 warnings.filterwarnings(
     action="ignore",
@@ -137,18 +138,37 @@ class IceSat2Explorer(param.Parameterized):
 
 def plot_alongtrack(
     df: pd.DataFrame,
-    rgtpair: str,
     regionname: str,
-    x_var: str = "x_atc",
-    y_var: str = "h_corr",
+    rgtpair: str,
+    elev_var: str = "h_corr",
+    xatc_var: str = "x_atc",
     time_var: str = "utc_time",
     cycle_var: str = "cycle_number",
     spacing: str = "1000/5",
     oldtonew: bool = True,
 ) -> pygmt.Figure:
     """
-    Plot 2D along track view of Ice Surface Height Changes over Time.
-    Uses PyGMT to produce the figure.
+    Plot 2D along track cross-section view of Ice Surface Elevation over Time.
+    Uses PyGMT to produce the figure. The input table should look something like
+    below (more columns can be present too).
+
+    | cycle_number | x_atc | h_corr |       utc_time      |
+    |--------------|-------|--------|---------------------|
+    |      1       |  500  |   14   | 2020-01-01T01:12:34 |
+    |      2       |  500  |   12   | 2020-04-01T12:23:45 |
+    |      3       |  500  |   10   | 2020-07-01T23:34:56 |
+
+    which will produce a plot similar to the following:
+
+      Ice Surface Elevation over each ICESat-2 cycle at Some Ice Stream
+         ^
+         | Reference Ground Track 1234_pt3
+         |
+         | -----------------------------    --- Cycle 1 at 2020-01-01T01:12:34
+    Elev | -.-.-.-.-.-.-.-.-.-.-.-.-.-.-    -.- Cycle 2 at 2020-04-01T12:23:45
+         | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    ~~~ Cycle 3 at 2020-07-01T23:34:56
+         |________________________________>
+                   Along track x
 
     Parameters
     ----------
@@ -156,12 +176,18 @@ def plot_alongtrack(
         A table containing the ICESat-2 track data from multiple cycles. It
         should ideally have columns called 'x_atc', 'h_corr', 'utc_time' and
         'cycle_number'.
-    x_var : str
-        The x-dimension column name to use from the table data, plotted
-        on the horizontal x-axis. Default is 'x_atc'.
-    y_var : str
-        The y-dimension column name to use from the table data, plotted
-        on the vertical x-axis. Default is 'h_corr'.
+    regionname : str
+        A descriptive placename for the data (e.g. Some Ice Stream), to be used
+        in the figure's main title.
+    rgtpair : str
+        The name of the referencegroundtrack pair being plotted (e.g. 1234_pt3),
+        to be used in the figure's subtitle.
+    elev_var : str
+        The elevation column name to use from the table data, plotted on the
+        vertical y-axis. Default is 'h_corr'.
+    xatc_var : str
+        The x along-track column name to use from the table data, plotted on the
+        horizontal x-axis. Default is 'x_atc'.
     time_var : str
         The time-dimension column name to use from the table data, used to
         calculate the mean datetime for each track in every cycle. Default is
@@ -191,11 +217,11 @@ def plot_alongtrack(
     # Setup map frame, title, axis annotations, etc
     fig.basemap(
         projection="X30c/10c",
-        region=pygmt.info(table=df[[x_var, y_var]], spacing=spacing),
+        region=pygmt.info(table=df[[xatc_var, elev_var]], spacing=spacing),
         frame=[
-            rf'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {regionname}"',
+            rf'WSne+t"Ice Surface Elevation over each ICESat-2 cycle at {regionname}"',
             'xaf+l"Along track x (m)"',
-            'yaf+l"Height (m)"',
+            'yaf+l"Elevation (m)"',
         ],
     )
     fig.text(
@@ -220,11 +246,11 @@ def plot_alongtrack(
     cycles: list = sorted(df[cycle_var].unique(), reverse=not oldtonew)
     cycle_colors: dict = {cycle: cycle_colors[cycle] for cycle in cycles}
 
-    # For each cycle, plot the height values (y_var) along the track (x_var)
+    # For each cycle, plot the height values (elev_var) along the track (xatc_var)
     for cycle, color in cycle_colors.items():
         df_ = df.query(expr=f"{cycle_var} == @cycle").copy()
         # Get x, y, time
-        data = np.column_stack(tup=(df_[x_var], df_[y_var]))
+        data = np.column_stack(tup=(df_[xatc_var], df_[elev_var]))
         time_nsec = df_[time_var].mean()
         time_sec = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
         label = f'"Cycle {cycle} at {time_sec}"'
@@ -235,4 +261,118 @@ def plot_alongtrack(
         # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
 
     fig.legend(S=3, position="JMR+JMR+o0.2c", box="+gwhite+p1p")
+    return fig
+
+
+def plot_crossovers(
+    df: pd.DataFrame,
+    regionname: str,
+    elev_var: str = "h",
+    time_var: str = "t",
+    track_var: str = "track1_track2",
+    spacing: float = 2.5,
+) -> pygmt.Figure:
+    """
+    Plot to show how elevation is changing at many crossover points over time.
+    Uses PyGMT to produce the figure. The input table should look something like
+    below (more columns can be present too).
+
+    |  track1_track2   |  h  |          t          |
+    |------------------|-----|---------------------|
+    | 0111_pt1x0222pt2 | 111 | 2020-01-01T01:12:34 |
+    | 0222_pt2x0333pt3 | 110 | 2020-04-01T12:23:45 |
+    | 0333_pt3x0111pt1 | 101 | 2020-07-01T23:34:56 |
+
+    which will produce a plot similar to the following:
+
+      ICESat-2 Crossover Elevations over Time at Some Ice Stream
+         ^
+         |                     -a---a---a---a
+         | -a---a---a---a---a-/      -b---b---b          -a- 0111_pt1x0222pt2
+    Elev |   -b---b---b---b---b---b-/  -c-               -b- 0222_pt2x0333pt3
+         |  -c---c---c---c---c---c----/   \-c---c        -c- 0333_pt3x0111pt1
+         |___________________________________________>
+                             Date
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        A table containing the ICESat-2 track data from multiple cycles. It
+        should ideally have columns called 'h', 't', and 'track1_track2'.
+    regionname : str
+        A descriptive placename for the data (e.g. Some Ice Stream), to be used
+        in the figure's main title.
+    elev_var : str
+        The elevation column name to use from the table data, plotted on the
+        vertical y-axis. Default is 'h'.
+    time_var : str
+        The time-dimension column name to use from the table data, plotted on
+        the horizontal x-axis. Default is 't'.
+    track_var : str
+        The track column name to use from the table data, containing variables
+        in the form of track1xtrack2 (note that 'x' is a hardcoded delimiter),
+        e.g. 0111_pt1x0222pt2. Default is 'track1_track2'.
+    spacing : str or float
+        Provide as a 'dy' increment, this is passed on to `pygmt.info` and used
+        to round up and down the y axis (elev_var) limits for a nicer plot
+        frame. Default is 2.5.
+
+    Returns
+    -------
+    fig : pygmt.Figure
+        A pygmt Figure instance containing the crossover plot which can be
+        viewed using fig.show() or saved to a file using fig.savefig()
+    """
+    fig = pygmt.Figure()
+
+    # Setup map frame, title, axis annotations, etc
+    with pygmt.config(
+        FONT_ANNOT_PRIMARY="9p",
+        FORMAT_TIME_PRIMARY_MAP="abbreviated",
+        FORMAT_DATE_MAP="o",
+    ):
+        # Get plot region, spaced out into nice intervals
+        # Note that passing time columns into pygmt.info doesn't work yet,
+        # see https://github.com/GenericMappingTools/pygmt/issues/597
+        plotregion = np.array(
+            [
+                df[time_var].min() - pd.Timedelta(1, unit="W"),
+                df[time_var].max() + pd.Timedelta(1, unit="W"),
+                *pygmt.info(table=df[elev_var], spacing=spacing)[:2],
+            ]
+        )
+        fig.basemap(
+            projection="X12c/12c",
+            region=plotregion,
+            frame=[
+                rf'WSne+t"ICESat-2 Crossover Elevations over Time at {regionname}"',
+                "pxa1Of1o+lDate",  # primary time axis, 1 mOnth annotation and minor axis
+                "sx1Y",  # secondary time axis, 1 Year intervals
+                'yaf+l"Elevation at crossover (m)"',
+            ],
+        )
+
+    crossovers = df.groupby(by=track_var)
+    pygmt.makecpt(cmap="categorical", series=[1, len(crossovers) + 1, 1])
+    for i, ((track1_track2), indexes) in enumerate(
+        tqdm.tqdm(crossovers.indices.items())
+    ):
+        df_ = df.loc[indexes].sort_values(by=time_var)
+        # plot only > 1 metre height change
+        if df_[elev_var].max() - df_[elev_var].min() > 1.0:
+            track1, track2 = track1_track2.split("x")
+            fig.plot(
+                x=df_[time_var],
+                y=df_[elev_var],
+                Z=i,
+                style="c0.1c",
+                cmap=True,
+                pen="thin+z",
+                label=f'"Track {track1} {track2}"',
+            )
+            # Plot line connecting points
+            fig.plot(
+                x=df_[time_var], y=df_[elev_var], Z=i, pen=f"faint,+z,-", cmap=True
+            )
+    fig.legend(S=0.5, position="JMR+JMR+o0.2c", box="+gwhite+p1p")
     return fig

@@ -34,6 +34,7 @@
 
 
 # %%
+import itertools
 import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -54,8 +55,20 @@ import zarr
 
 import deepicedrain
 
+
+# %%
+tag: str = "X2SYS"
+os.environ["X2SYS_HOME"] = os.path.abspath(tag)
+client = dask.distributed.Client(
+    n_workers=64, threads_per_worker=1, env={"X2SYS_HOME": os.environ["X2SYS_HOME"]}
+)
+client
+
 # %% [markdown]
 # # Data Preparation
+
+# %%
+min_date, max_date = ("2018-10-14", "2020-05-13")
 
 # %%
 if not os.path.exists("ATLXI/df_dhdt_antarctica.parquet"):
@@ -231,6 +244,7 @@ fig.colorbar(frame='af+l"Draining/Filling"', position='JBC+n"Unclassified"')
 fig.savefig(fname=f"figures/subglacial_lake_clusters_at_{basin.NAME}.png")
 fig.show()
 
+
 # %% [markdown]
 # # Select a lake to examine
 
@@ -254,7 +268,7 @@ antarctic_lakes: gpd.GeoDataFrame = gpd.read_file(
 
 # %%
 # Choose one draining/filling lake
-draining: bool = True  # False
+draining: bool = False  # False
 placename: str = "Slessor"  # "Whillans"
 lakes: gpd.GeoDataFrame = antarctic_lakes.query(expr="basin_name == @placename")
 lake = lakes.loc[lakes.maxabsdhdt.idxmin() if draining else lakes.maxabsdhdt.idxmax()]
@@ -313,7 +327,7 @@ for rgt, df_rgt_wide in tqdm.tqdm(rgt_groups, total=len(rgt_groups.groups.keys()
 # we can look at the locations where the
 # ICESat-2 tracks intersect and get the
 # height values there!
-# Uses [x2sys_cross](https://docs.generic-mapping-tools.org/6.1/supplements/x2sys/x2sys_cross).
+# Uses [pygmt.x2sys_cross](https://www.pygmt.org/v0.2.0/api/generated/pygmt.x2sys_cross.html).
 #
 # References:
 # - Wessel, P. (2010). Tools for analyzing intersecting tracks: The x2sys package.
@@ -322,9 +336,6 @@ for rgt, df_rgt_wide in tqdm.tqdm(rgt_groups, total=len(rgt_groups.groups.keys()
 
 # %%
 # Initialize X2SYS database in the X2SYS/ICESAT2 folder
-tag = "X2SYS"
-os.environ["X2SYS_HOME"] = os.path.abspath(tag)
-os.getcwd()
 pygmt.x2sys_init(
     tag="ICESAT2",
     fmtfile=f"{tag}/ICESAT2/xyht",
@@ -337,20 +348,18 @@ pygmt.x2sys_init(
 
 # %%
 # Run crossover analysis on all tracks
-rgts: list = [135, 327, 388, 577, 1080, 1272]  # Whillans upstream
-# rgts: list = [236, 501, 562, 1181]  # Whillans_downstream
-tracks = [f"{tag}/track_{i}.tsv" for i in rgts]
-assert all(os.path.exists(k) for k in tracks)
-
+rgts, tracks = track_dict.keys(), track_dict.values()
 # Parallelized paired crossover analysis
 futures: list = []
-for track1, track2 in itertools.combinations(rgts, r=2):
+for rgt1, rgt2 in itertools.combinations(rgts, r=2):
+    track1 = track_dict[rgt1][["x", "y", "h_corr", "utc_time"]]
+    track2 = track_dict[rgt2][["x", "y", "h_corr", "utc_time"]]
     future = client.submit(
-        key=f"{track1}_{track2}",
+        key=f"{rgt1}x{rgt2}",
         func=pygmt.x2sys_cross,
-        tracks=[f"{tag}/track_{track1}.tsv", f"{tag}/track_{track2}.tsv"],
+        tracks=[track1, track2],
         tag="ICESAT2",
-        region=[-460000, -400000, -560000, -500000],
+        # region=[-460000, -400000, -560000, -500000],
         interpolation="l",  # linear interpolation
         coe="e",  # external crossovers
         trackvalues=True,  # Get track 1 height (h_1) and track 2 height (h_2)
@@ -405,35 +414,37 @@ max_dhdt: pd.Series = df.iloc[df.dhdt.argmax()]  # most sudden change in height
 var: str = "h_X"
 fig = pygmt.Figure()
 # Setup basemap
-region = np.array([df.x.min(), df.x.max(), df.y.min(), df.y.max()])
-buffer = np.array([-2000, +2000, -2000, +2000])
+plotregion = pygmt.info(table=df[["x", "y"]], spacing=1000)
 pygmt.makecpt(cmap="batlow", series=[sumstats[var]["25%"], sumstats[var]["75%"]])
 # Map frame in metre units
-fig.basemap(frame="f", region=region + buffer, projection="X8c")
+fig.basemap(frame="f", region=plotregion, projection="X8c")
 # Plot actual track points
 for track in tracks:
-    fig.plot(data=track, color="green", style="c0.01c")
+    fig.plot(x=track.x, y=track.y, color="green", style="c0.01c")
 # Plot crossover point locations
 fig.plot(x=df.x, y=df.y, color=df.h_X, cmap=True, style="c0.1c", pen="thinnest")
+# PLot lake boundary
+lakex, lakey = lake.geometry.exterior.coords.xy
+fig.plot(x=lakex, y=lakey, pen="thin")
 # Map frame in kilometre units
 fig.basemap(
     frame=[
-        "WSne",
+        f'WSne+t"Crossover points at {region.name}"',
         'xaf+l"Polar Stereographic X (km)"',
         'yaf+l"Polar Stereographic Y (km)"',
     ],
-    region=(region + buffer) / 1000,
+    region=plotregion / 1000,
     projection="X8c",
 )
 fig.colorbar(position="JMR", frame=['x+l"Crossover Error"', "y+lm"])
-fig.savefig("figures/crossover_area.png")
+fig.savefig(f"figures/crossover_area_{placename}.png")
 fig.show()
 
 
 # %% [markdown]
-# ### 1D plots of height changing over time
+# ### Plot Crossover Elevation time-series
 #
-# Plot height change over time at:
+# Plot elevation change over time at:
 #
 # 1. One single crossover point location
 # 2. Many crossover locations over an area
@@ -442,21 +453,21 @@ fig.show()
 # Tidy up dataframe first using pd.wide_to_long
 # I.e. convert 't_1', 't_2', 'h_1', 'h_2' columns into just 't' and 'h'.
 df_th: pd.DataFrame = deepicedrain.wide_to_long(
-    df=df[["track1_track2", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
+    df=df.loc[:, ["track1_track2", "x", "y", "t_1", "t_2", "h_1", "h_2"]],
     stubnames=["t", "h"],
     j="track",
 )
 df_th = df_th.drop_duplicates(ignore_index=True)
 
 # %%
-# 1D Plot at location with **maximum** absolute crossover height error (max_h_X)
+# Plot at single location with **maximum** absolute crossover height error (max_h_X)
 df_max = df_th.query(expr="x == @max_h_X.x & y == @max_h_X.y").sort_values(by="t")
-track1, track2 = df_max.track1_track2.iloc[0].split("_")
+track1, track2 = df_max.track1_track2.iloc[0].split("x")
 print(f"{round(max_h_X.h_X, 2)} metres height change at {max_h_X.x}, {max_h_X.y}")
-t_min = (df_max.t.min() - pd.Timedelta(2, unit="W")).isoformat()
-t_max = (df_max.t.max() + pd.Timedelta(2, unit="W")).isoformat()
-h_min = df_max.h.min() - 0.2
-h_max = df_max.h.max() + 0.4
+plotregion = np.array(
+    [df_max.t.min(), df_max.t.max(), *pygmt.info(table=df_max[["h"]], spacing=2.5)[:2]]
+)
+plotregion += np.array([-pd.Timedelta(2, unit="W"), +pd.Timedelta(2, unit="W"), 0, 0])
 
 fig = pygmt.Figure()
 with pygmt.config(
@@ -464,9 +475,9 @@ with pygmt.config(
 ):
     fig.basemap(
         projection="X12c/8c",
-        region=[t_min, t_max, h_min, h_max],
+        region=plotregion,
         frame=[
-            "WSne",
+            f'WSne+t"Max elevation change over time at {region.name}"',
             "pxa1Of1o+lDate",  # primary time axis, 1 mOnth annotation and minor axis
             "sx1Y",  # secondary time axis, 1 Year intervals
             'yaf+l"Elevation at crossover (m)"',
@@ -482,45 +493,27 @@ fig.text(
 fig.plot(x=df_max.t, y=df_max.h, style="c0.15c", color="darkblue", pen="thin")
 # Plot dashed line connecting points
 fig.plot(x=df_max.t, y=df_max.h, pen=f"faint,blue,-")
-fig.savefig(f"figures/crossover_{track1}_{track2}_{min_date}_{max_date}.png")
+fig.savefig(
+    f"figures/crossover_point_{placename}_{track1}_{track2}_{min_date}_{max_date}.png"
+)
 fig.show()
 
 # %%
-# 1D plots of a crossover area, all the height points over time
-t_min = (df_th.t.min() - pd.Timedelta(1, unit="W")).isoformat()
-t_max = (df_th.t.max() + pd.Timedelta(1, unit="W")).isoformat()
-h_min = df_th.h.min() - 0.2
-h_max = df_th.h.max() + 0.2
+# Plot all crossover height points over time over the lake area
+fig = deepicedrain.vizplots.plot_crossovers(df=df_th, regionname=region.name)
+fig.savefig(f"figures/crossover_many_{placename}_{min_date}_{max_date}.png")
+fig.show()
 
-fig = pygmt.Figure()
-with pygmt.config(
-    FONT_ANNOT_PRIMARY="9p", FORMAT_TIME_PRIMARY_MAP="abbreviated", FORMAT_DATE_MAP="o"
-):
-    fig.basemap(
-        projection="X12c/12c",
-        region=[t_min, t_max, h_min, h_max],
-        frame=[
-            "WSne",
-            "pxa1Of1o+lDate",  # primary time axis, 1 mOnth annotation and minor axis
-            "sx1Y",  # secondary time axis, 1 Year intervals
-            'yaf+l"Elevation at crossover (m)"',
-        ],
-    )
+# %%
+# Plot all crossover height points over time over the lake area
+# with height values normalized to 0 from the first observation date
+normfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
+df_th["h_norm"] = df_th.groupby(by="track1_track2").h.transform(func=normfunc)
 
-crossovers = df_th.groupby(by=["x", "y"])
-pygmt.makecpt(cmap="categorical", series=[1, len(crossovers) + 1, 1])
-for i, ((x_coord, y_coord), indexes) in enumerate(crossovers.indices.items()):
-    df_ = df_th.loc[indexes].sort_values(by="t")
-    # if df_.h.max() - df_.h.min() > 1.0:  # plot only > 1 metre height change
-    track1, track2 = df_.track1_track2.iloc[0].split("_")
-    label = f'"Track {track1} {track2}"'
-    fig.plot(x=df_.t, y=df_.h, Z=i, style="c0.1c", cmap=True, pen="thin+z", label=label)
-    # Plot line connecting points
-    fig.plot(
-        x=df_.t, y=df_.h, Z=i, pen=f"faint,+z,-", cmap=True
-    )  # , label=f'"+g-1l+s0.15c"')
-fig.legend(position="JMR+JMR+o0.2c", box="+gwhite+p1p")
-fig.savefig(f"figures/crossover_many_{min_date}_{max_date}.png")
+fig = deepicedrain.vizplots.plot_crossovers(
+    df=df_th, regionname=region.name, elev_var="h_norm"
+)
+fig.savefig(f"figures/crossover_many_normalized_{placename}_{min_date}_{max_date}.png")
 fig.show()
 
 # %%
