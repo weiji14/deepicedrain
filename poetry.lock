@@ -564,7 +564,7 @@ description = "File-system specification"
 name = "fsspec"
 optional = false
 python-versions = ">3.5"
-version = "0.8.0"
+version = "0.7.4"
 
 [[package]]
 category = "main"
@@ -2064,7 +2064,6 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
 content-hash = "818e334eb7cc38dcc70dea25a8460086a4386564e46dd9f50b2af8a2caa9fe9e"
-lock-version = "1.0"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2361,8 +2360,8 @@ fiona = [
     {file = "Fiona-1.8.13.post1.tar.gz", hash = "sha256:1a432bf9fd56f089256c010da009c90d4a795c531a848132c965052185336600"},
 ]
 fsspec = [
-    {file = "fsspec-0.8.0-py3-none-any.whl", hash = "sha256:ce109f41ffe62853d5de84888f3e455c39f2a0796c05b558474c77156e19b570"},
-    {file = "fsspec-0.8.0.tar.gz", hash = "sha256:176f3fc405471af0f1f1e14cffa3d53ab8906577973d068b976114433c010d9d"},
+    {file = "fsspec-0.7.4-py3-none-any.whl", hash = "sha256:1f9391c9b6e92a89949f0b0f7154b8b62a01f00b9c2767797d94ffa376dae9ab"},
+    {file = "fsspec-0.7.4.tar.gz", hash = "sha256:7075fde6d617cd3a97eac633d230d868121a188a46d16a0dcb484eea0cf2b955"},
 ]
 gdal = [
     {file = "GDAL-3.0.4.tar.gz", hash = "sha256:a17eaa6872e4b7f7fa82f86aeccecc57d224bd054952a56db64368ecaf18509c"},
