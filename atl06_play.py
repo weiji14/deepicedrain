@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.1
+#       jupytext_version: 1.5.2
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -23,7 +23,7 @@
 # - Downloading datasets from the web via [intake](https://intake.readthedocs.io)
 # - Performing [Exploratory Data Analysis](https://en.wikipedia.org/wiki/Exploratory_data_analysis)
 #   using the [PyData](https://pydata.org) stack (e.g. [xarray](http://xarray.pydata.org), [dask](https://dask.org))
-# - Plotting figures using [Hvplot](https://hvplot.holoviz.org) and [PyGMT](https://www.pygmt.org) (TODO)
+# - Plotting figures using [Hvplot](https://hvplot.holoviz.org) and [PyGMT](https://www.pygmt.org)
 #
 # This is in contrast with the [icepyx](https://github.com/icesat2py/icepyx) package
 # and 'official' 2019/2020 [ICESat-2 Hackweek tutorials](https://github.com/ICESAT-2HackWeek/ICESat2_hackweek_tutorials) (which are also awesome!)
@@ -55,11 +55,6 @@ import xarray as xr
 import deepicedrain
 
 # %%
-# Configure intake and set number of compute cores for data download
-intake.config.conf["download_progress"] = False  # disable automatic tqdm progress bars
-
-logging.basicConfig(level=logging.WARNING)
-
 # Limit compute to 10 cores for download part using intake
 # Can possibly go up to 10 because there are 10 DPs?
 # See https://n5eil02u.ecs.nsidc.org/opendap/hyrax/catalog.xml
@@ -124,7 +119,7 @@ dates1 = pd.date_range(start="2018.10.14", end="2018.12.08")  # 1st batch
 dates2 = pd.date_range(start="2018.12.10", end="2019.06.26")  # 2nd batch
 dates3 = pd.date_range(start="2019.07.26", end="2020.05.13")  # 3rd batch
 dates = dates1.append(other=dates2).append(other=dates3)
-# dates = pd.date_range(start="2020.04.04", end="2020.05.13")  # custom batch
+# dates = pd.date_range(start="2020.05.14", end="2020.07.16")  # custom batch
 
 # %%
 # Submit download jobs to Client
