@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.1
+#       jupytext_version: 1.5.2
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -107,7 +107,8 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 # - O. Tange (2018): GNU Parallel 2018, Mar 2018, ISBN 9781387509881, DOI https://doi.org/10.5281/zenodo.1146014
 
 # %%
-# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --resume-failed --results logdir --joblog log --jobs 72 > /dev/null
+# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --resume-failed --results logdir --joblog log --jobs 80 --load 100% > /dev/null
+# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica_20200513_20200716_diff.sh --bar --resume-failed --results logdir --joblog log --jobs 80 --load 100% > /dev/null
 
 # %%
 # df_log = pd.read_csv(filepath_or_buffer="log", sep="\t")
