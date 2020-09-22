@@ -994,15 +994,18 @@ description = "Jupyter notebooks as Markdown documents, Julia, Python or R scrip
 name = "jupytext"
 optional = false
 python-versions = "*"
-version = "1.5.2"
+version = "1.6.0"
 
 [package.dependencies]
 nbformat = ">=4.0.0"
 pyyaml = "*"
 toml = "*"
 
+[package.dependencies.markdown-it-py]
+python = ">=3.6"
+version = ">=0.5.2,<0.6.0"
+
 [package.extras]
-myst = ["myst-parser (>=0.8,<1.0)"]
 toml = ["toml"]
 
 [[package]]
@@ -1045,6 +1048,24 @@ version = "3.2.2"
 
 [package.extras]
 testing = ["coverage", "pyyaml"]
+
+[[package]]
+category = "dev"
+description = "Python port of markdown-it. Markdown parsing, done right!"
+marker = "python_version >= \"3.6\""
+name = "markdown-it-py"
+optional = false
+python-versions = "~=3.6"
+version = "0.5.4"
+
+[package.dependencies]
+attrs = ">=19,<21"
+
+[package.extras]
+code_style = ["pre-commit (2.6)"]
+compare = ["commonmark (>=0.9.1,<0.10.0)", "markdown (>=3.2,<4.0)", "mistune (>=0.8.4,<0.9.0)", "mistletoe-ebp (>=0.10.0,<0.11.0)", "panflute (>=1.12,<2.0)"]
+rtd = ["myst-nb (>=0.10.0,<0.11.0)", "sphinx-book-theme", "sphinx-panels (>=0.4.0,<0.5.0)", "sphinx-copybutton", "sphinx (>=2,<4)", "pyyaml"]
+testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions", "pytest-benchmark (>=3.2,<4.0)", "psutil"]
 
 [[package]]
 category = "main"
@@ -2066,7 +2087,8 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "e6760a4e36e6cd39ed2dd20902bafd968f7684d508b5e21c484bd156409da26f"
+content-hash = "56eeb682bf9cd71121e409a1cfe2b3a70fb5d0a6dfcb967c79e611b11968eca1"
+lock-version = "1.0"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2488,7 +2510,7 @@ jupyterlab-server = [
     {file = "jupyterlab_server-1.2.0.tar.gz", hash = "sha256:5431d9dde96659364b7cc877693d5d21e7b80cea7ae3959ecc2b87518e5f5d8c"},
 ]
 jupytext = [
-    {file = "jupytext-1.5.2.tar.gz", hash = "sha256:1cebc9f5975b4c08db3de6d7d61b35f8c33a24cf2c8c04eee7b8a7aab8ddc39b"},
+    {file = "jupytext-1.6.0.tar.gz", hash = "sha256:91f7a76ca0e0ae0681d8f27e37f5bbdcd511d7e6ac089e0aa06eab0b32be0fd8"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.2.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:443c2320520eda0a5b930b2725b26f6175ca4453c61f739fef7a5847bd262f74"},
@@ -2565,6 +2587,10 @@ lxml = [
 markdown = [
     {file = "Markdown-3.2.2-py3-none-any.whl", hash = "sha256:c467cd6233885534bf0fe96e62e3cf46cfc1605112356c4f9981512b8174de59"},
     {file = "Markdown-3.2.2.tar.gz", hash = "sha256:1fafe3f1ecabfb514a5285fca634a53c1b32a81cb0feb154264d55bf2ff22c17"},
+]
+markdown-it-py = [
+    {file = "markdown-it-py-0.5.4.tar.gz", hash = "sha256:f18ec8f1c1a424ab2a9ac06b5ba87d6d2a01e450cd8678edbc71002106dd68a8"},
+    {file = "markdown_it_py-0.5.4-py3-none-any.whl", hash = "sha256:d1782446f7fcbf2db9a1bc0430230cb879498ad6d76168d7e7c762bab04cb4ea"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -3196,6 +3222,7 @@ toml = [
     {file = "toml-0.10.1.tar.gz", hash = "sha256:926b612be1e5ce0634a2ca03470f95169cf16f939018233a670519cb4ac58b0f"},
 ]
 toolz = [
+    {file = "toolz-0.10.0-py3-none-any.whl", hash = "sha256:e71d8d91c8902fb7659c23e10e9698a8c5cbea985683b8a378c6fd67b52f2fc4"},
     {file = "toolz-0.10.0.tar.gz", hash = "sha256:08fdd5ef7c96480ad11c12d472de21acd32359996f69a5259299b540feba4560"},
 ]
 tornado = [
