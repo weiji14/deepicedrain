@@ -26,9 +26,9 @@ sources:
       date:
         description: Year, month, and day of data acquisition
         type: datetime
-        default: 2020.05.13
+        default: 2020.07.16
         min: 2018.10.14
-        max: 2020.05.13  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
+        max: 2020.07.16  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
       orbitalsegment:
         description: Orbital Segment
         type: list
@@ -67,9 +67,9 @@ sources:
         date:
           description: Year, month, and day of data acquisition
           type: datetime
-          default: 2020.05.13
+          default: 2020.07.16
           min: 2018.10.14
-          max: 2020.05.13  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
+          max: 2020.07.16  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
         referencegroundtrack:
           description: ICESat-2 Reference Ground Track number
           type: str
