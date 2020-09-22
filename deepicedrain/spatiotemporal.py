@@ -181,15 +181,30 @@ def lonlat_to_xy(
     """
     Reprojects longitude/latitude EPSG:4326 coordinates to x/y coordinates.
     Default conversion is to Antarctic Stereographic Projection EPSG:3031.
-    """
-    if hasattr(longitude, "__array__") and callable(longitude.__array__):
-        # TODO upgrade to PyProj 3.0 to remove this workaround for passing in
-        # dask.dataframe.core.Series or xarray.DataArray objects
-        # Based on https://github.com/pyproj4/pyproj/pull/625
-        _longitude = longitude.__array__()
-        _latitude = latitude.__array__()
 
-    x, y = pyproj.Proj(projparams=epsg)(_longitude, _latitude)
+    See also https://pyproj4.github.io/pyproj/latest/api/proj.html#pyproj-proj
+
+    Parameters
+    ----------
+    longitude : xr.DataArray or dask.dataframe.core.Series
+        Input longitude coordinate(s).
+
+    latitude : xr.DataArray or dask.dataframe.core.Series
+        Input latitude coordinate(s).
+
+    epsg : int
+        EPSG integer code for the desired output coordinate system. Default is
+        3031 for Antarctic Polar Stereographic Projection.
+
+    Returns
+    -------
+    x : xr.DataArray or dask.dataframe.core.Series
+        The transformed x coordinate(s).
+
+    y : xr.DataArray or dask.dataframe.core.Series
+        The transformed y coordinate(s).
+    """
+    x, y = pyproj.Proj(projparams=epsg)(longitude, latitude)
 
     if hasattr(longitude, "coords"):
         return (
