@@ -19,28 +19,23 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
 
 # %%
-import dataclasses
 import glob
-import os
 
 import dask
 import dask.array
 import datashader
 import geopandas as gpd
 import holoviews as hv
-import holoviews.operation
 import hvplot.dask
 import hvplot.pandas
 import hvplot.xarray
 import intake
+import matplotlib.cm
 import numpy as np
 import pandas as pd
 import pygmt
-import pyproj
 import shapely
-import tqdm
 import xarray as xr
-import zarr
 
 import deepicedrain
 
@@ -367,9 +362,6 @@ fig.show(width=600)
 #
 # Meant to be a bit more interactive but slightly buggy,
 # need to sort out python dependency issues.
-
-# %%
-import matplotlib.cm
 
 # %%
 shade_grid = datashader.transfer_functions.shade(

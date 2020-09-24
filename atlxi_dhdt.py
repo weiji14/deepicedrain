@@ -374,7 +374,7 @@ fig.show(width=600)
 
 # %%
 # Save or load dhdt data from Parquet file
-placename: str = "whillans_upstream"  # "whillans_downstream"
+placename: str = "whillans_upstream"  # "amundsen_sea_embayment"  # "siple_coast"
 region: deepicedrain.Region = deepicedrain.Region.from_gdf(gdf=regions.loc[placename])
 if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
     # Subset dataset to geographic region of interest
