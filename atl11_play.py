@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.1
+#       jupytext_version: 1.5.2
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -19,54 +19,45 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/intro_to_ATL11.ipynb
 
 # %%
-import dataclasses
 import glob
-import os
 
 import dask
 import dask.array
 import datashader
 import geopandas as gpd
 import holoviews as hv
-import holoviews.operation
 import hvplot.dask
 import hvplot.pandas
 import hvplot.xarray
 import intake
+import matplotlib.cm
 import numpy as np
 import pandas as pd
 import pygmt
-import pyproj
 import shapely
-import tqdm
 import xarray as xr
-import zarr
 
 import deepicedrain
 
 # %%
-client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=32, threads_per_worker=1)
 client
 
 # %% [markdown]
 # # Load Data from Zarr
 #
 # Let's start by getting our data and running some preprocessing steps:
-# - Load 1385 (reference ground tracks) ATL11/*.zarr files
+# - Load 1387 (reference ground tracks) ATL11/*.zarr files
 # - Convert coordinates from longitude/latitude to x/y
 # - Convert GPS delta_time to UTC time
 # - Mask out low quality height (h_corr) data
-
-# %%
-stores = glob.glob(pathname="ATL11.001z123/ATL11_*.zarr")
-print(f"{len(stores)} reference ground track Zarr stores")
 
 # %%
 # Xarray open_dataset preprocessor to add fields based on input filename.
 # Adapted from the intake.open_netcdf._add_path_to_ds function.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{mincycle:02d}{maxcycle:02d}_{}_{}.zarr",
+        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
@@ -74,8 +65,8 @@ add_path_to_ds = lambda ds: ds.assign_coords(
 # Load dataset from all Zarr stores
 # Aligning chunks spatially along cycle_number (i.e. time)
 ds: xr.Dataset = xr.open_mfdataset(
-    paths=stores,
-    chunks={"cycle_number": 7},
+    paths="ATL11.001z123/ATL11_*_003_01.zarr",
+    chunks="auto",
     engine="zarr",
     combine="nested",
     concat_dim="ref_pt",
@@ -84,7 +75,7 @@ ds: xr.Dataset = xr.open_mfdataset(
     backend_kwargs={"consolidated": True},
 )
 # ds = ds.unify_chunks().compute()
-# TODO use intake
+# TODO use intake, wait for https://github.com/intake/intake-xarray/issues/70
 # source = intake.open_ndzarr(url="ATL11.001z123/ATL11_0*.zarr")
 # %% [markdown]
 # ## Convert geographic lon/lat to x/y
@@ -119,7 +110,9 @@ ds: xr.Dataset = ds.reset_coords(names=["longitude", "latitude"])
 # in the future.
 
 # %%
+# ds["utc_time"] = ds.delta_time.rename(new_name_or_name_dict="utc_time")
 ds["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=ds.delta_time)
+
 
 # %% [markdown]
 # ## Mask out low quality height data
@@ -206,18 +199,18 @@ df_subset.hvplot.points(
 # let's flatten our n-dimensional `xarray.Dataset`
 # to a 2-dimensiontal `pandas.DataFrame` table format.
 #
-# There are currently 7 cycles (as of May 2020),
+# There are currently 8 cycles (as of July 2020),
 # and by selecting just one cycle at a time,
 # we can see what the height (`h_corr`)
 # of the ice is like at that time.
 
 # %% [markdown]
-# ## Looking at ICESat-2 Cycle 6
+# ## Looking at ICESat-2 Cycle 7
 
 # %%
-cycle_number: int = 6
+cycle_number: int = 7
 dss = ds.sel(cycle_number=cycle_number)[[*essential_columns]]
-dss
+print(dss)
 
 # %%
 points = hv.Points(
@@ -259,13 +252,13 @@ df.sample(n=5_000_000).hvplot.points(
 # %% [markdown]
 # # Calculate Elevation Change (dh) over ICESAT-2 cycles!!
 #
-# Let's take a look at the change in elevation over one recent ICESat-2 cycle.
-# From our loaded dataset (ds), we'll select Cycles 6 and 5,
+# Let's take a look at the change in elevation over a year (4 ICESat-2 cycles).
+# From our loaded dataset (ds), we'll select Cycles 3 and 7,
 # and subtract the height (h_corr) between them to get a height difference (dh).
 
 # %%
 dh: xr.DataArray = deepicedrain.calculate_delta(
-    dataset=ds, oldcyclenum=5, newcyclenum=6, variable="h_corr"
+    dataset=ds, oldcyclenum=3, newcyclenum=7, variable="h_corr"
 )
 
 
@@ -275,11 +268,11 @@ dh = dh.persist()
 
 # %%
 delta_h: xr.Dataset = dh.dropna(dim="ref_pt").to_dataset(name="delta_height")
-delta_h
+print(delta_h)
 
 # %%
 df_dh: pd.DataFrame = delta_h.to_dataframe()
-df_dh.head()
+print(df_dh.head())
 
 # %%
 # Save or Load delta height data
@@ -323,22 +316,12 @@ subglacial_lakes = [
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
 agg_grid: xr.DataArray = region.datashade(df=df_dh, z_dim="delta_height")
-agg_grid
+print(agg_grid)
 
 # %%
 # Plot our map!
 scale: int = region.scale
 fig = pygmt.Figure()
-fig.coast(
-    region=region.bounds(),
-    projection=f"s0/-90/-71/1:{scale}",
-    area_thresh="+ag",
-    resolution="i",
-    shorelines="0.5p",
-    land="snow4",
-    water="snow3",
-    V="q",
-)
 # fig.grdimage(
 #    grid="Quantarctica3/SatelliteImagery/MODIS/MODIS_Mosaic.tif",
 #    region=region,
@@ -356,9 +339,19 @@ fig.grdimage(
 for subglacial_lake in subglacial_lakes:
     fig.plot(data=subglacial_lake, L=True, pen="thinnest")
 fig.colorbar(
-    position="JCR+e", frame=["af", 'x+l"Elevation Change from Cycle 5 to 6"', "y+lm"]
+    position="JCR+e", frame=["af", 'x+l"Elevation Change from Cycle 3 to 7"', "y+lm"]
 )
-fig.savefig(f"figures/plot_atl11_dh56_{placename}.png")
+fig.coast(
+    region=region.bounds(),
+    projection=f"s0/-90/-71/1:{scale}",
+    area_thresh="+ag",
+    resolution="i",
+    shorelines="0.5p",
+    # land="snow4",
+    # water="snow3",
+    V="q",
+)
+fig.savefig(f"figures/plot_atl11_dh37_{placename}.png")
 fig.show(width=600)
 
 
@@ -369,9 +362,6 @@ fig.show(width=600)
 #
 # Meant to be a bit more interactive but slightly buggy,
 # need to sort out python dependency issues.
-
-# %%
-import matplotlib.cm
 
 # %%
 shade_grid = datashader.transfer_functions.shade(

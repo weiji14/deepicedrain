@@ -115,6 +115,7 @@ sources:
         type: str
         default: siple_coast
         allowed:
+          - amundsen_sea_embayment
           - kamb
           - siple_coast
           - whillans_upstream

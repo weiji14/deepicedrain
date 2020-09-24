@@ -73,7 +73,7 @@ def test_region_from_geodataframe():
     """
     geodataframe: gpd.GeoDataFrame = gpd.read_file(
         filename="deepicedrain/deepicedrain_regions.geojson"
-    ).iloc[0]
+    ).iloc[1]
     region = Region.from_gdf(gdf=geodataframe, name_col="fullname", spacing=1000)
 
     assert region.name == "Kamb Ice Stream"
