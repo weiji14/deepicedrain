@@ -35,13 +35,10 @@
 # Adapted from https://github.com/suzanne64/ATL11/blob/master/plotting_scripts/AA_dhdt_map.ipynb
 
 # %%
-import itertools
 import os
-import warnings
 
 import cudf  # comment out if no GPU
 import dask
-import datashader
 import geopandas as gpd
 import holoviews as hv
 import hvplot.cudf  # comment out if no GPU
@@ -50,16 +47,13 @@ import intake
 import numpy as np
 import pandas as pd
 import panel as pn
-import param
 import pygmt
-import scipy.stats
-import tqdm
 import xarray as xr
 
 import deepicedrain
 
 # %%
-client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
 client
 
 # %% [markdown]
@@ -77,7 +71,7 @@ add_path_to_ds = lambda ds: ds.assign_coords(
 # Load ATL11 data from Zarr
 ds: xr.Dataset = xr.open_mfdataset(
     paths="ATL11.001z123/ATL11_*_003_01.zarr",
-    chunks={"cycle_number": 7},
+    chunks="auto",
     engine="zarr",
     combine="nested",
     concat_dim="ref_pt",
@@ -144,7 +138,7 @@ print(f"Trimmed to {len(ds.ref_pt)} points")
 # computations will be more efficient in later sections.
 
 # %%
-ds["h_corr"] = ds.h_corr.unify_chunks()
+# ds["h_corr"] = ds.h_corr.unify_chunks()
 
 # %%
 # Persist the height and time data in distributed memory
@@ -163,7 +157,7 @@ num_cycles: int = len(ds.cycle_number)
 
 # %%
 # Get first and last dates to put into our plots
-min_date, max_date = ("2018-10-14", "2020-05-13")
+min_date, max_date = ("2018-10-14", "2020-07-16")
 if min_date is None:
     min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
     min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
@@ -213,7 +207,7 @@ ds_ht: xr.Dataset = ds[["h_range", "h_corr", "delta_time"]].compute()
 # ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w", consolidated=True)
 ds_ht: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_hrange_time_{placename}.zarr",
-    chunks={"cycle_number": 7},
+    chunks={"cycle_number": 8},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -223,7 +217,7 @@ ds_ht: xr.Dataset = xr.open_dataset(
 df_hr: pd.DataFrame = ds_ht.h_range.to_dataframe()
 
 # %%
-df_hr.describe()
+print(df_hr.describe())
 
 # %%
 # Datashade our height values (vector points) onto a grid (raster image)
@@ -321,7 +315,7 @@ ds_dhdt: xr.Dataset = ds_dhdt.compute()
 # ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
 ds_dhdt: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_dhdt_{placename}.zarr",
-    chunks="auto",  # {"cycle_number": 7},
+    chunks="auto",
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -363,7 +357,7 @@ fig.coast(
     shorelines="0.5p",
     V="q",
 )
-fig.savefig(f"figures/plot_atl11_dhdt_{placename}_{min_date}_{max_date}.png")
+fig.savefig(f"figures/plot_atl11_dhdt_{placename.lower()}_{min_date}_{max_date}.png")
 fig.show(width=600)
 
 # %%
