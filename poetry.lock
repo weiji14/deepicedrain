@@ -363,11 +363,11 @@ description = "Utilities for Dask and CUDA interactions"
 name = "dask-cuda"
 optional = true
 python-versions = "*"
-version = "0.14.1"
+version = "0.15.0"
 
 [package.dependencies]
 dask = ">=2.9.0"
-distributed = ">=2.11.0"
+distributed = ">=2.18.0"
 numba = ">=0.40.1"
 numpy = ">=1.16.0"
 pynvml = ">=8.0.3"
@@ -2066,7 +2066,8 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "e6760a4e36e6cd39ed2dd20902bafd968f7684d508b5e21c484bd156409da26f"
+content-hash = "759b2a8682ce3b31470f83b4993d9be25d7856bc57c7775111620ed247a3567b"
+lock-version = "1.0"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2282,8 +2283,8 @@ dask = [
     {file = "dask-2.26.0.tar.gz", hash = "sha256:44c5c358bf9037dcff1b8332379738b7766b2d93652fca850a10b6e8a05497f7"},
 ]
 dask-cuda = [
-    {file = "dask-cuda-0.14.1.tar.gz", hash = "sha256:a92f2345a1f27768af398108083ad1b314144f312f2be668ba302df1cf459d3c"},
-    {file = "dask_cuda-0.14.1-py3-none-any.whl", hash = "sha256:d6f39a6cd93fe1e97b030a39e39045e12e84f0e708ca2b317a3baf6087080c8f"},
+    {file = "dask-cuda-0.15.0.tar.gz", hash = "sha256:fcde857744207c6d7cc824c658d8afa1a1ebcd33aef46099dd5f41d2283565ff"},
+    {file = "dask_cuda-0.15.0-py3-none-any.whl", hash = "sha256:811dc2bc807ad00df9632165c7a6b0c2b5a3ffee604300b88153016189398cca"},
 ]
 dask-labextension = [
     {file = "dask_labextension-3.0.0.tar.gz", hash = "sha256:c613f5c76b8fce4fae167eeab3377e0706e5045a27da1200b3b173025a94d94b"},
