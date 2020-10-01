@@ -19,7 +19,7 @@ geoviews = "^1.8.1"
 h5netcdf = "^0.8.1"
 intake = {extras = ["dataframe", "server"], version = "^0.6.0"}
 intake-parquet = "^0.2.3"
-intake-xarray = { git = "https://github.com/intake/intake-xarray.git", rev = "bf98a3c69eea81be716b310e33aeefbf1a89b1d0" }
+intake-xarray = "^0.3.2"
 jupyterlab = "^2.2.4"
 lxml = "^4.5.2"
 matplotlib = "^3.3.0"
@@ -31,7 +31,6 @@ pygmt = "^0.2.0"
 python = "^3.8"
 pyproj = "^3.0.dev2"
 scikit-learn = "^0.23.2"
-toolz = "^0.11.1"
 tqdm = "^4.48.2"
 xarray = {git = "https://github.com/weiji14/xarray.git", rev = "v0.16.0-131-gda42dab0"}
 xrviz = "^0.1.4"

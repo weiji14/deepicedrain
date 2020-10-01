@@ -771,7 +771,7 @@ description = "xarray plugins for Intake"
 name = "intake-xarray"
 optional = false
 python-versions = "*"
-version = "0.3.1+29.gbf98a3c"
+version = "0.3.2"
 
 [package.dependencies]
 dask = ">=2.2"
@@ -779,11 +779,6 @@ intake = ">=0.5.2"
 netcdf4 = "*"
 xarray = ">=0.12.0"
 zarr = "*"
-
-[package.source]
-reference = "bf98a3c69eea81be716b310e33aeefbf1a89b1d0"
-type = "git"
-url = "https://github.com/intake/intake-xarray.git"
 
 [[package]]
 category = "main"
@@ -2066,8 +2061,7 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "60a5db58b0b28c84964d454dfd17ca713f776f6c22b0afdcae542815ec1e67a4"
-lock-version = "1.0"
+content-hash = "563326bffa64da29974db3b1c430f3d93c48e176621627f89f23aef85df08f36"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2435,7 +2429,10 @@ intake = [
 intake-parquet = [
     {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
 ]
-intake-xarray = []
+intake-xarray = [
+    {file = "intake-xarray-0.3.2.tar.gz", hash = "sha256:1ab910b4fde2b31573742ddda273f3fe284d25a56ac75f4f51932b6766385644"},
+    {file = "intake_xarray-0.3.2-py3-none-any.whl", hash = "sha256:8f56934701f0fa02dbe57f5b50dee00a45da381a7b7f7093c4f568e9dfc8b1d6"},
+]
 ipykernel = [
     {file = "ipykernel-5.3.4-py3-none-any.whl", hash = "sha256:d6fbba26dba3cebd411382bc484f7bc2caa98427ae0ddb4ab37fe8bfeb5c7dd3"},
     {file = "ipykernel-5.3.4.tar.gz", hash = "sha256:9b2652af1607986a1b231c62302d070bc0534f564c393a5d9d130db9abbbe89d"},
