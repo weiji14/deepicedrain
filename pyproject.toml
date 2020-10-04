@@ -31,7 +31,7 @@ pygmt = "^0.2.0"
 python = "^3.8"
 pyproj = "^3.0.dev2"
 scikit-learn = "^0.23.2"
-tqdm = "^4.48.2"
+tqdm = "^4.50.0"
 xarray = {git = "https://github.com/weiji14/xarray.git", rev = "v0.16.0-131-gda42dab0"}
 xrviz = "^0.1.4"
 
