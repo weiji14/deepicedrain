@@ -25,7 +25,7 @@
 # In this notebook, we'll use some neat tools to help us examine the lakes:
 # - To find active subglacial lake boundaries,
 # use an *unsupervised clustering* technique
-# - To see ice surface elevation trends at a higher temporal resolution,
+# - To see ice surface elevation trends at a higher temporal resolution (< 3 months),
 # perform *crossover track error analysis* on intersecting ICESat-2 tracks
 #
 # To speed up analysis on millions of points,
@@ -69,6 +69,7 @@ client
 
 # %%
 min_date, max_date = ("2018-10-14", "2020-07-16")
+
 
 # %%
 if not os.path.exists("ATLXI/df_dhdt_antarctica.parquet"):
@@ -117,6 +118,7 @@ cudf_many.dhdt_slope.clip(
 # This will also remove the points on floating (FR) ice shelves and islands (IS),
 # so that we keep only points on the grounded (GR) ice regions.
 
+
 # %%
 # Use point in polygon to label points according to the drainage basins they fall in
 cudf_many["drainage_basin"]: cudf.Series = deepicedrain.point_in_polygon_gpu(
@@ -147,18 +149,44 @@ def find_clusters(X: cudf.core.dataframe.DataFrame) -> cudf.core.series.Series:
     return cluster_labels
 
 
+# %% [markdown]
+# ### Subglacial Lake Finder algorithm
+#
+# For each Antarctic drainage basin:
+#
+# 1. Select all points with significant elevation change over time (dhdt)
+#   - Specifically, the (absolute) dhdt value should be
+#     2x the median (absolute) dhdt for that drainage basin
+#   - E.g. if median dhdt for basin is 0.35 m/yr,
+#     we choose points that have dhdt > 0.70 m/yr
+# 2. Run unsupervised clustering to pick out active subglacial lakes
+#   - Split into draining (-dhdt) and filling (+dhdt) points first
+#   - Use DBSCAN algorithm to cluster points into groups,
+#     with an eps (distance) of 3 km and minimum sample size of 250 points
+# 3. Check each potential point cluster to see if it meets active lake criteria
+#   1. Build a convex hull 'lake' polygon around clustered points
+#   2. Check that the 'lake' has significant elevation change relative to outside
+#     - For the area in the 5 km buffer region **outside** the 'lake' polygon:
+#        - Find median dhdt (outer_dhdt)
+#        - Find median absolute deviation of dhdt values (outer_mad)
+#     - For the area **inside** the 'lake' polygon:
+#        - Find median dhdt (inner_dhdt)
+#     - If the potential lake shows an elevation change that is more than
+#       3x the surrounding deviation of background elevation change,
+#       we infer that this is likely an active subglacial 'lake'
+
 # %%
 # Subglacial lake finder
 activelakes: dict = {
-    "basin_name": [],
-    "num_points": [],
-    "outer_dhdt": [],
-    "outer_std": [],
-    "outer_mad": [],
-    "inner_dhdt": [],
-    "maxabsdhdt": [],
-    "refgtracks": [],
-    "geometry": [],
+    "basin_name": [],  # Antarctic drainage basin name
+    "num_points": [],  # Number of clustered data points
+    "outer_dhdt": [],  # Median elevation change over time (dhdt) outside of lake
+    "outer_std": [],  # Standard deviation of dhdt outside of lake
+    "outer_mad": [],  # Median absolute deviation of dhdt outside of lake
+    "inner_dhdt": [],  # Median elev change over time (dhdt) inside of lake bounds
+    "maxabsdhdt": [],  # Maximum absolute dhdt value inside of lake boundary
+    "refgtracks": [],  # Pipe-delimited list of ICESat-2 reference ground tracks
+    "geometry": [],  # Shapely Polygon geometry holding lake boundary coordinates
 }
 basin_name: str = "Pine_Island"  # Set a basin name here
 basins = drainage_basins[drainage_basins.NAME == basin_name].index  # one specific basin
@@ -194,6 +222,7 @@ for basin_index in tqdm.tqdm(iterable=basins):
         # Store attribute and geometry information of each active lake
         lake_points: cudf.DataFrame = X.loc[lake_labels == cluster_label]
 
+        # More data cleaning, dropping clusters with too few points
         try:
             assert len(lake_points) > 100
         except AssertionError:
@@ -242,6 +271,7 @@ for basin_index in tqdm.tqdm(iterable=basins):
             map(str, lake_points.referencegroundtrack.unique().to_pandas())
         )
 
+        # Save key variables to dictionary that will later go into geodataframe
         activelakes["basin_name"].append(basin.NAME)
         activelakes["num_points"].append(len(lake_points))
         activelakes["outer_dhdt"].append(outer_dhdt)
