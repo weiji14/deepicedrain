@@ -25,7 +25,7 @@
 # In this notebook, we'll use some neat tools to help us examine the lakes:
 # - To find active subglacial lake boundaries,
 # use an *unsupervised clustering* technique
-# - To see ice surface elevation trends at a higher temporal resolution,
+# - To see ice surface elevation trends at a higher temporal resolution (< 3 months),
 # perform *crossover track error analysis* on intersecting ICESat-2 tracks
 #
 # To speed up analysis on millions of points,
@@ -68,17 +68,26 @@ client
 # # Data Preparation
 
 # %%
-min_date, max_date = ("2018-10-14", "2020-05-13")
+min_date, max_date = ("2018-10-14", "2020-07-16")
+
 
 # %%
 if not os.path.exists("ATLXI/df_dhdt_antarctica.parquet"):
     zarrarray = zarr.open_consolidated(store=f"ATLXI/ds_dhdt_antarctica.zarr", mode="r")
-    _ = deepicedrain.zarr_to_parquet(
-        zarrarray=zarrarray,
+    _ = deepicedrain.ndarray_to_parquet(
+        ndarray=zarrarray,
         parquetpath="ATLXI/df_dhdt_antarctica.parquet",
         variables=["x", "y", "dhdt_slope", "referencegroundtrack", "h_corr"],
         dropnacols=["dhdt_slope"],
     )
+
+# %%
+# Read in Antarctic Drainage Basin Boundaries shapefile into a GeoDataFrame
+ice_boundaries: gpd.GeoDataFrame = gpd.read_file(
+    filename="Quantarctica3/Glaciology/MEaSUREs Antarctic Boundaries/IceBoundaries_Antarctica_v2.shp"
+)
+drainage_basins: gpd.GeoDataFrame = ice_boundaries.query(expr="TYPE == 'GR'")
+
 
 # %% [markdown]
 # ## Load in ICESat-2 data (x, y, dhdt) and do initial trimming
@@ -89,9 +98,17 @@ cudf_raw: cudf.DataFrame = cudf.read_parquet(
     filepath_or_buffer="ATLXI/df_dhdt_antarctica.parquet",
     columns=["x", "y", "dhdt_slope", "referencegroundtrack"],
 )
-# Filter to points with dhdt that is less than -1 m/yr or more than +1 m/yr
-cudf_many = cudf_raw.loc[abs(cudf_raw.dhdt_slope) > 1]
+# Filter to points with dhdt that is less than -0.2 m/yr or more than +0.2 m/yr
+cudf_many = cudf_raw.loc[abs(cudf_raw.dhdt_slope) > 0.2]
 print(f"Trimmed {len(cudf_raw)} -> {len(cudf_many)}")
+
+# %%
+# Clip outlier values to 3 sigma (standard deviations) from mean
+_mean = cudf_many.dhdt_slope.mean()
+_std = cudf_many.dhdt_slope.std()
+cudf_many.dhdt_slope.clip(
+    lower=np.float32(_mean - 3 * _std), upper=np.float32(_mean + 3 * _std), inplace=True
+)
 
 # %% [markdown]
 # ## Label ICESat-2 points according to their drainage basin
@@ -103,19 +120,12 @@ print(f"Trimmed {len(cudf_raw)} -> {len(cudf_many)}")
 
 
 # %%
-# Read in Antarctic Drainage Basin Boundaries shapefile into a GeoDataFrame
-ice_boundaries: gpd.GeoDataFrame = gpd.read_file(
-    filename="Quantarctica3/Glaciology/MEaSUREs Antarctic Boundaries/IceBoundaries_Antarctica_v2.shp"
-)
-drainage_basins: gpd.GeoDataFrame = ice_boundaries.query(expr="TYPE == 'GR'")
-
-
-# %%
 # Use point in polygon to label points according to the drainage basins they fall in
 cudf_many["drainage_basin"]: cudf.Series = deepicedrain.point_in_polygon_gpu(
     points_df=cudf_many, poly_df=drainage_basins
 )
 X_many = cudf_many.dropna()  # drop points that are not in a drainage basin
+print(f"Trimmed {len(cudf_many)} -> {len(X_many)}")
 
 # %% [markdown]
 # # Find Active Subglacial Lake clusters
@@ -128,8 +138,8 @@ def find_clusters(X: cudf.core.dataframe.DataFrame) -> cudf.core.series.Series:
     Density-based spatial clustering of applications with noise (DBSCAN)
     See also https://www.naftaliharris.com/blog/visualizing-dbscan-clustering
     """
-    # Run DBSCAN using 2500 m distance, and minimum of 250 points
-    dbscan = cuml.DBSCAN(eps=2500, min_samples=250)
+    # Run DBSCAN using 3000 m distance, and minimum of 250 points
+    dbscan = cuml.DBSCAN(eps=3000, min_samples=250)
     dbscan.fit(X=X)
 
     cluster_labels = dbscan.labels_ + 1  # noise points -1 becomes 0
@@ -139,24 +149,61 @@ def find_clusters(X: cudf.core.dataframe.DataFrame) -> cudf.core.series.Series:
     return cluster_labels
 
 
+# %% [markdown]
+# ### Subglacial Lake Finder algorithm
+#
+# For each Antarctic drainage basin:
+#
+# 1. Select all points with significant elevation change over time (dhdt)
+#   - Specifically, the (absolute) dhdt value should be
+#     2x the median (absolute) dhdt for that drainage basin
+#   - E.g. if median dhdt for basin is 0.35 m/yr,
+#     we choose points that have dhdt > 0.70 m/yr
+# 2. Run unsupervised clustering to pick out active subglacial lakes
+#   - Split into draining (-dhdt) and filling (+dhdt) points first
+#   - Use DBSCAN algorithm to cluster points into groups,
+#     with an eps (distance) of 3 km and minimum sample size of 250 points
+# 3. Check each potential point cluster to see if it meets active lake criteria
+#   1. Build a convex hull 'lake' polygon around clustered points
+#   2. Check that the 'lake' has significant elevation change relative to outside
+#     - For the area in the 5 km buffer region **outside** the 'lake' polygon:
+#        - Find median dhdt (outer_dhdt)
+#        - Find median absolute deviation of dhdt values (outer_mad)
+#     - For the area **inside** the 'lake' polygon:
+#        - Find median dhdt (inner_dhdt)
+#     - If the potential lake shows an elevation change that is more than
+#       3x the surrounding deviation of background elevation change,
+#       we infer that this is likely an active subglacial 'lake'
+
 # %%
 # Subglacial lake finder
 activelakes: dict = {
-    "basin_name": [],
-    "maxabsdhdt": [],
-    "refgtracks": [],
-    "geometry": [],
+    "basin_name": [],  # Antarctic drainage basin name
+    "num_points": [],  # Number of clustered data points
+    "outer_dhdt": [],  # Median elevation change over time (dhdt) outside of lake
+    "outer_std": [],  # Standard deviation of dhdt outside of lake
+    "outer_mad": [],  # Median absolute deviation of dhdt outside of lake
+    "inner_dhdt": [],  # Median elev change over time (dhdt) inside of lake bounds
+    "maxabsdhdt": [],  # Maximum absolute dhdt value inside of lake boundary
+    "refgtracks": [],  # Pipe-delimited list of ICESat-2 reference ground tracks
+    "geometry": [],  # Shapely Polygon geometry holding lake boundary coordinates
 }
-# for basin_index in tqdm.tqdm(
-#     iterable=drainage_basins[drainage_basins.NAME.str.startswith("Whillans")].index
-# ):
-for basin_index in tqdm.tqdm(iterable=drainage_basins.index):
+basin_name: str = "Pine_Island"  # Set a basin name here
+basins = drainage_basins[drainage_basins.NAME == basin_name].index  # one specific basin
+basins: pd.core.indexes.numeric.Int64Index = drainage_basins.index  # run on all basins
+for basin_index in tqdm.tqdm(iterable=basins):
     # Initial data cleaning, filter to rows that are in the drainage basin
     basin = drainage_basins.loc[basin_index]
-    X = X_many.loc[X_many.drainage_basin == basin.NAME]  # .reset_index(drop=True)
+    X_local = X_many.loc[X_many.drainage_basin == basin.NAME]  # .reset_index(drop=True)
+
+    # Get points with dhdt_slope higher than 2x the median dhdt_slope for the basin
+    # E.g. if median dhdt_slope is 0.35 m/yr, then we cluster points over 0.70 m/yr
+    abs_dhdt = X_local.dhdt_slope.abs()
+    tolerance: float = 2 * abs_dhdt.median()
+    X = X_local.loc[abs_dhdt > tolerance]
+
     if len(X) <= 1000:  # don't run on too few points
         continue
-    print(f"{len(X)} rows at {basin.NAME}")
 
     # Run unsupervised clustering separately on draining and filling lakes
     # Draining lake points have negative labels (e.g. -1, -2, 3),
@@ -166,26 +213,54 @@ for basin_index in tqdm.tqdm(iterable=drainage_basins.index):
     draining_lake_labels = -find_clusters(X=X.loc[X.dhdt_slope < 0][cluster_vars])
     filling_lake_labels = find_clusters(X=X.loc[X.dhdt_slope > 0][cluster_vars])
     lake_labels = cudf.concat(objs=[draining_lake_labels, filling_lake_labels])
+    lake_labels: cudf.Series = lake_labels.sort_index()
     lake_labels.name = "cluster_label"
 
+    # Checking all potential subglacial lakes in a basin
     clusters: cudf.Series = lake_labels.unique()
-    print(
-        f"{(clusters < 0).sum()} draining and {(clusters > 0).sum()} filling lakes found"
-    )
-
     for cluster_label in clusters.to_array():
         # Store attribute and geometry information of each active lake
         lake_points: cudf.DataFrame = X.loc[lake_labels == cluster_label]
 
+        # More data cleaning, dropping clusters with too few points
         try:
-            assert len(lake_points) > 2
+            assert len(lake_points) > 100
         except AssertionError:
+            lake_labels = lake_labels.replace(to_replace=cluster_label, value=None)
             continue
 
         multipoint: shapely.geometry.MultiPoint = shapely.geometry.MultiPoint(
             points=lake_points[["x", "y"]].as_matrix()
         )
         convexhull: shapely.geometry.Polygon = multipoint.convex_hull
+
+        # Filter out (most) false positive subglacial lakes
+        # Check that elevation change over time in lake is anomalous to outside
+        # The 5000 m distance from lake boundary setting is empirically based on
+        # Smith et al. 2009's methodology at https://doi.org/10.3189/002214309789470879
+        outer_ring_buffer = convexhull.buffer(distance=5000) - convexhull
+        X_local["in_donut_ring"] = deepicedrain.point_in_polygon_gpu(
+            points_df=X_local,
+            poly_df=gpd.GeoDataFrame({"name": True, "geometry": [outer_ring_buffer]}),
+        )
+        outer_points = X_local.dropna(subset="in_donut_ring")
+        outer_dhdt: float = outer_points.dhdt_slope.median()
+
+        outer_std: float = outer_points.dhdt_slope.std()
+        outer_mad: float = scipy.stats.median_abs_deviation(
+            x=outer_points.dhdt_slope.to_pandas()
+        )
+
+        inner_dhdt: float = lake_points.dhdt_slope.median()
+        X_local.drop_column(name="in_donut_ring")
+
+        # If lake interior's median dhdt value is within 3 median absolute deviations
+        # of the lake exterior's dhdt value, we remove the lake label
+        # I.e. skip if above background change not significant enough
+        # Inspired by Kim et al. 2016's methodology at https://doi.org/10.5194/tc-10-2971-2016
+        if abs(inner_dhdt - outer_dhdt) < 3 * outer_mad:
+            lake_labels = lake_labels.replace(to_replace=cluster_label, value=None)
+            continue
 
         maxabsdhdt: float = (
             lake_points.dhdt_slope.max()
@@ -196,16 +271,34 @@ for basin_index in tqdm.tqdm(iterable=drainage_basins.index):
             map(str, lake_points.referencegroundtrack.unique().to_pandas())
         )
 
+        # Save key variables to dictionary that will later go into geodataframe
         activelakes["basin_name"].append(basin.NAME)
+        activelakes["num_points"].append(len(lake_points))
+        activelakes["outer_dhdt"].append(outer_dhdt)
+        activelakes["outer_std"].append(outer_std)
+        activelakes["outer_mad"].append(outer_mad)
+        activelakes["inner_dhdt"].append(inner_dhdt)
         activelakes["maxabsdhdt"].append(maxabsdhdt)
         activelakes["refgtracks"].append(refgtracks)
         activelakes["geometry"].append(convexhull)
 
+    # Calculate total number of lakes found for one drainage basin
+    clusters: cudf.Series = lake_labels.unique()
+    n_draining, n_filling = (clusters < 0).sum(), (clusters > 0).sum()
+    if n_draining + n_filling > 0:
+        print(f"{len(X)} rows at {basin.NAME} above ± {tolerance:.2f} m/yr")
+        print(f"{n_draining} draining and {n_filling} filling lakes found")
+
 if len(activelakes["geometry"]) >= 1:
     gdf = gpd.GeoDataFrame(activelakes, crs="EPSG:3031")
-    gdf.to_file(filename="antarctic_subglacial_lakes.geojson", driver="GeoJSON")
+    basename = "antarctic_subglacial_lakes"  # f"temp_{basin_name.lower()}_lakes"  #
+    gdf.to_file(filename=f"{basename}_3031.geojson", driver="GeoJSON")
+    gdf.to_crs(crs={"init": "epsg:4326"}).to_file(
+        filename=f"{basename}_4326.geojson", driver="GeoJSON"
+    )
 
-print(f"Total of {len(gdf)} subglacial lakes founds")
+print(f"Total of {len(gdf)} subglacial lakes found")
+
 
 # %% [markdown]
 # ## Visualize lakes
@@ -234,8 +327,8 @@ fig.plot(
     cmap=True,
     frame=[
         f'WSne+t"Estimated number of lake clusters at {basin.NAME}: {n_clusters_}"',
-        'xaf+l"Polar Stereographic X (m)"',
-        'yaf+l"Polar Stereographic Y (m)"',
+        'xafg+l"Polar Stereographic X (m)"',
+        'yafg+l"Polar Stereographic Y (m)"',
     ],
 )
 basinx, basiny = basin.geometry.exterior.coords.xy
