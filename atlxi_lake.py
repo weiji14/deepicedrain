@@ -154,6 +154,7 @@ activelakes: dict = {
     "num_points": [],
     "outer_dhdt": [],
     "outer_std": [],
+    "outer_mad": [],
     "inner_dhdt": [],
     "maxabsdhdt": [],
     "refgtracks": [],
@@ -215,16 +216,20 @@ for basin_index in tqdm.tqdm(iterable=basins):
         )
         outer_points = X_local.dropna(subset="in_donut_ring")
         outer_dhdt: float = outer_points.dhdt_slope.median()
+
         outer_std: float = outer_points.dhdt_slope.std()
+        outer_mad: float = scipy.stats.median_abs_deviation(
+            x=outer_points.dhdt_slope.to_pandas()
+        )
 
         inner_dhdt: float = lake_points.dhdt_slope.median()
         X_local.drop_column(name="in_donut_ring")
 
-        # If lake interior's median dhdt value is not 1 standard deviation
-        # higher than the lake exterior's dhdt value, we remove the lake label
+        # If lake interior's median dhdt value is within 3 median absolute deviations
+        # of the lake exterior's dhdt value, we remove the lake label
         # I.e. skip if above background change not significant enough
-        # Mimic Kim et al. 2016's methodology at https://doi.org/10.5194/tc-10-2971-2016
-        if abs(inner_dhdt - outer_dhdt) < outer_std:
+        # Inspired by Kim et al. 2016's methodology at https://doi.org/10.5194/tc-10-2971-2016
+        if abs(inner_dhdt - outer_dhdt) < 3 * outer_mad:
             lake_labels = lake_labels.replace(to_replace=cluster_label, value=None)
             continue
 
@@ -241,6 +246,7 @@ for basin_index in tqdm.tqdm(iterable=basins):
         activelakes["num_points"].append(len(lake_points))
         activelakes["outer_dhdt"].append(outer_dhdt)
         activelakes["outer_std"].append(outer_std)
+        activelakes["outer_mad"].append(outer_mad)
         activelakes["inner_dhdt"].append(inner_dhdt)
         activelakes["maxabsdhdt"].append(maxabsdhdt)
         activelakes["refgtracks"].append(refgtracks)
@@ -255,9 +261,10 @@ for basin_index in tqdm.tqdm(iterable=basins):
 
 if len(activelakes["geometry"]) >= 1:
     gdf = gpd.GeoDataFrame(activelakes, crs="EPSG:3031")
-    gdf.to_file(filename="antarctic_subglacial_lakes_3031.geojson", driver="GeoJSON")
+    basename = "antarctic_subglacial_lakes"  # f"temp_{basin_name.lower()}_lakes"  #
+    gdf.to_file(filename=f"{basename}_3031.geojson", driver="GeoJSON")
     gdf.to_crs(crs={"init": "epsg:4326"}).to_file(
-        filename="antarctic_subglacial_lakes_4326.geojson", driver="GeoJSON"
+        filename=f"{basename}_4326.geojson", driver="GeoJSON"
     )
 
 print(f"Total of {len(gdf)} subglacial lakes found")
