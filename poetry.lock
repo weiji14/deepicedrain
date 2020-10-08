@@ -1989,17 +1989,17 @@ description = "N-D labeled arrays and datasets in Python"
 name = "xarray"
 optional = false
 python-versions = ">=3.6"
-version = "0.16.1.dev131+gda42dab0"
+version = "0.16.2.dev18+g49e3032d"
 
 [package.dependencies]
 numpy = ">=1.15"
 pandas = ">=0.25"
-setuptools = ">=41.2"
+setuptools = ">=38.4"
 
 [package.source]
-reference = "da42dab04d1e6dad22de01cb82adc93aa5c9ed00"
+reference = "49e3032ddfa3fe86361300fd08db4764ee718bf1"
 type = "git"
-url = "https://github.com/weiji14/xarray.git"
+url = "https://github.com/pydata/xarray.git"
 
 [[package]]
 category = "main"
@@ -2061,7 +2061,7 @@ heapdict = "*"
 cuda = ["cupy-cuda102", "dask-cuda"]
 
 [metadata]
-content-hash = "563326bffa64da29974db3b1c430f3d93c48e176621627f89f23aef85df08f36"
+content-hash = "bc44b38a44ad006cf776b2c3920a32117d4b1897ba39961695006ace553c90ef"
 python-versions = "^3.8"
 
 [metadata.files]
