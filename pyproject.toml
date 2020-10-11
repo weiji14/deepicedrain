@@ -20,7 +20,7 @@ h5netcdf = "^0.8.1"
 intake = {extras = ["dataframe", "server"], version = "^0.6.0"}
 intake-parquet = "^0.2.3"
 intake-xarray = "^0.3.2"
-jupyterlab = "^2.2.4"
+jupyterlab = "^2.2.8"
 lxml = "^4.5.2"
 matplotlib = "^3.3.2"
 numcodecs = "^0.7.2"
