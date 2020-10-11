@@ -457,7 +457,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "distributed"
-version = "2.26.0"
+version = "2.30.0"
 description = "Distributed scheduler for Dask"
 category = "main"
 optional = false
@@ -2090,7 +2090,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f4fffde9b00667a4bb0273b98697249544f8f6b0e946a33189b97eb781869a29"
+content-hash = "2e31c34e78736b51ff13d2726ab46549d46395fada0981a77c97fb1fb72c22bf"
 
 [metadata.files]
 aiohttp = [
@@ -2339,8 +2339,8 @@ defusedxml = [
     {file = "defusedxml-0.6.0.tar.gz", hash = "sha256:f684034d135af4c6cbb949b8a4d2ed61634515257a67299e5f940fbaa34377f5"},
 ]
 distributed = [
-    {file = "distributed-2.26.0-py3-none-any.whl", hash = "sha256:e584e538d0908a003e0cf2807c19d94cebaebf14d270663df65e1daabc49d6fe"},
-    {file = "distributed-2.26.0.tar.gz", hash = "sha256:b5471a7af8ec3c1b309767bfd726ff20acb4408f72294f96e7bf8ff89a326a7d"},
+    {file = "distributed-2.30.0-py3-none-any.whl", hash = "sha256:5c9078eb8e95a17d482cad74022aafdf8af1870c2fc4fbe51071dab474e42ffb"},
+    {file = "distributed-2.30.0.tar.gz", hash = "sha256:3eb8e4173625cea6ebda2f0a079b813eeabbffd1b24584855cf063ed1cca60b3"},
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
@@ -3120,6 +3120,9 @@ pyzmq = [
     {file = "pyzmq-19.0.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:654d3e06a4edc566b416c10293064732516cf8871a4522e0a2ba00cc2a2e600c"},
     {file = "pyzmq-19.0.2-cp38-cp38-win32.whl", hash = "sha256:276ad604bffd70992a386a84bea34883e696a6b22e7378053e5d3227321d9702"},
     {file = "pyzmq-19.0.2-cp38-cp38-win_amd64.whl", hash = "sha256:09d24a80ccb8cbda1af6ed8eb26b005b6743e58e9290566d2a6841f4e31fa8e0"},
+    {file = "pyzmq-19.0.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:18189fc59ff5bf46b7ccf5a65c1963326dbfc85a2bc73e9f4a90a40322b992c8"},
+    {file = "pyzmq-19.0.2-cp39-cp39-manylinux1_i686.whl", hash = "sha256:b1dd4cf4c5e09cbeef0aee83f3b8af1e9986c086a8927b261c042655607571e8"},
+    {file = "pyzmq-19.0.2-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:c6d653bab76b3925c65d4ac2ddbdffe09710f3f41cc7f177299e8c4498adb04a"},
     {file = "pyzmq-19.0.2-pp27-pypy_73-macosx_10_9_x86_64.whl", hash = "sha256:c1a31cd42905b405530e92bdb70a8a56f048c8a371728b8acf9d746ecd4482c0"},
     {file = "pyzmq-19.0.2-pp36-pypy36_pp73-macosx_10_9_x86_64.whl", hash = "sha256:a7e7f930039ee0c4c26e4dfee015f20bd6919cd8b97c9cd7afbde2923a5167b6"},
     {file = "pyzmq-19.0.2.tar.gz", hash = "sha256:296540a065c8c21b26d63e3cea2d1d57902373b16e4256afe46422691903a438"},
@@ -3145,6 +3148,12 @@ regex = [
     {file = "regex-2020.9.27-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:8d69cef61fa50c8133382e61fd97439de1ae623fe943578e477e76a9d9471637"},
     {file = "regex-2020.9.27-cp38-cp38-win32.whl", hash = "sha256:f2388013e68e750eaa16ccbea62d4130180c26abb1d8e5d584b9baf69672b30f"},
     {file = "regex-2020.9.27-cp38-cp38-win_amd64.whl", hash = "sha256:4318d56bccfe7d43e5addb272406ade7a2274da4b70eb15922a071c58ab0108c"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux1_i686.whl", hash = "sha256:84cada8effefe9a9f53f9b0d2ba9b7b6f5edf8d2155f9fdbe34616e06ececf81"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:816064fc915796ea1f26966163f6845de5af78923dfcecf6551e095f00983650"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:5d892a4f1c999834eaa3c32bc9e8b976c5825116cde553928c4c8e7e48ebda67"},
+    {file = "regex-2020.9.27-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:c9443124c67b1515e4fe0bb0aa18df640965e1030f468a2a5dc2589b26d130ad"},
+    {file = "regex-2020.9.27-cp39-cp39-win32.whl", hash = "sha256:49f23ebd5ac073765ecbcf046edc10d63dcab2f4ae2bce160982cb30df0c0302"},
+    {file = "regex-2020.9.27-cp39-cp39-win_amd64.whl", hash = "sha256:3d20024a70b97b4f9546696cbf2fd30bae5f42229fbddf8661261b1eaff0deb7"},
     {file = "regex-2020.9.27.tar.gz", hash = "sha256:a6f32aea4260dfe0e55dc9733ea162ea38f0ea86aa7d0f77b15beac5bf7b369d"},
 ]
 requests = [
