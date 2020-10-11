@@ -343,7 +343,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "dask"
-version = "2.26.0"
+version = "2.30.0"
 description = "Parallel PyData with Task Scheduling"
 category = "main"
 optional = false
@@ -2091,7 +2091,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "02348a2e1c106934d092714be875c039ee7c5ade3da8dcf9e07501e068ee80ad"
+content-hash = "2f1453fb627da78eb8114d633c835ffac8de18a0c824a0e19cff5edb90c50774"
 
 [metadata.files]
 aiohttp = [
@@ -2314,8 +2314,8 @@ cython = [
     {file = "Cython-0.29.21.tar.gz", hash = "sha256:e57acb89bd55943c8d8bf813763d20b9099cc7165c0f16b707631a7654be9cad"},
 ]
 dask = [
-    {file = "dask-2.26.0-py3-none-any.whl", hash = "sha256:09e2e3423df23acf59e54202351895a9bf3e18210e343b6247b33034207b0a3a"},
-    {file = "dask-2.26.0.tar.gz", hash = "sha256:44c5c358bf9037dcff1b8332379738b7766b2d93652fca850a10b6e8a05497f7"},
+    {file = "dask-2.30.0-py3-none-any.whl", hash = "sha256:4c215aa55951f570b5a294b2ce964ed801c6efd766231c53447460e60f73ea14"},
+    {file = "dask-2.30.0.tar.gz", hash = "sha256:a1669022e25de99b227c3d83da4801f032415962dac431099bf0534648e41a54"},
 ]
 dask-cuda = [
     {file = "dask-cuda-0.15.0.tar.gz", hash = "sha256:fcde857744207c6d7cc824c658d8afa1a1ebcd33aef46099dd5f41d2283565ff"},
