@@ -5,15 +5,15 @@ Does bounding box region subsets, coordinate/time conversions, and more!
 import dataclasses
 import datetime
 import os
+import shutil
 import tempfile
 
+import datashader
 import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pyproj
 import xarray as xr
-
-import datashader
 
 
 @dataclasses.dataclass(frozen=True)
@@ -298,3 +298,118 @@ def point_in_polygon_gpu(
             point_labels.loc[poly_labels[label]] = poly_df_.loc[label][poly_label_col]
 
     return point_labels
+
+
+def spatiotemporal_cube(
+    table: pd.DataFrame,
+    placename: str = "",
+    x_var: str = "x",
+    y_var: str = "y",
+    z_var: str = "h_corr",
+    spacing: int = 250,
+    cycles: list = None,
+    folder: str = "",
+) -> xr.Dataset:
+    """
+    Interpolates a time-series point cloud into an xarray.Dataset data cube.
+    Uses `pygmt`'s blockmedian and surface algorithms to produce individual
+    NetCDF grids, and `xarray` to stack each NetCDF grid into one dataset.
+
+    Steps are as follows:
+
+    1. Create several xarray.DataArray grid surfaces from a table of points,
+       one for each time cycle.
+    2. Stacked the grids along a time cycle axis into a xarray.Dataset which is
+       a spatiotemporal data cube with 'x', 'y' and 'cycle_number' dimensions.
+
+                             _1__2__3_
+            *   *           /  /  /  /|
+         *   *             /  /  /  / |
+       *   *    *         /__/__/__/  |  y
+    *    *   *      -->   |  |  |  |  |
+      *    *   *          |  |  |  | /
+        *    *            |__|__|__|/  x
+                             cycle
+
+    Parameters
+    ----------
+    table : pandas.DataFrame
+        A table containing the ICESat-2 track data from multiple cycles. It
+        should ideally have geographical columns called 'x', 'y', and attribute
+        columns like 'h_corr_1', 'h_corr_2', etc for each cycle time.
+    placename : str
+        Optional. A descriptive placename for the data (e.g. some_ice_stream),
+        to be used in the temporary NetCDF filename.
+    x_var : str
+        The x coordinate column name to use from the table data. Default is
+        'x'.
+    y_var : str
+        The y coordinate column name to use from the table data. Default is
+        'y'.
+    z_var : str
+        The z column name to use from the table data. This will be the
+        attribute that the surface algorithm will run on. Default is 'h_corr'.
+    spacing : float or str
+        The spatial resolution of the resulting grid, provided as a number or
+        as 'dx/dy' increments. This is passed on to `pygmt.blockmedian` and
+        `pygmt.surface`. Default is 250 (metres).
+    cycles : list
+        The cycle numbers to run the gridding algorithm on, e.g. [3, 4] will
+        use columns 'h_corr_3' and 'h_corr_4'. Default is None which will
+        automatically determine the cycles for a given z_var.
+    folder : str
+        The folder to keep the intermediate NetCDF file in. Default is to place
+        the files in the current working directory.
+
+    Returns
+    -------
+    cube : xarray.Dataset
+        A 3-dimensional data cube made of digital surfaces stacked along a time
+        cycle axis.
+
+    """
+    import pygmt
+    import tqdm
+
+    # Determine grid's bounding box region (xmin, xmax, ymin, ymax)
+    grid_region: np.ndarray = pygmt.info(
+        table=table[[x_var, y_var]], spacing=f"s{spacing}"
+    )
+
+    # Create one grid surface for each time cycle
+    if cycles is None:
+        cycles: list = [
+            int(col[len(z_var) + 1 :]) for col in table.columns if col.startswith(z_var)
+        ]
+    _placename = f"_{placename}" if placename else ""
+    for cycle in tqdm.tqdm(iterable=cycles):
+        df_trimmed = pygmt.blockmedian(
+            table=table[[x_var, y_var, f"{z_var}_{cycle}"]].dropna(),
+            region=grid_region,
+            spacing=f"{spacing}+e",
+        )
+        outfile = f"{z_var}{_placename}_cycle_{cycle}.nc"
+        pygmt.surface(
+            data=df_trimmed.values,
+            region=grid_region,
+            spacing=spacing,
+            T=0.35,  # tension factor
+            V="e",  # error messages only
+            outfile=outfile,
+        )
+        # print(pygmt.grdinfo(outfile))
+
+    # Stack several NetCDF grids into one NetCDF along the time cycle axis
+    paths: list = [f"{z_var}{_placename}_cycle_{cycle}.nc" for cycle in cycles]
+    dataset: xr.Dataset = xr.open_mfdataset(
+        paths=paths,
+        combine="nested",
+        concat_dim=[pd.Index(data=cycles, name="cycle_number")],
+        attrs_file=paths[-1],
+    )
+
+    # Move files into new folder if requested
+    if folder:
+        [shutil.move(src=path, dst=folder) for path in paths]
+
+    return dataset

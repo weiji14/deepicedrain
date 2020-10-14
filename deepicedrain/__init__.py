@@ -11,6 +11,7 @@ from deepicedrain.spatiotemporal import (
     deltatime_to_utctime,
     lonlat_to_xy,
     point_in_polygon_gpu,
+    spatiotemporal_cube,
 )
 from deepicedrain.vizplots import IceSat2Explorer, plot_alongtrack, plot_crossovers
 
