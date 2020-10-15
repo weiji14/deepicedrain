@@ -560,7 +560,7 @@ test = ["pytest (>=3)", "pytest-cov", "boto3 (>=1.2.4)", "mock"]
 
 [[package]]
 name = "fsspec"
-version = "0.8.3"
+version = "0.8.4"
 description = "File-system specification"
 category = "main"
 optional = false
@@ -759,7 +759,7 @@ pyarrow = "*"
 
 [[package]]
 name = "intake-xarray"
-version = "0.3.2"
+version = "0.4.0"
 description = "xarray plugins for Intake"
 category = "main"
 optional = false
@@ -767,6 +767,7 @@ python-versions = "*"
 
 [package.dependencies]
 dask = ">=2.2"
+fsspec = ">0.8.3"
 intake = ">=0.5.2"
 netcdf4 = "*"
 xarray = ">=0.12.0"
@@ -2091,7 +2092,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "73d2d48dc12fbf30648adbff407ed6afa08f3efc0bec44176854edada8ea6a9f"
+content-hash = "4d258abe9f8fdbb8fe0399347552ddde3044b869f0d9cdedcffe085a56468d0b"
 
 [metadata.files]
 aiohttp = [
@@ -2398,8 +2399,8 @@ fiona = [
     {file = "Fiona-1.8.17.tar.gz", hash = "sha256:716201c21246587f374785bec6d6a20a984fe1f6c2b0e83bf15127eb8f724d0c"},
 ]
 fsspec = [
-    {file = "fsspec-0.8.3-py3-none-any.whl", hash = "sha256:560b8cda169c495956a0db4700e9e0d131dc6114f7d0c8766d603faa53618b8f"},
-    {file = "fsspec-0.8.3.tar.gz", hash = "sha256:aad96c98b7f73bc437bb024e7cb3b0943c61049f95d6c5edec5b8b8850fd0875"},
+    {file = "fsspec-0.8.4-py3-none-any.whl", hash = "sha256:404194b0cf93128d980689fe9a49013ee9676edd1ab7f0f15b737b2cedb0ab88"},
+    {file = "fsspec-0.8.4.tar.gz", hash = "sha256:e1e494d4814f6804769f3c7bfd7a722a15113cc0339d14755297f09306b8f21f"},
 ]
 gdal = [
     {file = "GDAL-3.0.4.tar.gz", hash = "sha256:a17eaa6872e4b7f7fa82f86aeccecc57d224bd054952a56db64368ecaf18509c"},
@@ -2471,8 +2472,8 @@ intake-parquet = [
     {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
 ]
 intake-xarray = [
-    {file = "intake-xarray-0.3.2.tar.gz", hash = "sha256:1ab910b4fde2b31573742ddda273f3fe284d25a56ac75f4f51932b6766385644"},
-    {file = "intake_xarray-0.3.2-py3-none-any.whl", hash = "sha256:8f56934701f0fa02dbe57f5b50dee00a45da381a7b7f7093c4f568e9dfc8b1d6"},
+    {file = "intake-xarray-0.4.0.tar.gz", hash = "sha256:319d62a8854ad8de6e3d5db245f9d1441f9a8b08549351d367ff7d98a7e8535a"},
+    {file = "intake_xarray-0.4.0-py3-none-any.whl", hash = "sha256:32025dd3f69204c6f5e976159b20a61d2902843af77c4b3e36f676715184c850"},
 ]
 ipykernel = [
     {file = "ipykernel-5.3.4-py3-none-any.whl", hash = "sha256:d6fbba26dba3cebd411382bc484f7bc2caa98427ae0ddb4ab37fe8bfeb5c7dd3"},
@@ -3121,6 +3122,7 @@ pyzmq = [
     {file = "pyzmq-19.0.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:18189fc59ff5bf46b7ccf5a65c1963326dbfc85a2bc73e9f4a90a40322b992c8"},
     {file = "pyzmq-19.0.2-cp39-cp39-manylinux1_i686.whl", hash = "sha256:b1dd4cf4c5e09cbeef0aee83f3b8af1e9986c086a8927b261c042655607571e8"},
     {file = "pyzmq-19.0.2-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:c6d653bab76b3925c65d4ac2ddbdffe09710f3f41cc7f177299e8c4498adb04a"},
+    {file = "pyzmq-19.0.2-cp39-cp39-win_amd64.whl", hash = "sha256:949a219493a861c263b75a16588eadeeeab08f372e25ff4a15a00f73dfe341f4"},
     {file = "pyzmq-19.0.2-pp27-pypy_73-macosx_10_9_x86_64.whl", hash = "sha256:c1a31cd42905b405530e92bdb70a8a56f048c8a371728b8acf9d746ecd4482c0"},
     {file = "pyzmq-19.0.2-pp36-pypy36_pp73-macosx_10_9_x86_64.whl", hash = "sha256:a7e7f930039ee0c4c26e4dfee015f20bd6919cd8b97c9cd7afbde2923a5167b6"},
     {file = "pyzmq-19.0.2.tar.gz", hash = "sha256:296540a065c8c21b26d63e3cea2d1d57902373b16e4256afe46422691903a438"},
