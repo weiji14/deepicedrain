@@ -308,6 +308,7 @@ def spatiotemporal_cube(
     z_var: str = "h_corr",
     spacing: int = 250,
     cycles: list = None,
+    projection: str = "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
     folder: str = "",
 ) -> xr.Dataset:
     """
@@ -357,6 +358,11 @@ def spatiotemporal_cube(
         The cycle numbers to run the gridding algorithm on, e.g. [3, 4] will
         use columns 'h_corr_3' and 'h_corr_4'. Default is None which will
         automatically determine the cycles for a given z_var.
+    projection : str
+        The proj4 string to store in the NetCDF output, will be passed directly
+        to `pygmt.surface`'s J (projection) argument. Default is '+proj=stere
+        +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84
+        +units=m +no_defs', i.e. Antarctic Polar Stereographic EPSG:3031.
     folder : str
         The folder to keep the intermediate NetCDF file in. Default is to place
         the files in the current working directory.
@@ -393,23 +399,26 @@ def spatiotemporal_cube(
             data=df_trimmed.values,
             region=grid_region,
             spacing=spacing,
+            J=f'"{projection}"',  # projection
             T=0.35,  # tension factor
             V="e",  # error messages only
             outfile=outfile,
         )
         # print(pygmt.grdinfo(outfile))
 
-    # Stack several NetCDF grids into one NetCDF along the time cycle axis
+    # Move files into new folder if requested
     paths: list = [f"{z_var}{_placename}_cycle_{cycle}.nc" for cycle in cycles]
+    if folder:
+        paths: list = [
+            shutil.move(src=path, dst=os.path.join(folder, path)) for path in paths
+        ]
+
+    # Stack several NetCDF grids into one NetCDF along the time cycle axis
     dataset: xr.Dataset = xr.open_mfdataset(
         paths=paths,
         combine="nested",
         concat_dim=[pd.Index(data=cycles, name="cycle_number")],
         attrs_file=paths[-1],
     )
-
-    # Move files into new folder if requested
-    if folder:
-        [shutil.move(src=path, dst=folder) for path in paths]
 
     return dataset

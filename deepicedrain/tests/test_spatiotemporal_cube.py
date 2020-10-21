@@ -42,7 +42,7 @@ def test_spatiotemporal_cube(table):
     )
 
     assert isinstance(grid, xr.Dataset)
-    assert grid.dims == {"x": 8, "y": 16, "cycle_number": 2}
+    assert grid.dims == {"x": 8, "y": 16, "cycle_number": 2, "grid_mapping": 12}
     xr.testing.assert_allclose(a=grid.z.min(), b=xr.DataArray(data=-19568.74))
     xr.testing.assert_allclose(a=grid.z.max(), b=xr.DataArray(data=21167.637))
     xr.testing.assert_allclose(
