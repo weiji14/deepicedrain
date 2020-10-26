@@ -13,6 +13,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pyproj
+import scipy.stats
 import xarray as xr
 
 
@@ -307,6 +308,7 @@ def spatiotemporal_cube(
     y_var: str = "y",
     z_var: str = "h_corr",
     spacing: int = 250,
+    clip_limits: bool = True,
     cycles: list = None,
     projection: str = "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
     folder: str = "",
@@ -354,6 +356,10 @@ def spatiotemporal_cube(
         The spatial resolution of the resulting grid, provided as a number or
         as 'dx/dy' increments. This is passed on to `pygmt.blockmedian` and
         `pygmt.surface`. Default is 250 (metres).
+    clip_limits : bool
+        Whether or not to clip the output grid surface to ± 3 times the median
+        absolute deviation of the data table's z-values. Useful for handling
+        outlier values in the data table. Default is True (will clip).
     cycles : list
         The cycle numbers to run the gridding algorithm on, e.g. [3, 4] will
         use columns 'h_corr_3' and 'h_corr_4'. Default is None which will
@@ -382,11 +388,24 @@ def spatiotemporal_cube(
         table=table[[x_var, y_var]], spacing=f"s{spacing}"
     )
 
-    # Create one grid surface for each time cycle
+    # Automatically determine list of cycles if None is given
     if cycles is None:
         cycles: list = [
             int(col[len(z_var) + 1 :]) for col in table.columns if col.startswith(z_var)
         ]
+
+    # Limit surface output to within 3 median absolute deviations of median value
+    if clip_limits:
+        z_values = table[[f"{z_var}_{cycle}" for cycle in cycles]]
+        median: float = np.nanmedian(z_values)
+        meddev: float = scipy.stats.median_abs_deviation(
+            x=z_values, axis=None, nan_policy="omit"
+        )
+        limits: list = [f"l{median - 3 * meddev}", f"u{median + 3 * meddev}"]
+    else:
+        limits = None
+
+    # Create one grid surface for each time cycle
     _placename = f"_{placename}" if placename else ""
     for cycle in tqdm.tqdm(iterable=cycles):
         df_trimmed = pygmt.blockmedian(
@@ -400,6 +419,7 @@ def spatiotemporal_cube(
             region=grid_region,
             spacing=spacing,
             J=f'"{projection}"',  # projection
+            L=limits,  # lower and upper limits
             T=0.35,  # tension factor
             V="e",  # error messages only
             outfile=outfile,
