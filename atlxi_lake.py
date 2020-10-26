@@ -44,6 +44,7 @@ import cuml
 import dask
 import dask.array
 import geopandas as gpd
+import hvplot.xarray
 import numpy as np
 import pandas as pd
 import panel as pn
@@ -51,6 +52,7 @@ import pygmt
 import scipy.spatial
 import shapely.geometry
 import tqdm
+import xarray as xr
 import zarr
 
 import deepicedrain
@@ -339,7 +341,7 @@ fig.show()
 
 
 # %% [markdown]
-# # Select a lake to examine
+# # Select a subglacial lake to examine
 
 # %%
 # Save or load dhdt data from Parquet file
@@ -392,6 +394,124 @@ lake.geometry
 placename: str = region.name.lower().replace(" ", "_")
 df_lake: cudf.DataFrame = region.subset(data=df_dhdt)
 
+
+# %% [markdown]
+# ## Create an interpolated ice surface elevation grid for each ICESat-2 cycle
+
+# %%
+# Generate gridded time-series of ice elevation over lake
+cycles: tuple = (3, 4, 5, 6, 7, 8)
+os.makedirs(name=f"figures/{placename}", exist_ok=True)
+ds_lake: xr.Dataset = deepicedrain.spatiotemporal_cube(
+    table=df_lake.to_pandas(),
+    placename=placename,
+    cycles=cycles,
+    folder=f"figures/{placename}",
+)
+ds_lake.to_netcdf(path=f"figures/{placename}/xyht_{placename}.nc", mode="w")
+
+# %%
+# Get 3D grid_region (xmin/xmax/ymin/ymax/zmin/zmax),
+# and calculate normalized z-values as Elevation delta relative to Cycle 3
+grid_region = pygmt.info(table=df_lake[["x", "y"]].to_pandas(), spacing="s250")
+z_limits: tuple = (float(ds_lake.z.min()), float(ds_lake.z.max()))  # original z limits
+grid_region: np.ndarray = np.append(arr=grid_region, values=z_limits)
+
+ds_lake_norm: xr.Dataset = ds_lake - ds_lake.sel(cycle_number=3).z
+z_norm_limits: tuple = (float(ds_lake_norm.z.min()), float(ds_lake_norm.z.max()))
+grid_region_norm: np.ndarray = np.append(arr=grid_region[:4], values=z_norm_limits)
+
+print(f"Elevation limits are: {z_limits}")
+
+# %%
+# 3D plots of gridded ice surface elevation over time
+azimuth: float = 157.5  # 202.5  # 270
+elevation: float = 45  # 60
+for cycle in tqdm.tqdm(iterable=cycles):
+    time_nsec: pd.Timestamp = df_lake[f"utc_time_{cycle}"].to_pandas().mean()
+    time_sec: str = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
+
+    grdview_kwargs = dict(
+        cmap=True,
+        zscale=0.1,  # zscaling factor, default to 10x vertical exaggeration
+        surftype="sim",  # surface, image and mesh plot
+        perspective=[azimuth, elevation],  # perspective using azimuth/elevation
+        # W="c0.05p,black,solid",  # draw contours
+    )
+
+    fig = pygmt.Figure()
+    # grid = ds_lake.sel(cycle_number=cycle).z
+    grid = f"figures/{placename}/h_corr_{placename}_cycle_{cycle}.nc"
+    pygmt.makecpt(cmap="lapaz", series=z_limits)
+    fig.grdview(
+        grid=grid,
+        projection="X10c",
+        region=grid_region,
+        shading=True,
+        frame=[
+            f'SWZ+t"{region.name}"',  # plot South, West axes, and Z-axis
+            'xaf+l"Polar Stereographic X (m)"',  # add x-axis annotations and minor ticks
+            'yaf+l"Polar Stereographic Y (m)"',  # add y-axis annotations and minor ticks
+            f'zaf+l"Elevation (m)"',  # add z-axis annotations, minor ticks and axis label
+        ],
+        **grdview_kwargs,
+    )
+
+    # Plot lake boundary outline
+    # TODO wait for plot3d to plot lake boundary points at correct height
+    df = pd.DataFrame([region.bounds()]).values
+    points = pd.DataFrame(
+        data=[point for point in lake.geometry.exterior.coords], columns=("x", "y")
+    )
+    df_xyz = pygmt.grdtrack(points=points, grid=grid, newcolname="z")
+    fig.plot(
+        data=df_xyz.values,
+        region=grid_region,
+        pen="1.5p,yellow2",
+        Jz=True,  # zscale
+        p=f"{azimuth}/{elevation}/{df_xyz.z.median()}",  # perspective
+        # label='"Subglacial Lake X"'
+    )
+
+    # Plot normalized elevation change
+    grid = ds_lake_norm.sel(cycle_number=cycle).z
+    if cycle == 3:
+        # add some tiny random noise to make plot work
+        grid = grid + np.random.normal(scale=1e-8, size=grid.shape)
+    pygmt.makecpt(cmap="vik", series=z_norm_limits)
+    fig.grdview(
+        grid=grid,
+        region=grid_region_norm,
+        frame=[
+            f'SEZ2+t"Cycle {cycle} at {time_sec}"',  # plot South, East axes, and Z-axis
+            'xaf+l"Polar Stereographic X (m)"',  # add x-axis annotations and minor ticks
+            'yaf+l"Polar Stereographic Y (m)"',  # add y-axis annotations and minor ticks
+            f'zaf+l"Elev Change (m)"',  # add z-axis annotations, minor ticks and axis label
+        ],
+        X="10c",  # xshift
+        **grdview_kwargs,
+    )
+
+    fig.savefig(f"figures/{placename}/dsm_{placename}_cycle_{cycle}.png")
+fig.show()
+
+# %%
+# Make a animated GIF of changing ice surface from the PNG files
+gif_fname: str = (
+    f"figures/{placename}/dsm_{placename}_cycles_{cycles[0]}-{cycles[-1]}.gif"
+)
+# !convert -delay 120 -loop 0 figures/{placename}/dsm_*.png {gif_fname}
+
+# %%
+# HvPlot 2D interactive view of ice surface elevation grids over each ICESat-2 cycle
+dashboard: pn.layout.Column = pn.Column(
+    ds_lake.hvplot.image(x="x", y="y", clim=z_limits, cmap="gist_earth", data_aspect=1)
+    # * ds_lake.hvplot.contour(x="x", y="y", clim=z_limits, data_aspect=1)
+)
+dashboard.show(port=30227)
+
+# %% [markdown]
+# ## Along track plots of ice surface elevation change over time
 
 # %%
 # Select a few Reference Ground tracks to look at
