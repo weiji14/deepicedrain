@@ -35,7 +35,7 @@ class IceSat2Explorer(param.Parameterized):
     plot_variable = param.Selector(
         default="dhdt_slope", objects=["referencegroundtrack", "dhdt_slope", "h_corr"]
     )
-    cycle_number = param.Integer(default=7, bounds=(2, 7))
+    cycle_number = param.Integer(default=7, bounds=(2, 8))
     dhdt_range = param.Range(default=(1.0, 10.0), bounds=(0.0, 20.0))
     rasterize = param.Boolean(default=True)
     datashade = param.Boolean(default=False)
@@ -271,6 +271,7 @@ def plot_crossovers(
     time_var: str = "t",
     track_var: str = "track1_track2",
     spacing: float = 2.5,
+    elev_filter: float = 1.0,
 ) -> pygmt.Figure:
     """
     Plot to show how elevation is changing at many crossover points over time.
@@ -316,6 +317,9 @@ def plot_crossovers(
         Provide as a 'dy' increment, this is passed on to `pygmt.info` and used
         to round up and down the y axis (elev_var) limits for a nicer plot
         frame. Default is 2.5.
+    elev_filter : float
+        Minimum elevation change required for the crossover point to show up
+        on the plot. Default is 1.0 (metres).
 
     Returns
     -------
@@ -359,7 +363,7 @@ def plot_crossovers(
     ):
         df_ = df.loc[indexes].sort_values(by=time_var)
         # plot only > 1 metre height change
-        if df_[elev_var].max() - df_[elev_var].min() > 1.0:
+        if df_[elev_var].max() - df_[elev_var].min() > elev_filter:
             track1, track2 = track1_track2.split("x")
             fig.plot(
                 x=df_[time_var],
@@ -374,5 +378,6 @@ def plot_crossovers(
             fig.plot(
                 x=df_[time_var], y=df_[elev_var], Z=i, pen=f"faint,+z,-", cmap=True
             )
-    fig.legend(S=0.5, position="JMR+JMR+o0.2c", box="+gwhite+p1p")
+    with pygmt.config(FONT_ANNOT_PRIMARY="9p"):
+        fig.legend(S=0.8, position="JTR+jTL+o0.2c", box="+gwhite+p1p")
     return fig

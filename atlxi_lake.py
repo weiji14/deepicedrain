@@ -343,11 +343,14 @@ fig.show()
 
 # %%
 # Save or load dhdt data from Parquet file
-placename: str = "Recovery"  # "Whillans"
-drainage_basins: gpd.GeoDataFrame = drainage_basins.set_index(keys="NAME")
-region: deepicedrain.Region = deepicedrain.Region.from_gdf(
-    gdf=drainage_basins.loc[placename], name="Recovery Basin"
-)
+placename: str = "siple_coast"  # "Recovery"  # "Whillans"
+try:
+    drainage_basins: gpd.GeoDataFrame = drainage_basins.set_index(keys="NAME")
+    region: deepicedrain.Region = deepicedrain.Region.from_gdf(
+        gdf=drainage_basins.loc[placename], name="Recovery Basin"
+    )
+except KeyError:
+    pass
 df_dhdt: cudf.DataFrame = cudf.read_parquet(
     f"ATLXI/df_dhdt_{placename.lower()}.parquet"
 )
@@ -356,22 +359,33 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(
 # %%
 # Antarctic subglacial lake polygons with EPSG:3031 coordinates
 antarctic_lakes: gpd.GeoDataFrame = gpd.read_file(
-    filename="antarctic_subglacial_lakes.geojson"
+    filename="antarctic_subglacial_lakes_3031.geojson"
 )
 
 # %%
 # Choose one draining/filling lake
-draining: bool = False  # False
-placename: str = "Slessor"  # "Whillans"
+draining: bool = False
+placename: str = "Whillans"  # "Slessor"  # "Kamb"  # "Mercer"  #
 lakes: gpd.GeoDataFrame = antarctic_lakes.query(expr="basin_name == @placename")
-lake = lakes.loc[lakes.maxabsdhdt.idxmin() if draining else lakes.maxabsdhdt.idxmax()]
+lake = lakes.loc[lakes.inner_dhdt.idxmin() if draining else lakes.inner_dhdt.idxmax()]
+# lake = lakes.query(expr="inner_dhdt < 0" if draining else "inner_dhdt > 0").loc[63]
 lakedict = {
-    76: "Subglacial Lake Conway",  # draining lake
-    78: "Whillans IX",  # filling lake
-    103: "Slessor 45",  # draining lake
-    108: "Slessor 23",  # filling lake
+    21: "Mercer 2b",  # filling lake
+    40: "Subglacial Lake Conway",  # draining lake
+    48: "Subglacial Lake Whillans",  # filling lake
+    50: "Whillans IX",  # filling lake
+    63: "Kamb 1",  # filling lake
+    65: "Kamb 12",  # filling lake
+    97: "MacAyeal 1",  # draining lake
+    109: "Slessor 45",  # draining lake
+    116: "Slessor 23",  # filling lake
+    153: "Recovery IX",  # draining lake
+    157: "Recovery 3",  # filling lake
 }
 region = deepicedrain.Region.from_gdf(gdf=lake, name=lakedict[lake.name])
+
+print(lake)
+lake.geometry
 
 # %%
 # Subset data to lake of interest
@@ -445,6 +459,10 @@ rgts, tracks = track_dict.keys(), track_dict.values()
 # Parallelized paired crossover analysis
 futures: list = []
 for rgt1, rgt2 in itertools.combinations(rgts, r=2):
+    # skip if same referencegroundtrack but different laser pair
+    # as they are parallel and won't cross
+    if rgt1[:4] == rgt2[:4]:
+        continue
     track1 = track_dict[rgt1][["x", "y", "h_corr", "utc_time"]]
     track2 = track_dict[rgt2][["x", "y", "h_corr", "utc_time"]]
     future = client.submit(
@@ -511,14 +529,20 @@ plotregion = pygmt.info(table=df[["x", "y"]], spacing=1000)
 pygmt.makecpt(cmap="batlow", series=[sumstats[var]["25%"], sumstats[var]["75%"]])
 # Map frame in metre units
 fig.basemap(frame="f", region=plotregion, projection="X8c")
-# Plot actual track points
+# Plot actual track points in green
 for track in tracks:
-    fig.plot(x=track.x, y=track.y, color="green", style="c0.01c")
+    tracklabel = f"{track.iloc[0].referencegroundtrack} {track.iloc[0].pairtrack}"
+    fig.plot(
+        x=track.x,
+        y=track.y,
+        pen="thinnest,green,.",
+        style=f'qN+1:+l"{tracklabel}"+f3p,Helvetica,darkgreen',
+    )
 # Plot crossover point locations
 fig.plot(x=df.x, y=df.y, color=df.h_X, cmap=True, style="c0.1c", pen="thinnest")
-# PLot lake boundary
+# Plot lake boundary in blue
 lakex, lakey = lake.geometry.exterior.coords.xy
-fig.plot(x=lakex, y=lakey, pen="thin")
+fig.plot(x=lakex, y=lakey, pen="thin,blue,-.")
 # Map frame in kilometre units
 fig.basemap(
     frame=[
@@ -530,7 +554,7 @@ fig.basemap(
     projection="X8c",
 )
 fig.colorbar(position="JMR", frame=['x+l"Crossover Error"', "y+lm"])
-fig.savefig(f"figures/crossover_area_{placename}.png")
+fig.savefig(f"figures/{placename}/crossover_area_{placename}_{min_date}_{max_date}.png")
 fig.show()
 
 
@@ -587,14 +611,14 @@ fig.plot(x=df_max.t, y=df_max.h, style="c0.15c", color="darkblue", pen="thin")
 # Plot dashed line connecting points
 fig.plot(x=df_max.t, y=df_max.h, pen=f"faint,blue,-")
 fig.savefig(
-    f"figures/crossover_point_{placename}_{track1}_{track2}_{min_date}_{max_date}.png"
+    f"figures/{placename}/crossover_point_{placename}_{track1}_{track2}_{min_date}_{max_date}.png"
 )
 fig.show()
 
 # %%
 # Plot all crossover height points over time over the lake area
-fig = deepicedrain.vizplots.plot_crossovers(df=df_th, regionname=region.name)
-fig.savefig(f"figures/crossover_many_{placename}_{min_date}_{max_date}.png")
+fig = deepicedrain.plot_crossovers(df=df_th, regionname=region.name)
+fig.savefig(f"figures/{placename}/crossover_many_{placename}_{min_date}_{max_date}.png")
 fig.show()
 
 # %%
@@ -603,10 +627,15 @@ fig.show()
 normfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
 df_th["h_norm"] = df_th.groupby(by="track1_track2").h.transform(func=normfunc)
 
-fig = deepicedrain.vizplots.plot_crossovers(
-    df=df_th, regionname=region.name, elev_var="h_norm"
+fig = deepicedrain.plot_crossovers(
+    df=df_th,
+    regionname=region.name,
+    elev_var="h_norm",
+    elev_filter=3 * abs(df.h_X).median(),
 )
-fig.savefig(f"figures/crossover_many_normalized_{placename}_{min_date}_{max_date}.png")
+fig.savefig(
+    f"figures/{placename}/crossover_many_normalized_{placename}_{min_date}_{max_date}.png"
+)
 fig.show()
 
 # %%
