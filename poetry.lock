@@ -301,7 +301,7 @@ tests_extra = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)", "pytest-mpl"]
 
 [[package]]
 name = "cupy-cuda102"
-version = "7.7.0"
+version = "8.0.0"
 description = "CuPy: NumPy-like API accelerated with CUDA"
 category = "main"
 optional = true
@@ -309,17 +309,16 @@ python-versions = ">=3.5.0"
 
 [package.dependencies]
 fastrlock = ">=0.3"
-numpy = ">=1.9.0"
-six = ">=1.9.0"
+numpy = ">=1.15"
 
 [package.extras]
-appveyor = ["pytest (<4.2.0)", "attrs (<19.2.0)", "mock"]
+appveyor = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
 docs = ["sphinx (3.0.4)", "sphinx-rtd-theme"]
-doctest = ["matplotlib"]
-jenkins = ["pytest (<4.2.0)", "attrs (<19.2.0)", "mock", "pytest-timeout", "pytest-cov", "coveralls", "codecov"]
+doctest = ["matplotlib", "optuna"]
+jenkins = ["pytest (<4.2.0)", "attrs (<19.2.0)", "pytest-timeout", "pytest-cov", "coveralls", "codecov"]
 setup = ["fastrlock (>=0.3)"]
 stylecheck = ["autopep8 (1.4.4)", "flake8 (3.7.9)", "pbr (4.0.4)", "pycodestyle (2.5.0)"]
-test = ["pytest (<4.2.0)", "attrs (<19.2.0)", "mock"]
+test = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
 travis = ["autopep8 (1.4.4)", "flake8 (3.7.9)", "pbr (4.0.4)", "pycodestyle (2.5.0)", "sphinx (3.0.4)", "sphinx-rtd-theme"]
 
 [[package]]
@@ -369,7 +368,7 @@ distributed = ["distributed (>=2.0)"]
 
 [[package]]
 name = "dask-cuda"
-version = "0.15.0"
+version = "0.16.0"
 description = "Utilities for Dask and CUDA interactions"
 category = "main"
 optional = true
@@ -2092,7 +2091,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "efb34eb515e634295e465b0d327e5d2446f41b7e1917ff9750a681edbb7762a6"
+content-hash = "d91e90f72df2024468bbc57f693b2f01d3e3c7aaee1e1bc0063b3ed679763a19"
 
 [metadata.files]
 aiohttp = [
@@ -2267,13 +2266,13 @@ colorcet = [
     {file = "colorcet-2.0.2.tar.gz", hash = "sha256:514813790a74b578c3eaff76b2102274c2ba8b0239c9504586df685223007dee"},
 ]
 cupy-cuda102 = [
-    {file = "cupy_cuda102-7.7.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:c6ac4594ec1cdf93dc8c9748c2c2fff42f9b447dcf239adcfed5a66dae33157f"},
-    {file = "cupy_cuda102-7.7.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:6986aafb3d99c0be79c636d88f9554fd6f9ec1d38cf4f39b824bfa202ae57992"},
-    {file = "cupy_cuda102-7.7.0-cp36-cp36m-win_amd64.whl", hash = "sha256:707fb83d1b60d57149205475dfe317490499ac2d6b0914879807137daf939b03"},
-    {file = "cupy_cuda102-7.7.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:370d6fe38b85402412fb6af38b9b0fbc7df1ce6dcf8261faef9813b51e4525a9"},
-    {file = "cupy_cuda102-7.7.0-cp37-cp37m-win_amd64.whl", hash = "sha256:9c9a0f68353119d805c3c2b2184953f548028f6dbde9b2ad9be4350c396e853d"},
-    {file = "cupy_cuda102-7.7.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:e8399aa72254df915991599302977d1e67c2ca05198ced3f6ed4feaa8e432078"},
-    {file = "cupy_cuda102-7.7.0-cp38-cp38-win_amd64.whl", hash = "sha256:7a29eae531673aa3d672ab151490b2ce19a2c59f76f184b4e77f25e1a3235bbf"},
+    {file = "cupy_cuda102-8.0.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:c9d77f99ac94ae2c1ce172b3b679bc079df42f3a47a28ee726d203ed17684cd2"},
+    {file = "cupy_cuda102-8.0.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:9dc2039d5929cfdb877c53baf925a525539e027d3e5d8e6772f555a17bdc0b89"},
+    {file = "cupy_cuda102-8.0.0-cp36-cp36m-win_amd64.whl", hash = "sha256:ef1c5fe0341de05751424a7c427c309e4afc25fed978a351309581db13ed1781"},
+    {file = "cupy_cuda102-8.0.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:c7f0c7fbda8c17e81474483451a8563eb46ef7606d4b530751c8f2887247365c"},
+    {file = "cupy_cuda102-8.0.0-cp37-cp37m-win_amd64.whl", hash = "sha256:af2d835b68d101343bdac4c572a7a19986f83489a78745bb54cda59d667a3c07"},
+    {file = "cupy_cuda102-8.0.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:7686148ceaf62cd11baf16500f74e2833fda7392d22b1f63c8c500967e220f44"},
+    {file = "cupy_cuda102-8.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:cc6aaa1c7943187e18a9afe64da1503161ad7fa2d68f279888c364497367b1be"},
 ]
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
@@ -2321,8 +2320,8 @@ dask = [
     {file = "dask-2.30.0.tar.gz", hash = "sha256:a1669022e25de99b227c3d83da4801f032415962dac431099bf0534648e41a54"},
 ]
 dask-cuda = [
-    {file = "dask-cuda-0.15.0.tar.gz", hash = "sha256:fcde857744207c6d7cc824c658d8afa1a1ebcd33aef46099dd5f41d2283565ff"},
-    {file = "dask_cuda-0.15.0-py3-none-any.whl", hash = "sha256:811dc2bc807ad00df9632165c7a6b0c2b5a3ffee604300b88153016189398cca"},
+    {file = "dask-cuda-0.16.0.tar.gz", hash = "sha256:11e68fdba64a6644eb26cdfaab874507523a5465db950e7259f470e764b867a4"},
+    {file = "dask_cuda-0.16.0-py3-none-any.whl", hash = "sha256:5ce1725cdc88ad0cfd5f576447ab747e5260c0aaeb24239f70221f983557b471"},
 ]
 dask-labextension = [
     {file = "dask_labextension-3.0.0.tar.gz", hash = "sha256:c613f5c76b8fce4fae167eeab3377e0706e5045a27da1200b3b173025a94d94b"},
