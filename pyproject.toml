@@ -25,7 +25,7 @@ lxml = "^4.5.2"
 matplotlib = "^3.3.2"
 numcodecs = "^0.7.2"
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"}
-pyarrow = "0.17.1"
+pyarrow = "1.0.1"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
 pygmt = "^0.2.0"
