@@ -254,7 +254,7 @@ for basin_index in tqdm.tqdm(iterable=basins):
         )
 
         inner_dhdt: float = lake_points.dhdt_slope.median()
-        X_local.drop_column(name="in_donut_ring")
+        X_local = X_local.drop(labels="in_donut_ring", axis="columns")
 
         # If lake interior's median dhdt value is within 3 median absolute deviations
         # of the lake exterior's dhdt value, we remove the lake label
