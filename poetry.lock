@@ -627,6 +627,14 @@ recommended = ["datashader", "geopandas", "gdal", "netcdf4", "jupyter", "matplot
 tests = ["coveralls", "flake8", "nbsmoke (>=0.2.0)", "nose", "pytest"]
 
 [[package]]
+name = "glob2"
+version = "0.7"
+description = "Version of the glob module that can capture patterns and supports recursive wildcards"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "h5netcdf"
 version = "0.8.1"
 description = "netCDF4 via h5py"
@@ -1048,6 +1056,21 @@ htmlsoup = ["beautifulsoup4"]
 source = ["Cython (>=0.29.7)"]
 
 [[package]]
+name = "mako"
+version = "1.1.3"
+description = "A super-fast templating language that borrows the  best ideas from the existing templating languages."
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+MarkupSafe = ">=0.9.2"
+
+[package.extras]
+babel = ["babel"]
+lingua = ["lingua"]
+
+[[package]]
 name = "markdown"
 version = "3.3"
 description = "Python implementation of Markdown."
@@ -1363,6 +1386,30 @@ all = ["flake8", "nose"]
 tests = ["nose", "flake8"]
 
 [[package]]
+name = "parse"
+version = "1.18.0"
+description = "parse() is the opposite of format()"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "parse-type"
+version = "0.5.2"
+description = "Simplifies to build parse types based on the parse module"
+category = "dev"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+
+[package.dependencies]
+parse = ">=1.8.4"
+six = ">=1.11"
+
+[package.extras]
+develop = ["coverage (>=4.4)", "pytest (>=3.2)", "pytest-cov", "tox (>=2.8)"]
+docs = ["sphinx (>=1.2)"]
+
+[[package]]
 name = "parso"
 version = "0.7.1"
 description = "A Python Parser"
@@ -1666,6 +1713,23 @@ toml = "*"
 [package.extras]
 checkqa_mypy = ["mypy (0.780)"]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
+
+[[package]]
+name = "pytest-bdd"
+version = "4.0.1"
+description = "BDD for pytest"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+glob2 = "*"
+Mako = "*"
+parse = "*"
+parse-type = "*"
+py = "*"
+pytest = ">=4.3"
+six = ">=1.9.0"
 
 [[package]]
 name = "python-dateutil"
@@ -2091,7 +2155,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "77c6ac34a72dbe1df93d95179f46a91e9c6a1ff97e03b5045b1e010ca8522dcc"
+content-hash = "44ad270c2d5ac1280793d9ed99266d435ec583fbe6364516c127795c8a167f21"
 
 [metadata.files]
 aiohttp = [
@@ -2414,6 +2478,9 @@ geoviews = [
     {file = "geoviews-1.8.1-py2.py3-none-any.whl", hash = "sha256:bc944fde2c8ce8442d3a1c6a57c8f3958cdf5cdc1fbf12547a3a5fa86b079439"},
     {file = "geoviews-1.8.1.tar.gz", hash = "sha256:7cf0c43b01b4aa623520a233d5f82e58b69febd58e22af328128f699f1c745fe"},
 ]
+glob2 = [
+    {file = "glob2-0.7.tar.gz", hash = "sha256:85c3dbd07c8aa26d63d7aacee34fa86e9a91a3873bc30bf62ec46e531f92ab8c"},
+]
 h5netcdf = [
     {file = "h5netcdf-0.8.1-py2.py3-none-any.whl", hash = "sha256:8c3de80cb1e547c39081e735a84dcdd0029dc2daee918a80098a41ab954a557f"},
     {file = "h5netcdf-0.8.1.tar.gz", hash = "sha256:b94af698f99d57aac7828033f1c42ad014f5bda7ee5819f9014b4fbef5b56b25"},
@@ -2615,6 +2682,10 @@ lxml = [
     {file = "lxml-4.5.2-cp39-cp39-manylinux1_i686.whl", hash = "sha256:6f767d11803dbd1274e43c8c0b2ff0a8db941e6ed0f5d44f852fb61b9d544b54"},
     {file = "lxml-4.5.2-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:d15a801d9037d7512edb2f1e196acebb16ab17bef4b25a91ea2e9a455ca353af"},
     {file = "lxml-4.5.2.tar.gz", hash = "sha256:cdc13a1682b2a6241080745b1953719e7fe0850b40a5c71ca574f090a1391df6"},
+]
+mako = [
+    {file = "Mako-1.1.3-py2.py3-none-any.whl", hash = "sha256:93729a258e4ff0747c876bd9e20df1b9758028946e976324ccd2d68245c7b6a9"},
+    {file = "Mako-1.1.3.tar.gz", hash = "sha256:8195c8c1400ceb53496064314c6736719c6f25e7479cd24c77be3d9361cddc27"},
 ]
 markdown = [
     {file = "Markdown-3.3-py3-none-any.whl", hash = "sha256:fbb1ba54ca41e8991dc5a561d9c6f752f5e4546f8750e56413ea50f2385761d3"},
@@ -2884,6 +2955,13 @@ param = [
     {file = "param-1.9.3-py2.py3-none-any.whl", hash = "sha256:b9afbfda25be81bd763a399beaf8775fd79156e5897d4de50d3e091d15d72636"},
     {file = "param-1.9.3.tar.gz", hash = "sha256:8370d41616e257b8ed2e242ec531e0340b8c954bea414b791fa0ef6235959981"},
 ]
+parse = [
+    {file = "parse-1.18.0.tar.gz", hash = "sha256:91666032d6723dc5905248417ef0dc9e4c51df9526aaeef271eacad6491f06a4"},
+]
+parse-type = [
+    {file = "parse_type-0.5.2-py2.py3-none-any.whl", hash = "sha256:089a471b06327103865dfec2dd844230c3c658a4a1b5b4c8b6c16c8f77577f9e"},
+    {file = "parse_type-0.5.2.tar.gz", hash = "sha256:7f690b18d35048c15438d6d0571f9045cffbec5907e0b1ccf006f889e3a38c0b"},
+]
 parso = [
     {file = "parso-0.7.1-py2.py3-none-any.whl", hash = "sha256:97218d9159b2520ff45eb78028ba8b50d2bc61dcc062a9682666f2dc4bd331ea"},
     {file = "parso-0.7.1.tar.gz", hash = "sha256:caba44724b994a8a5e086460bb212abc5a8bc46951bf4a9a1210745953622eb9"},
@@ -3040,6 +3118,10 @@ pyshp = [
 pytest = [
     {file = "pytest-6.1.2-py3-none-any.whl", hash = "sha256:4288fed0d9153d9646bfcdf0c0428197dba1ecb27a33bb6e031d002fa88653fe"},
     {file = "pytest-6.1.2.tar.gz", hash = "sha256:c0a7e94a8cdbc5422a51ccdad8e6f1024795939cc89159a0ae7f0b316ad3823e"},
+]
+pytest-bdd = [
+    {file = "pytest-bdd-4.0.1.tar.gz", hash = "sha256:0b8467fe4c6effe0d5d11919eec1808da07752c68332d776bb9eb2a6cbdbd8f1"},
+    {file = "pytest_bdd-4.0.1-py2.py3-none-any.whl", hash = "sha256:cbe1d932be237e6cbe1c855f18bb797911f40c4fa11d033c59f55bed99633481"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
