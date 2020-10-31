@@ -134,22 +134,6 @@ print(f"Trimmed {len(cudf_many)} -> {len(X_many)}")
 #
 # Uses Density-based spatial clustering of applications with noise (DBSCAN).
 
-# %%
-def find_clusters(X: cudf.core.dataframe.DataFrame) -> cudf.core.series.Series:
-    """
-    Density-based spatial clustering of applications with noise (DBSCAN)
-    See also https://www.naftaliharris.com/blog/visualizing-dbscan-clustering
-    """
-    # Run DBSCAN using 3000 m distance, and minimum of 250 points
-    dbscan = cuml.DBSCAN(eps=3000, min_samples=250)
-    dbscan.fit(X=X)
-
-    cluster_labels = dbscan.labels_ + 1  # noise points -1 becomes 0
-    cluster_labels = cluster_labels.mask(cond=cluster_labels == 0)  # turn 0 to NaN
-    cluster_labels.index = X.index  # let labels have same index as input data
-
-    return cluster_labels
-
 
 # %% [markdown]
 # ### Subglacial Lake Finder algorithm
@@ -212,11 +196,14 @@ for basin_index in tqdm.tqdm(iterable=basins):
     # Filling lake points have positive labels (e.g. 1, 2, 3),
     # Noise points have NaN labels (i.e. NaN)
     cluster_vars = ["x", "y", "dhdt_slope"]
-    draining_lake_labels = -find_clusters(X=X.loc[X.dhdt_slope < 0][cluster_vars])
-    filling_lake_labels = find_clusters(X=X.loc[X.dhdt_slope > 0][cluster_vars])
+    draining_lake_labels = -deepicedrain.find_clusters(
+        X=X.loc[X.dhdt_slope < 0][cluster_vars]
+    )
+    filling_lake_labels = deepicedrain.find_clusters(
+        X=X.loc[X.dhdt_slope > 0][cluster_vars]
+    )
     lake_labels = cudf.concat(objs=[draining_lake_labels, filling_lake_labels])
     lake_labels: cudf.Series = lake_labels.sort_index()
-    lake_labels.name = "cluster_label"
 
     # Checking all potential subglacial lakes in a basin
     clusters: cudf.Series = lake_labels.unique()
@@ -314,8 +301,8 @@ X_ = X.to_pandas()
 # %%
 # Plot clusters on a map in colour, noise points/outliers as small dots
 fig = pygmt.Figure()
-n_clusters_ = len(X_.cluster_label.unique()) - 1  # No. of clusters minus noise (NaN)
-sizes = (X_.cluster_label.isna()).map(arg={True: 0.01, False: 0.1})
+n_clusters_ = len(X_.cluster_id.unique()) - 1  # No. of clusters minus noise (NaN)
+sizes = (X_.cluster_id.isna()).map(arg={True: 0.01, False: 0.1})
 if n_clusters_:
     pygmt.makecpt(cmap="polar+h0", series=(-1.5, 1.5, 1), reverse=True, D=True)
 else:
@@ -325,7 +312,7 @@ fig.plot(
     y=X_.y,
     sizes=sizes,
     style="cc",
-    color=X_.cluster_label,
+    color=X_.cluster_id,
     cmap=True,
     frame=[
         f'WSne+t"Estimated number of lake clusters at {basin.NAME}: {n_clusters_}"',

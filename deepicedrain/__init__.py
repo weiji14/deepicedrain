@@ -6,6 +6,7 @@ import intake
 import deepicedrain
 from deepicedrain.deltamath import calculate_delta, nan_linregress, nanptp
 from deepicedrain.extraload import array_to_dataframe, ndarray_to_parquet, wide_to_long
+from deepicedrain.lake_algorithms import find_clusters
 from deepicedrain.spatiotemporal import (
     Region,
     deltatime_to_utctime,
