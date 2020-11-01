@@ -6,6 +6,7 @@ Contents:
   - icesat2atlasdownloader - Download Antarctic ICESat-2 ATLAS products from [NSIDC](https://nsidc.org/data/ICESat-2)
   - icesat2atl06 - Reads in ICESat-2 ATL06 data into an xarray.Dataset
   - icesat2dhdt - Preprocessed ICESat-2 height change over time (dhdt) data in a columnar format
+  - measures_antarctic_boundaries - MEaSUREs Antarctic Boundaries from Satellite Radar as a geopandas.GeoDataFrame
   - subglacial_lakes - ICESat-2 detected Antarctic subglacial lake polygons as a geopandas.GeoDataFrame
   - test_data - Sample ICESat-2 datasets for testing purposes
 

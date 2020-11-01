@@ -85,8 +85,8 @@ if not os.path.exists("ATLXI/df_dhdt_antarctica.parquet"):
 
 # %%
 # Read in Antarctic Drainage Basin Boundaries shapefile into a GeoDataFrame
-ice_boundaries: gpd.GeoDataFrame = gpd.read_file(
-    filename="Quantarctica3/Glaciology/MEaSUREs Antarctic Boundaries/IceBoundaries_Antarctica_v2.shp"
+ice_boundaries: gpd.GeoDataFrame = (
+    deepicedrain.catalog.measures_antarctic_boundaries.read()
 )
 drainage_basins: gpd.GeoDataFrame = ice_boundaries.query(expr="TYPE == 'GR'")
 
