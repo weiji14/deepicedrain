@@ -85,7 +85,7 @@ python-versions = ">=3.5.3"
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -750,7 +750,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -778,6 +778,19 @@ complete = ["bokeh (<2.0)", "dask", "hvplot", "msgpack-numpy", "panel (>=0.7.0)"
 dataframe = ["dask", "msgpack-numpy", "pyarrow"]
 plot = ["hvplot", "panel (>=0.7.0)", "bokeh (<2.0)"]
 server = ["tornado", "python-snappy"]
+
+[[package]]
+name = "intake-geopandas"
+version = "0.2.3"
+description = "Geopandas plugin for Intake"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+geopandas = "*"
+intake = "*"
+pytest = "*"
 
 [[package]]
 name = "intake-parquet"
@@ -1496,7 +1509,7 @@ python-versions = ">=3.5"
 name = "pluggy"
 version = "0.13.1"
 description = "plugin and hook calling mechanisms for python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -1571,7 +1584,7 @@ python-versions = "*"
 name = "py"
 version = "1.9.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -1718,7 +1731,7 @@ python-versions = ">= 2.7"
 name = "pytest"
 version = "6.1.2"
 description = "pytest: simple powerful testing with Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -2024,7 +2037,7 @@ twisted = ["twisted"]
 name = "toml"
 version = "0.10.1"
 description = "Python Library for Tom's Obvious, Minimal Language"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -2206,7 +2219,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "37a666c41eea0fac63fc2e905fd2c7e289a7c0e549400cbd649544b9a20ffa25"
+content-hash = "72e7992e72afb48b3f17851ececa9cf5d965ff3a597460f7fd432acd9a22df39"
 
 [metadata.files]
 aiohttp = [
@@ -2598,6 +2611,10 @@ iniconfig = [
 intake = [
     {file = "intake-0.6.0-py3-none-any.whl", hash = "sha256:32a6d77965f3b89a12894c29e8c7516391a0be4c42902af52f12747186920bcc"},
     {file = "intake-0.6.0.tar.gz", hash = "sha256:0c284abeb74927a7366dcab6cefc010c4d050365b8af61c37326a2473a490a4e"},
+]
+intake-geopandas = [
+    {file = "intake_geopandas-0.2.3-py3-none-any.whl", hash = "sha256:a642af8103c186112596cd25764e54d0502b673f2b263371ccb6ea81a8be3e7d"},
+    {file = "intake_geopandas-0.2.3.tar.gz", hash = "sha256:7a0303b758a4d4323b8c905274d98608da0373c6d559e48d4f09054851608172"},
 ]
 intake-parquet = [
     {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
@@ -3001,6 +3018,11 @@ pandas = [
     {file = "pandas-1.1.3-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:df43ea0e9fd9f9672b0de9cac26d01255ad50481994bf3cb4687c21eec2d7bbc"},
     {file = "pandas-1.1.3-cp38-cp38-win32.whl", hash = "sha256:a605054fbca71ed1d08bb2aef6f73c84a579bbac956bfe8f9718d5e84cb41248"},
     {file = "pandas-1.1.3-cp38-cp38-win_amd64.whl", hash = "sha256:84a4ffe668df357e31f98c829536e3a7142c3036c82f996e639f644c5d32eda1"},
+    {file = "pandas-1.1.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:147162568b1242355290341baf281926cfac66ada07e634f3fc521ac967e4653"},
+    {file = "pandas-1.1.3-cp39-cp39-manylinux1_i686.whl", hash = "sha256:2999adc6736f8cb4c69d65a6e2b25a11bcb395da5b048342b8e4d6fe055e57ae"},
+    {file = "pandas-1.1.3-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:f4cb8252ae71f093f4a6b847adf0bc9330f109c48f08363c2071f189f1c89c87"},
+    {file = "pandas-1.1.3-cp39-cp39-win32.whl", hash = "sha256:b026e913d88fad3a74eea8ed5a5f98e8823080ea02f8d9bb0ec19e92552daad6"},
+    {file = "pandas-1.1.3-cp39-cp39-win_amd64.whl", hash = "sha256:11c284769f41e95f7d16a327eb555989c5f29418aad075fa80c97ef3aa8fb885"},
     {file = "pandas-1.1.3.tar.gz", hash = "sha256:babbeda2f83b0686c9ad38d93b10516e68cdcd5771007eb80a763e98aaf44613"},
 ]
 pandocfilters = [
