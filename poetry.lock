@@ -310,8 +310,8 @@ tests_extra = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)", "pytest-mpl"]
 
 [[package]]
 name = "cupy-cuda102"
-version = "8.0.0"
-description = "CuPy: NumPy-like API accelerated with CUDA"
+version = "8.1.0"
+description = "CuPy: A NumPy-compatible array library accelerated by CUDA"
 category = "main"
 optional = true
 python-versions = ">=3.5.0"
@@ -2253,7 +2253,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f1459bbed5e3e172ab3cb7b21678c56c004536734fccab22cac1c24ec1488d08"
+content-hash = "cbbcc7f911efdf4c63a121e8f0a46e32f900ebba0019ba3fce6d4a75d63516f1"
 
 [metadata.files]
 aiohttp = [
@@ -2455,13 +2455,13 @@ colorcet = [
     {file = "colorcet-2.0.2.tar.gz", hash = "sha256:514813790a74b578c3eaff76b2102274c2ba8b0239c9504586df685223007dee"},
 ]
 cupy-cuda102 = [
-    {file = "cupy_cuda102-8.0.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:c9d77f99ac94ae2c1ce172b3b679bc079df42f3a47a28ee726d203ed17684cd2"},
-    {file = "cupy_cuda102-8.0.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:9dc2039d5929cfdb877c53baf925a525539e027d3e5d8e6772f555a17bdc0b89"},
-    {file = "cupy_cuda102-8.0.0-cp36-cp36m-win_amd64.whl", hash = "sha256:ef1c5fe0341de05751424a7c427c309e4afc25fed978a351309581db13ed1781"},
-    {file = "cupy_cuda102-8.0.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:c7f0c7fbda8c17e81474483451a8563eb46ef7606d4b530751c8f2887247365c"},
-    {file = "cupy_cuda102-8.0.0-cp37-cp37m-win_amd64.whl", hash = "sha256:af2d835b68d101343bdac4c572a7a19986f83489a78745bb54cda59d667a3c07"},
-    {file = "cupy_cuda102-8.0.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:7686148ceaf62cd11baf16500f74e2833fda7392d22b1f63c8c500967e220f44"},
-    {file = "cupy_cuda102-8.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:cc6aaa1c7943187e18a9afe64da1503161ad7fa2d68f279888c364497367b1be"},
+    {file = "cupy_cuda102-8.1.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:890b0ab79cd3b78436f28f748390e9d3351b76064e88f470cdfb325962dd7d6d"},
+    {file = "cupy_cuda102-8.1.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:ca9b4a32f948064d536fe868b254dd56dae2396b60b68aedd0f20d9df4ec98fe"},
+    {file = "cupy_cuda102-8.1.0-cp36-cp36m-win_amd64.whl", hash = "sha256:012c3f5c316ffc24f7b2b9247a702bcadc1564dcb3b23c6198b6831b62054ae9"},
+    {file = "cupy_cuda102-8.1.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:0d97b8bae4f86e9fc6621302825a45154d85afdae61078f5e3c35e8fed13bb98"},
+    {file = "cupy_cuda102-8.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:c3df20ce87131d1d38a1a6a689b557fb8db6e40c0401c322bff2024fc8d49427"},
+    {file = "cupy_cuda102-8.1.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:4e6882b49b8751f27cc6e6a8118f51ecbd4657eab7c37428a782671532bbd4e0"},
+    {file = "cupy_cuda102-8.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:919c81658aaab2a26e44940b5f012fb2459db0c0d4f658a1a18beff1f88ad590"},
 ]
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
