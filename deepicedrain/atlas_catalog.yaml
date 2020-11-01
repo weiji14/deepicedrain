@@ -161,6 +161,40 @@ sources:
         h_corr:
           c: h_corr_{{cycle}}
           cmap: gist_earth
+  measures_antarctic_boundaries:
+    description: 'MEaSUREs Antarctic Boundaries for IPY 2007-2009 from Satellite Radar, Version 2'
+    args:
+      storage_options:
+        simplecache:
+          cache_storage: Quantarctica3/Glaciology/MEaSUREs Antarctic Boundaries/
+          same_names: true
+      urlpath:
+        - simplecache::http://data.pgc.umn.edu/gis/packages/quantarctica/Quantarctica3/Glaciology/MEaSUREs%20Antarctic%20Boundaries/{{boundary_type}}_Antarctica_v2.dbf
+        - simplecache::http://data.pgc.umn.edu/gis/packages/quantarctica/Quantarctica3/Glaciology/MEaSUREs%20Antarctic%20Boundaries/{{boundary_type}}_Antarctica_v2.prj
+        - simplecache::http://data.pgc.umn.edu/gis/packages/quantarctica/Quantarctica3/Glaciology/MEaSUREs%20Antarctic%20Boundaries/{{boundary_type}}_Antarctica_v2.qix
+        - simplecache::http://data.pgc.umn.edu/gis/packages/quantarctica/Quantarctica3/Glaciology/MEaSUREs%20Antarctic%20Boundaries/{{boundary_type}}_Antarctica_v2.shp
+        - simplecache::http://data.pgc.umn.edu/gis/packages/quantarctica/Quantarctica3/Glaciology/MEaSUREs%20Antarctic%20Boundaries/{{boundary_type}}_Antarctica_v2.shx
+      use_fsspec: true
+    parameters:
+      boundary_type:
+        description: 'Antarctic Boundary type. Either Coastline, GroundingLine or IceBoundaries'
+        type: str
+        default: IceBoundaries
+        allowed: ["Coastline", "GroundingLine", "IceBoundaries"]
+    driver: intake_geopandas.geopandas.ShapefileSource
+    metadata: {}
+  subglacial_lakes:
+    description: 'Antarctic subglacial lake polygons detected from ICESat-2/ATLAS laser altimetry'
+    args:
+      urlpath: antarctic_subglacial_lakes_{{epsg}}.geojson
+    parameters:
+      epsg:
+        description: Coordinate Reference System as an EPSG code
+        type: int
+        default: 3031
+        allowed: [3031, 4326]
+    driver: intake_geopandas.geopandas.GeoJSONSource
+    metadata: {}
   test_data:
     description: 'Sample ICESat-2 datasets for testing purposes'
     args:

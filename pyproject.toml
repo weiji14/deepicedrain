@@ -18,6 +18,7 @@ geopandas = "^0.8.1"
 geoviews = "^1.8.1"
 h5netcdf = "^0.8.1"
 intake = {extras = ["dataframe", "server"], version = "^0.6.0"}
+intake-geopandas = {git = "https://github.com/intake/intake_geopandas.git", rev = "e08c89bdd95216e9ff3f5bb6f8547799e7e7a463"}
 intake-parquet = "^0.2.3"
 intake-xarray = "^0.4.0"
 jupyterlab = "^2.2.8"
