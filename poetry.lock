@@ -322,13 +322,13 @@ numpy = ">=1.15"
 
 [package.extras]
 appveyor = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
-docs = ["sphinx (3.0.4)", "sphinx-rtd-theme"]
+docs = ["sphinx (==3.0.4)", "sphinx-rtd-theme"]
 doctest = ["matplotlib", "optuna"]
 jenkins = ["pytest (<4.2.0)", "attrs (<19.2.0)", "pytest-timeout", "pytest-cov", "coveralls", "codecov"]
 setup = ["fastrlock (>=0.3)"]
-stylecheck = ["autopep8 (1.4.4)", "flake8 (3.7.9)", "pbr (4.0.4)", "pycodestyle (2.5.0)"]
+stylecheck = ["autopep8 (==1.4.4)", "flake8 (==3.7.9)", "pbr (==4.0.4)", "pycodestyle (==2.5.0)"]
 test = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
-travis = ["autopep8 (1.4.4)", "flake8 (3.7.9)", "pbr (4.0.4)", "pycodestyle (2.5.0)", "sphinx (3.0.4)", "sphinx-rtd-theme"]
+travis = ["autopep8 (==1.4.4)", "flake8 (==3.7.9)", "pbr (==4.0.4)", "pycodestyle (==2.5.0)", "sphinx (==3.0.4)", "sphinx-rtd-theme"]
 
 [[package]]
 name = "cycler"
@@ -362,17 +362,19 @@ bokeh = {version = ">=1.0.0,<2.0.0 || >2.0.0", optional = true, markers = "extra
 cloudpickle = {version = ">=0.2.2", optional = true, markers = "extra == \"bag\""}
 distributed = {version = ">=2.0", optional = true, markers = "extra == \"complete\""}
 fsspec = {version = ">=0.6.0", optional = true, markers = "extra == \"bag\""}
+numpy = {version = ">=1.13.0", optional = true, markers = "extra == \"complete\""}
 pandas = {version = ">=0.23.0", optional = true, markers = "extra == \"complete\""}
 partd = {version = ">=0.3.10", optional = true, markers = "extra == \"bag\""}
 pyyaml = "*"
+toolz = {version = ">=0.8.2", optional = true, markers = "extra == \"bag\""}
 
 [package.extras]
 array = ["numpy (>=1.13.0)", "toolz (>=0.8.2)"]
 bag = ["cloudpickle (>=0.2.2)", "fsspec (>=0.6.0)", "toolz (>=0.8.2)", "partd (>=0.3.10)"]
-complete = ["bokeh (>=1.0.0,<2.0.0 || >2.0.0)", "cloudpickle (>=0.2.2)", "distributed (>=2.0)", "fsspec (>=0.6.0)", "numpy (>=1.13.0)", "pandas (>=0.23.0)", "partd (>=0.3.10)", "toolz (>=0.8.2)"]
+complete = ["bokeh (>=1.0.0,!=2.0.0)", "cloudpickle (>=0.2.2)", "distributed (>=2.0)", "fsspec (>=0.6.0)", "numpy (>=1.13.0)", "pandas (>=0.23.0)", "partd (>=0.3.10)", "toolz (>=0.8.2)"]
 dataframe = ["numpy (>=1.13.0)", "pandas (>=0.23.0)", "toolz (>=0.8.2)", "partd (>=0.3.10)", "fsspec (>=0.6.0)"]
 delayed = ["cloudpickle (>=0.2.2)", "toolz (>=0.8.2)"]
-diagnostics = ["bokeh (>=1.0.0,<2.0.0 || >2.0.0)"]
+diagnostics = ["bokeh (>=1.0.0,!=2.0.0)"]
 distributed = ["distributed (>=2.0)"]
 
 [[package]]
@@ -704,17 +706,17 @@ param = ">=1.9.3,<2.0"
 pyviz-comms = ">=0.7.3"
 
 [package.extras]
-all = ["pyarrow (<1.0)", "shapely", "scipy", "scikit-image", "cftime", "cyordereddict", "mock", "flake8 (3.6.0)", "deepdiff", "path.py", "matplotlib (>=2.2)", "networkx", "plotly (>=4.0)", "spatialpandas", "ffmpeg", "xarray (>=0.10.4)", "ipython (5.4.1)", "pytest-cov (2.5.1)", "bokeh (>=1.1.0)", "matplotlib (>=2.2,<3.1)", "pillow", "ipython (>=5.4.0)", "datashader", "dask", "nose", "coveralls", "nbconvert (5.3.1)", "nbsmoke (>=0.2.0)", "pytest (<6.0)", "netcdf4", "notebook", "streamz (>=0.5.0)", "jsonschema (2.6.0)", "awscli"]
-basic_tests = ["nose", "mock", "flake8 (3.6.0)", "coveralls", "path.py", "matplotlib (>=2.2,<3.1)", "nbsmoke (>=0.2.0)", "pytest-cov (2.5.1)", "pytest (<6.0)", "matplotlib (>=2.1)", "bokeh (>=1.1.0)", "pandas", "ipython (>=5.4.0)", "notebook"]
+all = ["pyarrow (<1.0)", "shapely", "scipy", "scikit-image", "cftime", "cyordereddict", "mock", "flake8 (==3.6.0)", "deepdiff", "path.py", "matplotlib (>=2.2)", "networkx", "plotly (>=4.0)", "spatialpandas", "ffmpeg", "xarray (>=0.10.4)", "ipython (==5.4.1)", "pytest-cov (==2.5.1)", "bokeh (>=1.1.0)", "matplotlib (>=2.2,<3.1)", "pillow", "ipython (>=5.4.0)", "datashader", "dask", "nose", "coveralls", "nbconvert (==5.3.1)", "nbsmoke (>=0.2.0)", "pytest (<6.0)", "netcdf4", "notebook", "streamz (>=0.5.0)", "jsonschema (==2.6.0)", "awscli"]
+basic_tests = ["nose", "mock", "flake8 (==3.6.0)", "coveralls", "path.py", "matplotlib (>=2.2,<3.1)", "nbsmoke (>=0.2.0)", "pytest-cov (==2.5.1)", "pytest (<6.0)", "matplotlib (>=2.1)", "bokeh (>=1.1.0)", "pandas", "ipython (>=5.4.0)", "notebook"]
 build = ["param (>=1.7.0)", "setuptools (>=30.3.0)", "pyct (>=0.4.4)", "python (<3.8)"]
 doc = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "streamz (>=0.5.0)", "datashader", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "spatialpandas", "pyarrow (<1.0)", "nbsite (>0.5.2)", "sphinx", "sphinx-holoviz-theme", "mpl-sample-data (>=3.1.3)", "awscli", "pscript", "graphviz", "bokeh (<2.2)", "nbconvert (<6.0)", "mpl-sample-data"]
 examples = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "streamz (>=0.5.0)", "datashader", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "spatialpandas", "pyarrow (<1.0)"]
-extras = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "streamz (>=0.5.0)", "datashader", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "spatialpandas", "pyarrow (<1.0)", "cyordereddict", "pscript (0.7.1)"]
-nbtests = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "nose", "awscli", "deepdiff", "nbconvert (5.3.1)", "jsonschema (2.6.0)", "cyordereddict", "ipython (5.4.1)"]
+extras = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "streamz (>=0.5.0)", "datashader", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "spatialpandas", "pyarrow (<1.0)", "cyordereddict", "pscript (==0.7.1)"]
+nbtests = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "nose", "awscli", "deepdiff", "nbconvert (==5.3.1)", "jsonschema (==2.6.0)", "cyordereddict", "ipython (==5.4.1)"]
 notebook = ["ipython (>=5.4.0)", "notebook"]
 recommended = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)"]
-tests = ["nose", "mock", "flake8 (3.6.0)", "coveralls", "path.py", "matplotlib (>=2.2,<3.1)", "nbsmoke (>=0.2.0)", "pytest-cov (2.5.1)", "pytest (<6.0)"]
-unit_tests = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "streamz (>=0.5.0)", "datashader", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "spatialpandas", "pyarrow (<1.0)", "nose", "mock", "flake8 (3.6.0)", "coveralls", "path.py", "matplotlib (>=2.2,<3.1)", "nbsmoke (>=0.2.0)", "pytest-cov (2.5.1)", "pytest (<6.0)"]
+tests = ["nose", "mock", "flake8 (==3.6.0)", "coveralls", "path.py", "matplotlib (>=2.2,<3.1)", "nbsmoke (>=0.2.0)", "pytest-cov (==2.5.1)", "pytest (<6.0)"]
+unit_tests = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=2.2)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "streamz (>=0.5.0)", "datashader", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "spatialpandas", "pyarrow (<1.0)", "nose", "mock", "flake8 (==3.6.0)", "coveralls", "path.py", "matplotlib (>=2.2,<3.1)", "nbsmoke (>=0.2.0)", "pytest-cov (==2.5.1)", "pytest (<6.0)"]
 
 [[package]]
 name = "hvplot"
@@ -765,14 +767,21 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 appdirs = "*"
-dask = {version = ">=1.0", extras = ["bag"]}
+dask = [
+    {version = ">=1.0", extras = ["bag"]},
+    {version = "*", extras = ["dataframe"], optional = true, markers = "extra == \"dataframe\""},
+]
 entrypoints = "*"
 fsspec = ">=0.3.6"
 jinja2 = "*"
 msgpack = "*"
+msgpack-numpy = {version = "*", optional = true, markers = "extra == \"dataframe\""}
 numpy = "*"
+pyarrow = {version = "*", optional = true, markers = "extra == \"dataframe\""}
+python-snappy = {version = "*", optional = true, markers = "extra == \"server\""}
 pyyaml = "*"
 requests = "*"
+tornado = {version = "*", optional = true, markers = "extra == \"server\""}
 
 [package.extras]
 complete = ["bokeh (<2.0)", "dask", "hvplot", "msgpack-numpy", "panel (>=0.7.0)", "pyarrow", "python-snappy", "tornado"]
@@ -787,6 +796,7 @@ description = "Geopandas plugin for Intake"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+develop = true
 
 [package.dependencies]
 geopandas = "*"
@@ -902,7 +912,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 parso = ">=0.7.0,<0.8.0"
 
 [package.extras]
-qa = ["flake8 (3.7.9)"]
+qa = ["flake8 (==3.7.9)"]
 testing = ["Django (<3.1)", "colorama", "docopt", "pytest (>=3.9.0,<5.0.0)"]
 
 [[package]]
@@ -1000,7 +1010,7 @@ simpervisor = ">=0.2"
 
 [[package]]
 name = "jupyterlab"
-version = "2.2.8"
+version = "2.2.9"
 description = "The JupyterLab notebook server extension."
 category = "main"
 optional = false
@@ -1176,6 +1186,18 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "msgpack-numpy"
+version = "0.4.7.1"
+description = "Numpy data serialization using msgpack"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+msgpack = ">=0.5.2"
+numpy = ">=1.9.0"
+
+[[package]]
 name = "multidict"
 version = "4.7.6"
 description = "multidict implementation"
@@ -1253,11 +1275,11 @@ testpath = "*"
 traitlets = ">=4.2"
 
 [package.extras]
-all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
+all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)", "tornado (>=4.0)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
 docs = ["sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
 serve = ["tornado (>=4.0)"]
-test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (0.2.2)"]
-webpdf = ["pyppeteer (0.2.2)"]
+test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pyppeteer (==0.2.2)"]
+webpdf = ["pyppeteer (==0.2.2)"]
 
 [[package]]
 name = "nbformat"
@@ -1533,6 +1555,7 @@ description = "Utilities for organizing and manipulating point data"
 category = "main"
 optional = false
 python-versions = "*"
+develop = true
 
 [package.dependencies]
 gdal = "3.0.4"
@@ -1654,11 +1677,11 @@ Webob = "*"
 [package.extras]
 cas = ["requests", "lxml"]
 docs = ["sphinx", "pygments", "sphinx-rtd-theme"]
-functions = ["gsw (3.0.6)", "coards"]
+functions = ["gsw (==3.0.6)", "coards"]
 "handlers.netcdf" = ["netcdf4", "ordereddict"]
 server = ["gunicorn", "pastedeploy"]
-testing = ["gsw (3.0.6)", "coards", "requests", "lxml", "gunicorn", "pastedeploy", "netcdf4", "ordereddict", "webtest", "beautifulsoup4", "flake8", "pytest (>=2.8)", "pytest-cov", "pytest-attrib", "mock", "requests-mock", "requests"]
-tests = ["gsw (3.0.6)", "coards", "requests", "lxml", "gunicorn", "pastedeploy", "netcdf4", "ordereddict", "webtest", "beautifulsoup4", "flake8"]
+testing = ["gsw (==3.0.6)", "coards", "requests", "lxml", "gunicorn", "pastedeploy", "netcdf4", "ordereddict", "webtest", "beautifulsoup4", "flake8", "pytest (>=2.8)", "pytest-cov", "pytest-attrib", "mock", "requests-mock", "requests"]
+tests = ["gsw (==3.0.6)", "coards", "requests", "lxml", "gunicorn", "pastedeploy", "netcdf4", "ordereddict", "webtest", "beautifulsoup4", "flake8"]
 
 [[package]]
 name = "pyepsg"
@@ -1756,7 +1779,7 @@ py = ">=1.8.2"
 toml = "*"
 
 [package.extras]
-checkqa_mypy = ["mypy (0.780)"]
+checkqa_mypy = ["mypy (==0.780)"]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
@@ -1904,7 +1927,7 @@ urllib3 = ">=1.21.1,<1.25.0 || >1.25.0,<1.25.1 || >1.25.1,<1.26"
 
 [package.extras]
 security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
-socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
+socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
 
 [[package]]
 name = "scikit-learn"
@@ -2119,7 +2142,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
 secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=0.14)", "ipaddress"]
-socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
+socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "wcwidth"
@@ -2156,6 +2179,7 @@ description = "N-D labeled arrays and datasets in Python"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+develop = true
 
 [package.dependencies]
 numpy = ">=1.15"
@@ -2229,7 +2253,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "311495e2d1b69c2ce9594daf94f3c129a714201121134a0aaf56b26320c0841c"
+content-hash = "f1459bbed5e3e172ab3cb7b21678c56c004536734fccab22cac1c24ec1488d08"
 
 [metadata.files]
 aiohttp = [
@@ -2296,6 +2320,8 @@ argon2-cffi = [
     {file = "argon2_cffi-20.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:6678bb047373f52bcff02db8afab0d2a77d83bde61cfecea7c5c62e2335cb203"},
     {file = "argon2_cffi-20.1.0-cp38-cp38-win32.whl", hash = "sha256:77e909cc756ef81d6abb60524d259d959bab384832f0c651ed7dcb6e5ccdbb78"},
     {file = "argon2_cffi-20.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:9dfd5197852530294ecb5795c97a823839258dfd5eb9420233c7cfedec2058f2"},
+    {file = "argon2_cffi-20.1.0-cp39-cp39-win32.whl", hash = "sha256:e2db6e85c057c16d0bd3b4d2b04f270a7467c147381e8fd73cbbe5bc719832be"},
+    {file = "argon2_cffi-20.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:8a84934bd818e14a17943de8099d41160da4a336bcc699bb4c394bbb9b94bd32"},
 ]
 asciitree = [
     {file = "asciitree-0.3.3.tar.gz", hash = "sha256:4aa4b9b649f85e3fcb343363d97564aa1fb62e249677f2e18a96765145cc0f6e"},
@@ -2696,8 +2722,8 @@ jupyter-server-proxy = [
     {file = "jupyter_server_proxy-1.5.0-py3-none-any.whl", hash = "sha256:f8055e9cf33fec68f1f1bf497a2b786e815db7b738a6f561680752532c08ac77"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-2.2.8-py3-none-any.whl", hash = "sha256:95d0509557881cfa8a5fcdf225f2fca46faf1bc52fc56a28e0b72fcc594c90ab"},
-    {file = "jupyterlab-2.2.8.tar.gz", hash = "sha256:c8377bee30504919c1e79949f9fe35443ab7f5c4be622c95307e8108410c8b8c"},
+    {file = "jupyterlab-2.2.9-py3-none-any.whl", hash = "sha256:59af02c26a15ec2d2862a15bc72e41ae304b406a0b0d3f4f705eeb7caf91902b"},
+    {file = "jupyterlab-2.2.9.tar.gz", hash = "sha256:3be8f8edea173753dd838c1b6d3bbcb6f5c801121f824a477025c1b6a1d33dc6"},
 ]
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
@@ -2877,6 +2903,10 @@ msgpack = [
     {file = "msgpack-1.0.0-cp38-cp38-win32.whl", hash = "sha256:002a0d813e1f7b60da599bdf969e632074f9eec1b96cbed8fb0973a63160a408"},
     {file = "msgpack-1.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:39c54fdebf5fa4dda733369012c59e7d085ebdfe35b6cf648f09d16708f1be5d"},
     {file = "msgpack-1.0.0.tar.gz", hash = "sha256:9534d5cc480d4aff720233411a1f765be90885750b07df772380b34c10ecb5c0"},
+]
+msgpack-numpy = [
+    {file = "msgpack-numpy-0.4.7.1.tar.gz", hash = "sha256:7eaf51acf82d7c467d21aa71df94e1c051b2055e54b755442051b474fa7cf5e1"},
+    {file = "msgpack_numpy-0.4.7.1-py2.py3-none-any.whl", hash = "sha256:50d9e456d034ead6de53d9596a64bac4c9b0e15a682c4dce0efc556dc9d786fe"},
 ]
 multidict = [
     {file = "multidict-4.7.6-cp35-cp35m-macosx_10_14_x86_64.whl", hash = "sha256:275ca32383bc5d1894b6975bb4ca6a7ff16ab76fa622967625baeebcf8079000"},
