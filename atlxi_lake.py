@@ -347,9 +347,7 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(
 
 # %%
 # Antarctic subglacial lake polygons with EPSG:3031 coordinates
-antarctic_lakes: gpd.GeoDataFrame = gpd.read_file(
-    filename="antarctic_subglacial_lakes_3031.geojson"
-)
+antarctic_lakes: gpd.GeoDataFrame = deepicedrain.catalog.subglacial_lakes.read()
 
 # %%
 # Choose one draining/filling lake

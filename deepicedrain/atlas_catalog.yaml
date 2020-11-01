@@ -161,6 +161,18 @@ sources:
         h_corr:
           c: h_corr_{{cycle}}
           cmap: gist_earth
+  subglacial_lakes:
+    description: 'Antarctic subglacial lake polygons detected from ICESat-2/ATLAS laser altimetry'
+    args:
+      urlpath: antarctic_subglacial_lakes_{{epsg}}.geojson
+    parameters:
+      epsg:
+        description: Coordinate Reference System as an EPSG code
+        type: int
+        default: 3031
+        allowed: [3031, 4326]
+    driver: intake_geopandas.geopandas.GeoJSONSource
+    metadata: {}
   test_data:
     description: 'Sample ICESat-2 datasets for testing purposes'
     args:

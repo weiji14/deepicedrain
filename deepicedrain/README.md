@@ -2,10 +2,11 @@
 
 Contents:
 
-- :artificial_satellite: atlas_catalog.yaml - [intake](https://intake.readthedocs.io) data catalog for accessing ICESat-2 ATLAS datasets
+- :artificial_satellite: atlas_catalog.yaml - [intake](https://intake.readthedocs.io) data catalog for accessing ICESat-2 ATLAS datasets and other Antarctic features
   - icesat2atlasdownloader - Download Antarctic ICESat-2 ATLAS products from [NSIDC](https://nsidc.org/data/ICESat-2)
   - icesat2atl06 - Reads in ICESat-2 ATL06 data into an xarray.Dataset
   - icesat2dhdt - Preprocessed ICESat-2 height change over time (dhdt) data in a columnar format
+  - subglacial_lakes - ICESat-2 detected Antarctic subglacial lake polygons as a geopandas.GeoDataFrame
   - test_data - Sample ICESat-2 datasets for testing purposes
 
 - :1234: deltamath.py - Mathematical functions for calculating delta changes of some physical unit
