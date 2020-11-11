@@ -7,7 +7,7 @@ dependencies:
   - rapidsai::cuml=0.16.0[md5=860bf18db9682fbf2b679e33b2163fe9]
   - rapidsai::cuspatial=0.16.0[md5=135a197274994aae324c439c19431ba7]
   - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
-  - conda-forge/label/dev::gmt=6.2.0.dev2+8a4275f[md5=72e0fcf3001cad3afa980867111e276c]
+  - conda-forge/label/dev::gmt=6.2.0.dev4+92c5676[md5=a60d72bf5a32f10e96c4ad23df5e8f28]
   - conda-forge::gxx_linux-64=7.5.0[md5=36f3b65563c9264b6d1e04369f0456ba]
   - conda-forge::nodejs=13.13.0[md5=cf25f8cee7aad7f417980872d34d8fd6]
   - conda-forge::parallel=20200522[md5=8fa06db0afc1e7b1f136277557a4b65e]
