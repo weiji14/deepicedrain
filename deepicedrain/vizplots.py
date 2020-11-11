@@ -336,15 +336,16 @@ def plot_crossovers(
         FORMAT_DATE_MAP="o",
     ):
         # Get plot region, spaced out into nice intervals
-        # Note that passing time columns into pygmt.info doesn't work yet,
+        # Note that passing time columns into pygmt.info doesn't work well yet,
         # see https://github.com/GenericMappingTools/pygmt/issues/597
         plotregion = np.array(
             [
                 df[time_var].min() - pd.Timedelta(1, unit="W"),
                 df[time_var].max() + pd.Timedelta(1, unit="W"),
-                *pygmt.info(table=df[elev_var], spacing=spacing)[:2],
+                *pygmt.info(table=df[[elev_var]], spacing=spacing)[:2],
             ]
         )
+        # pygmt.info(table=df[[time_var, elev_var]], spacing=f"1W/{spacing}", f="0T")
         fig.basemap(
             projection="X12c/12c",
             region=plotregion,

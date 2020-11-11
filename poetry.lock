@@ -791,12 +791,11 @@ server = ["tornado", "python-snappy"]
 
 [[package]]
 name = "intake-geopandas"
-version = "0.2.3+40.ge08c89b"
+version = "0.2.4"
 description = "Geopandas plugin for Intake"
 category = "main"
 optional = false
 python-versions = ">=3.6"
-develop = true
 
 [package.dependencies]
 geopandas = "*"
@@ -805,12 +804,6 @@ intake = "*"
 [package.extras]
 arrow = ["pyarrow"]
 regionmask = ["regionmask"]
-
-[package.source]
-type = "git"
-url = "https://github.com/intake/intake_geopandas.git"
-reference = "e08c89bdd95216e9ff3f5bb6f8547799e7e7a463"
-resolved_reference = "e08c89bdd95216e9ff3f5bb6f8547799e7e7a463"
 
 [[package]]
 name = "intake-parquet"
@@ -1704,11 +1697,12 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "pygmt"
-version = "0.2.0"
+version = "0.2.0+53.gc7c5eae"
 description = "A Python interface for the Generic Mapping Tools"
 category = "main"
 optional = false
 python-versions = "*"
+develop = true
 
 [package.dependencies]
 netCDF4 = "*"
@@ -1716,6 +1710,12 @@ numpy = "*"
 packaging = "*"
 pandas = "*"
 xarray = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/GenericMappingTools/pygmt.git"
+reference = "c7c5eaecf8fedbca584743f6adca4a378851ba9a"
+resolved_reference = "c7c5eaecf8fedbca584743f6adca4a378851ba9a"
 
 [[package]]
 name = "pynvml"
@@ -2253,7 +2253,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f1459bbed5e3e172ab3cb7b21678c56c004536734fccab22cac1c24ec1488d08"
+content-hash = "c1776cf6eb1c660a874e5e2f60744ff440b17095ded11bc2512efc20441be9c7"
 
 [metadata.files]
 aiohttp = [
@@ -2669,7 +2669,10 @@ intake = [
     {file = "intake-0.6.0-py3-none-any.whl", hash = "sha256:32a6d77965f3b89a12894c29e8c7516391a0be4c42902af52f12747186920bcc"},
     {file = "intake-0.6.0.tar.gz", hash = "sha256:0c284abeb74927a7366dcab6cefc010c4d050365b8af61c37326a2473a490a4e"},
 ]
-intake-geopandas = []
+intake-geopandas = [
+    {file = "intake_geopandas-0.2.4-py3-none-any.whl", hash = "sha256:1ed7572d2dfbad2b31c945483d171c613910afb4b8efb2c1e729f9aadbd73094"},
+    {file = "intake_geopandas-0.2.4.tar.gz", hash = "sha256:f94bacc0f499b56f5b71c52e018265755ba2b2b76169a5681802ec66f417f3ed"},
+]
 intake-parquet = [
     {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
 ]
@@ -3228,10 +3231,7 @@ pygments = [
     {file = "Pygments-2.7.1-py3-none-any.whl", hash = "sha256:307543fe65c0947b126e83dd5a61bd8acbd84abec11f43caebaf5534cbc17998"},
     {file = "Pygments-2.7.1.tar.gz", hash = "sha256:926c3f319eda178d1bd90851e4317e6d8cdb5e292a3386aac9bd75eca29cf9c7"},
 ]
-pygmt = [
-    {file = "pygmt-0.2.0-py3-none-any.whl", hash = "sha256:692680a6b56f9011680fde73dfe31a95bd4b15db1020b01abcc8723746fe0f18"},
-    {file = "pygmt-0.2.0.tar.gz", hash = "sha256:9fddefd8a101e5f22f49d6ed0c0aee6079791e62d2c9f24d7d2e370ec1b80924"},
-]
+pygmt = []
 pynvml = [
     {file = "pynvml-8.0.4-py3-none-any.whl", hash = "sha256:00c1a54fd3462a0774ec08add0d9fbb5f051214a85f782ca7d55b85eb8d54e53"},
     {file = "pynvml-8.0.4.tar.gz", hash = "sha256:c8d4eadc648c7e12a3c9182a9750afd8481b76412f83747bcc01e2aa829cde5d"},
@@ -3450,6 +3450,8 @@ shapely = [
     {file = "Shapely-1.7.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:90a3e2ae0d6d7d50ff2370ba168fbd416a53e7d8448410758c5d6a5920646c1d"},
     {file = "Shapely-1.7.1-cp38-cp38-win32.whl", hash = "sha256:a3774516c8a83abfd1ddffb8b6ec1b0935d7fe6ea0ff5c31a18bfdae567b4eba"},
     {file = "Shapely-1.7.1-cp38-cp38-win_amd64.whl", hash = "sha256:6593026cd3f5daaea12bcc51ae5c979318070fefee210e7990cb8ac2364e79a1"},
+    {file = "Shapely-1.7.1-cp39-cp39-win32.whl", hash = "sha256:2df5260d0f2983309776cb41bfa85c464ec07018d88c0ecfca23d40bfadae2f1"},
+    {file = "Shapely-1.7.1-cp39-cp39-win_amd64.whl", hash = "sha256:a5c3a50d823c192f32615a2a6920e8c046b09e07a58eba220407335a9cd2e8ea"},
     {file = "Shapely-1.7.1.tar.gz", hash = "sha256:1641724c1055459a7e2b8bbe47ba25bdc89554582e62aec23cb3f3ca25f9b129"},
 ]
 simpervisor = [
