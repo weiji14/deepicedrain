@@ -48,7 +48,7 @@ def test_spatiotemporal_cube(table):
     xr.testing.assert_allclose(
         a=grid.z.median(axis=(1, 2)),
         b=xr.DataArray(
-            data=[1655.0094, 1654.4307], coords=[[1, 2]], dims=["cycle_number"]
+            data=[1656.0028, 1655.0167], coords=[[1, 2]], dims=["cycle_number"]
         ),
     )
     assert "-Gh_corr_greenland_cycle_2.nc" in grid.history

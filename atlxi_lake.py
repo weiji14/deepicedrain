@@ -174,7 +174,7 @@ activelakes: dict = {
     "refgtracks": [],  # Pipe-delimited list of ICESat-2 reference ground tracks
     "geometry": [],  # Shapely Polygon geometry holding lake boundary coordinates
 }
-basin_name: str = "Pine_Island"  # Set a basin name here
+basin_name: str = "Whillans"  # Set a basin name here
 basins = drainage_basins[drainage_basins.NAME == basin_name].index  # one specific basin
 basins: pd.core.indexes.numeric.Int64Index = drainage_basins.index  # run on all basins
 for basin_index in tqdm.tqdm(iterable=basins):
@@ -303,16 +303,13 @@ X_ = X.to_pandas()
 fig = pygmt.Figure()
 n_clusters_ = len(X_.cluster_id.unique()) - 1  # No. of clusters minus noise (NaN)
 sizes = (X_.cluster_id.isna()).map(arg={True: 0.01, False: 0.1})
-if n_clusters_:
-    pygmt.makecpt(cmap="polar+h0", series=(-1.5, 1.5, 1), reverse=True, D=True)
-else:
-    pygmt.makecpt(cmap="gray")
+pygmt.makecpt(cmap="polar", series=(-1, 3, 2), color_model="+cDrain,Fill", reverse=True)
 fig.plot(
     x=X_.x,
     y=X_.y,
     sizes=sizes,
     style="cc",
-    color=X_.cluster_id,
+    color=pd.cut(x=X_.cluster_id, bins=(-np.inf, 0, np.inf), labels=[-1, 1]),
     cmap=True,
     frame=[
         f'WSne+t"Estimated number of lake clusters at {basin.NAME}: {n_clusters_}"',
@@ -322,7 +319,7 @@ fig.plot(
 )
 basinx, basiny = basin.geometry.exterior.coords.xy
 fig.plot(x=basinx, y=basiny, pen="thinnest,-")
-fig.colorbar(frame='af+l"Draining/Filling"', position='JBC+n"Unclassified"')
+fig.colorbar(position='JMR+w2c/0.5c+e+m+n"Unclassified"', L="i0.5c")
 fig.savefig(fname=f"figures/subglacial_lake_clusters_at_{basin.NAME}.png")
 fig.show()
 
@@ -351,14 +348,15 @@ antarctic_lakes: gpd.GeoDataFrame = deepicedrain.catalog.subglacial_lakes.read()
 
 # %%
 # Choose one draining/filling lake
-draining: bool = False
+draining: bool = True
 placename: str = "Whillans"  # "Slessor"  # "Kamb"  # "Mercer"  #
 lakes: gpd.GeoDataFrame = antarctic_lakes.query(expr="basin_name == @placename")
 lake = lakes.loc[lakes.inner_dhdt.idxmin() if draining else lakes.inner_dhdt.idxmax()]
-# lake = lakes.query(expr="inner_dhdt < 0" if draining else "inner_dhdt > 0").loc[63]
+lake = lakes.query(expr="inner_dhdt < 0" if draining else "inner_dhdt > 0").loc[41]
 lakedict = {
     21: "Mercer 2b",  # filling lake
-    40: "Subglacial Lake Conway",  # draining lake
+    40: "Lower Subglacial Lake Conway",  # draining lake
+    41: "Subglacial Lake Conway",  # draining lake
     48: "Subglacial Lake Whillans",  # filling lake
     50: "Whillans IX",  # filling lake
     63: "Kamb 1",  # filling lake
@@ -398,9 +396,8 @@ ds_lake.to_netcdf(path=f"figures/{placename}/xyht_{placename}.nc", mode="w")
 # %%
 # Get 3D grid_region (xmin/xmax/ymin/ymax/zmin/zmax),
 # and calculate normalized z-values as Elevation delta relative to Cycle 3
-grid_region = pygmt.info(table=df_lake[["x", "y"]].to_pandas(), spacing="s250")
 z_limits: tuple = (float(ds_lake.z.min()), float(ds_lake.z.max()))  # original z limits
-grid_region: np.ndarray = np.append(arr=grid_region, values=z_limits)
+grid_region: tuple = region.bounds() + z_limits
 
 ds_lake_norm: xr.Dataset = ds_lake - ds_lake.sel(cycle_number=3).z
 z_norm_limits: tuple = (float(ds_lake_norm.z.min()), float(ds_lake_norm.z.max()))
