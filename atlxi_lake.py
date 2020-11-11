@@ -36,6 +36,7 @@
 # %%
 import itertools
 import os
+import subprocess
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
@@ -439,20 +440,26 @@ for cycle in tqdm.tqdm(iterable=cycles):
         **grdview_kwargs,
     )
 
-    # Plot lake boundary outline
-    # TODO wait for plot3d to plot lake boundary points at correct height
-    df = pd.DataFrame([region.bounds()]).values
+    # Plot satellite track line points in green
+    fig.plot3d(
+        data=df_lake[["x", "y", f"h_corr_{cycle}"]].dropna().as_matrix(),
+        color="green",
+        style="c0.02c",
+        zscale=True,
+        perspective=f"{azimuth}/{elevation}",
+    )
+    # Plot lake boundary outline as yellow dashed line
     points = pd.DataFrame(
-        data=[point for point in lake.geometry.exterior.coords], columns=("x", "y")
+        data=[point for point in lake.geometry.boundary.coords], columns=("x", "y")
     )
     df_xyz = pygmt.grdtrack(points=points, grid=grid, newcolname="z")
-    fig.plot(
+    df_xyz["z"] = df_xyz.z.fillna(value=df_xyz.z.median())
+    fig.plot3d(
         data=df_xyz.values,
         region=grid_region,
-        pen="1.5p,yellow2",
-        Jz=True,  # zscale
-        p=f"{azimuth}/{elevation}/{df_xyz.z.median()}",  # perspective
-        # label='"Subglacial Lake X"'
+        pen="1.5p,yellow2,-",
+        zscale=True,
+        perspective=f"{azimuth}/{elevation}",
     )
 
     # Plot normalized elevation change
@@ -479,10 +486,22 @@ fig.show()
 
 # %%
 # Make a animated GIF of changing ice surface from the PNG files
+# !convert -delay 120 -loop 0 figures/{placename}/dsm_*.png {gif_fname}
 gif_fname: str = (
     f"figures/{placename}/dsm_{placename}_cycles_{cycles[0]}-{cycles[-1]}.gif"
 )
-# !convert -delay 120 -loop 0 figures/{placename}/dsm_*.png {gif_fname}
+subprocess.check_call(
+    [
+        "convert",
+        "-delay",
+        "120",
+        "-loop",
+        "0",
+        f"figures/{placename}/dsm_*.png",
+        gif_fname,
+    ]
+)
+
 
 # %%
 # HvPlot 2D interactive view of ice surface elevation grids over each ICESat-2 cycle
