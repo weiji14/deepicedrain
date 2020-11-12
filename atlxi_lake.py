@@ -349,11 +349,11 @@ antarctic_lakes: gpd.GeoDataFrame = deepicedrain.catalog.subglacial_lakes.read()
 
 # %%
 # Choose one draining/filling lake
-draining: bool = True
+draining: bool = False
 placename: str = "Whillans"  # "Slessor"  # "Kamb"  # "Mercer"  #
 lakes: gpd.GeoDataFrame = antarctic_lakes.query(expr="basin_name == @placename")
 lake = lakes.loc[lakes.inner_dhdt.idxmin() if draining else lakes.inner_dhdt.idxmax()]
-lake = lakes.query(expr="inner_dhdt < 0" if draining else "inner_dhdt > 0").loc[41]
+lake = lakes.query(expr="inner_dhdt < 0" if draining else "inner_dhdt > 0").loc[48]
 lakedict = {
     21: "Mercer 2b",  # filling lake
     40: "Lower Subglacial Lake Conway",  # draining lake
@@ -400,87 +400,37 @@ ds_lake.to_netcdf(path=f"figures/{placename}/xyht_{placename}.nc", mode="w")
 z_limits: tuple = (float(ds_lake.z.min()), float(ds_lake.z.max()))  # original z limits
 grid_region: tuple = region.bounds() + z_limits
 
-ds_lake_norm: xr.Dataset = ds_lake - ds_lake.sel(cycle_number=3).z
-z_norm_limits: tuple = (float(ds_lake_norm.z.min()), float(ds_lake_norm.z.max()))
-grid_region_norm: np.ndarray = np.append(arr=grid_region[:4], values=z_norm_limits)
+ds_lake_diff: xr.Dataset = ds_lake - ds_lake.sel(cycle_number=3).z
+z_diff_limits: tuple = (float(ds_lake_diff.z.min()), float(ds_lake_diff.z.max()))
+diff_grid_region: np.ndarray = np.append(arr=grid_region[:4], values=z_diff_limits)
 
 print(f"Elevation limits are: {z_limits}")
 
 # %%
 # 3D plots of gridded ice surface elevation over time
-azimuth: float = 157.5  # 202.5  # 270
-elevation: float = 45  # 60
 for cycle in tqdm.tqdm(iterable=cycles):
     time_nsec: pd.Timestamp = df_lake[f"utc_time_{cycle}"].to_pandas().mean()
     time_sec: str = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
 
-    grdview_kwargs = dict(
-        cmap=True,
-        zscale=0.1,  # zscaling factor, default to 10x vertical exaggeration
-        surftype="sim",  # surface, image and mesh plot
-        perspective=[azimuth, elevation],  # perspective using azimuth/elevation
-        # W="c0.05p,black,solid",  # draw contours
-    )
-
-    fig = pygmt.Figure()
-    # grid = ds_lake.sel(cycle_number=cycle).z
     grid = f"figures/{placename}/h_corr_{placename}_cycle_{cycle}.nc"
-    pygmt.makecpt(cmap="lapaz", series=z_limits)
-    fig.grdview(
-        grid=grid,
-        projection="X10c",
-        region=grid_region,
-        shading=True,
-        frame=[
-            f'SWZ+t"{region.name}"',  # plot South, West axes, and Z-axis
-            'xaf+l"Polar Stereographic X (m)"',  # add x-axis annotations and minor ticks
-            'yaf+l"Polar Stereographic Y (m)"',  # add y-axis annotations and minor ticks
-            f'zaf+l"Elevation (m)"',  # add z-axis annotations, minor ticks and axis label
-        ],
-        **grdview_kwargs,
-    )
-
-    # Plot satellite track line points in green
-    fig.plot3d(
-        data=df_lake[["x", "y", f"h_corr_{cycle}"]].dropna().as_matrix(),
-        color="green",
-        style="c0.02c",
-        zscale=True,
-        perspective=f"{azimuth}/{elevation}",
-    )
-    # Plot lake boundary outline as yellow dashed line
     points = pd.DataFrame(
-        data=[point for point in lake.geometry.boundary.coords], columns=("x", "y")
+        data=np.vstack(lake.geometry.boundary.coords.xy).T, columns=("x", "y")
     )
-    df_xyz = pygmt.grdtrack(points=points, grid=grid, newcolname="z")
-    df_xyz["z"] = df_xyz.z.fillna(value=df_xyz.z.median())
-    fig.plot3d(
-        data=df_xyz.values,
-        region=grid_region,
-        pen="1.5p,yellow2,-",
-        zscale=True,
-        perspective=f"{azimuth}/{elevation}",
-    )
+    outline_points = pygmt.grdtrack(points=points, grid=grid, newcolname="z")
+    outline_points["z"] = outline_points.z.fillna(value=outline_points.z.median())
 
-    # Plot normalized elevation change
-    grid = ds_lake_norm.sel(cycle_number=cycle).z
-    if cycle == 3:
-        # add some tiny random noise to make plot work
-        grid = grid + np.random.normal(scale=1e-8, size=grid.shape)
-    pygmt.makecpt(cmap="vik", series=z_norm_limits)
-    fig.grdview(
-        grid=grid,
-        region=grid_region_norm,
-        frame=[
-            f'SEZ2+t"Cycle {cycle} at {time_sec}"',  # plot South, East axes, and Z-axis
-            'xaf+l"Polar Stereographic X (m)"',  # add x-axis annotations and minor ticks
-            'yaf+l"Polar Stereographic Y (m)"',  # add y-axis annotations and minor ticks
-            f'zaf+l"Elev Change (m)"',  # add z-axis annotations, minor ticks and axis label
-        ],
-        X="10c",  # xshift
-        **grdview_kwargs,
+    fig = deepicedrain.plot_icesurface(
+        grid=grid,  # ds_lake.sel(cycle_number=cycle).z
+        grid_region=grid_region,
+        diff_grid=ds_lake_diff.sel(cycle_number=cycle).z,
+        diff_grid_region=diff_grid_region,
+        track_points=df_lake[["x", "y", f"h_corr_{cycle}"]].dropna().as_matrix(),
+        outline_points=outline_points,
+        azimuth=157.5,  # 202.5  # 270
+        elevation=45,  # 60
+        title=region.name,
+        subtitle=f"Cycle {cycle} at {time_sec}",
     )
-
     fig.savefig(f"figures/{placename}/dsm_{placename}_cycle_{cycle}.png")
 fig.show()
 

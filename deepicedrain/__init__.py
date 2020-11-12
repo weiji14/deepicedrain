@@ -14,7 +14,12 @@ from deepicedrain.spatiotemporal import (
     point_in_polygon_gpu,
     spatiotemporal_cube,
 )
-from deepicedrain.vizplots import IceSat2Explorer, plot_alongtrack, plot_crossovers
+from deepicedrain.vizplots import (
+    IceSat2Explorer,
+    plot_alongtrack,
+    plot_crossovers,
+    plot_icesurface,
+)
 
 __version__: str = "0.3.2"
 

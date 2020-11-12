@@ -14,6 +14,7 @@ import panel as pn
 import param
 import pygmt
 import tqdm
+import xarray as xr
 
 warnings.filterwarnings(
     action="ignore",
@@ -381,4 +382,148 @@ def plot_crossovers(
             )
     with pygmt.config(FONT_ANNOT_PRIMARY="9p"):
         fig.legend(S=0.8, position="JTR+jTL+o0.2c", box="+gwhite+p1p")
+    return fig
+
+
+def plot_icesurface(
+    grid: str or xr.DataArray = None,
+    grid_region: tuple or np.ndarray = None,
+    diff_grid: xr.DataArray = None,
+    diff_grid_region: tuple or np.ndarray = None,
+    track_points: pd.DataFrame = None,
+    outline_points: pd.DataFrame = None,
+    azimuth: float = 157.5,
+    elevation: float = 45,
+    title: str = "",
+    subtitle: str = "",
+) -> pygmt.Figure:
+    """
+    Plot to show a 3D perspective of an elevation grid surface on the left, and
+    the differenced grid on the right. Also allows for ovelaying track points
+    and a polygon outline. This function is custom designed for showcasing
+    ICESat-2 altimetry data of an active subglacial lake surface changing over
+    time. The resulting plot will be similar to the right plot below:
+
+                         ___________         Subglacial Lake X at YYYYMMDD
+                        |__|__|__|__|
+        ___________     |__|__|__|__|       ^               ^
+       |__|__|__|__|  y |__|_dz__|__|     z |            dz |
+       |__|__|__|__|    |__|__|__|__| -->   |  ^~^~~^~      |  ^~^~~^~
+     y |__|__z__|__|    |__|__|__|__|        \ ~~^~~~^^~~    \ ~~^~~~^^~~
+       |__|__|__|__|          x             y \  ~^^~~^~~~  y \  ~^^~~^~~~
+       |__|__|__|__|                           \__ __ __ __    \__ __ __ __
+             x                                       x               x
+
+    Uses `pygmt.grdview` to produce the figure. The main input grid can be a
+    NetCDF filename or an xarray.DataArray with x, y, z variables, while the
+    diff_grid must be an xarray.DataArray. Note that there are several
+    hardcoded defaults like the vertical exaggeration (0.1x) and axis labels.
+
+    Parameters
+    ----------
+    grid : str or xr.DataArray
+        The main digital surface elevation model to plot, provided as a file
+        name or xarray.DataArray grid.
+    grid_region : tuple or np.ndarray
+        The bounding cube of the grid given as (xmin, xmax, ymin, ymax, zmin,
+        zmax).
+    diff_grid : xr.DataArray
+        A differenced elevation grid as an xarray.DataArray.
+    diff_grid_region : tuple or np.ndarray
+        The bounding cube of the diff_grid given as (xmin, xmax, ymin, ymax,
+        zmin, zmax).
+    track_points : pd.DataFrame
+        Altimetry track points to plot on top of the main grid surface,
+        provided as a pandas.DataFrame table with xyz columns. Optional.
+    outline_points : pd.DataFrame
+        A set of nodes making up a polygon to be plotted on top of the main
+        grid surface, provided as a pandas.DataFrame table with xyz columns.
+        Optional.
+    azimuth : float
+        Angle of viewpoint in degrees from 0-360. Default is 157.5 (SSE),
+    elevation : float
+        Angle from horizon in degrees from 0-90. Default is 45.
+    title : str
+        Main heading text (e.g. "Subglacial Lake X"). Default is "" (blank).
+    subtitle : str
+        Secondary headig text (e.g. "Time at YYYYMMDD"). Default is "" (blank).
+
+    Returns
+    -------
+    fig : pygmt.Figure
+        A pygmt Figure instance containing the 3D perspective grid plot which
+        can be viewed using fig.show() or saved to a file using fig.savefig()
+    """
+    assert len(grid_region) == 6  # (xmin, xmax, ymin, ymax, zmin, zmax)
+
+    fig = pygmt.Figure()
+
+    ## Left plot
+    # Ice surface elevation grid
+    pygmt.makecpt(cmap="lapaz", series=grid_region[-2:])
+    fig.grdview(
+        grid=grid,
+        projection="X10c",
+        region=grid_region,
+        shading=True,
+        frame=[
+            f'SWZ+b+t"{title}"',  # plot South, West axes, and Z-axis
+            'xaf+l"Polar Stereographic X (m)"',  # add x-axis annotations and minor ticks
+            'yaf+l"Polar Stereographic Y (m)"',  # add y-axis annotations and minor ticks
+            f'zaf+l"Elevation (m)"',  # add z-axis annotations, minor ticks and axis label
+        ],
+        cmap=True,
+        zscale=0.1,  # zscaling factor, hardcoded to 0.1x vertical exaggeration
+        # zsize="5c",  # z-axis size, hardcoded to be 5 centimetres
+        surftype="sim",  # surface, image and mesh plot
+        perspective=[azimuth, elevation],  # perspective using azimuth/elevation
+        # W="c0.05p,black,solid",  # draw contours
+    )
+
+    # Plot satellite track line points in green
+    if track_points is not None:
+        fig.plot3d(
+            data=track_points,
+            color="green",
+            style="c0.02c",
+            zscale=True,
+            perspective=f"{azimuth}/{elevation}",
+        )
+    # Plot lake boundary outline as yellow dashed line
+    if outline_points is not None:
+        fig.plot3d(
+            data=outline_points.values,
+            region=grid_region,
+            pen="1.5p,yellow2,-",
+            zscale=True,
+            perspective=f"{azimuth}/{elevation}",
+        )
+
+    ## Right plot
+    # Normalized ice surface elevation change grid
+    fig.shift_origin(xshift="10c")
+    if diff_grid.min() == diff_grid.max():
+        # add some tiny random noise to make plot work
+        np.random.seed(seed=int(elevation))
+        diff_grid = diff_grid + abs(np.random.normal(scale=1e-32, size=diff_grid.shape))
+    pygmt.makecpt(cmap="roma", series=diff_grid_region[-2:])
+    fig.grdview(
+        grid=diff_grid,
+        projection="X10c",
+        region=diff_grid_region,
+        shading=False,
+        frame=[
+            f'SEZ2+b+t"{subtitle}"',  # plot South, East axes, and Z-axis
+            'xaf+l"Polar Stereographic X (m)"',  # add x-axis annotations and minor ticks
+            'yaf+l"Polar Stereographic Y (m)"',  # add y-axis annotations and minor ticks
+            f'zaf+l"Elev Change (m)"',  # add z-axis annotations, minor ticks and axis label
+        ],
+        cmap=True,
+        zscale=0.1,  # zscaling factor, hardcoded to 0.1x vertical exaggeration
+        # zsize="5c",  # z-axis size, hardcoded to be 5 centimetres
+        surftype="sim",  # surface, image and mesh plot
+        perspective=[azimuth, elevation],  # perspective using azimuth/elevation
+        # W="c0.05p,black,solid",  # draw contours
+    )
+
     return fig
