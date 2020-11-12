@@ -21,18 +21,18 @@ Feature: Mapping Antarctic subglacial lakes
     Then the result is an animation of ice surface elevation changing over time
 
     Examples:
-    | location    | lake_name                      | lake_id | cycles | azimuth | elevation |
-    # | siple_coast | Mercer 2b                      | 21      | 3-8    | 157.5   | 45        |
-    # | siple_coast | Lower Subglacial Lake Conway   | 40      | 3-8    | 157.5   | 45        |
-    # | siple_coast | Subglacial Lake Conway         | 41      | 3-8    | 157.5   | 45        |
-    # | siple_coast | Subglacial Lake Whillans       | 48      | 3-8    | 157.5   | 45        |
-    # | siple_coast | Whillans IX                    | 50      | 3-8    | 157.5   | 45        |
-    # | siple_coast | Kamb 8                         | 62      | 3-8    | 157.5   | 45        |
-    # | siple_coast | Kamb 1                         | 63      | 3-8    | 157.5   | 45        |
-    | siple_coast | Kamb 34                        | 64      | 4-7    | 157.5   | 45        |
-    # | siple_coast | Kamb 12                        | 65      | 3-8    | 157.5   | 45        |
-    # | siple_coast | MacAyeal 1                     | 97      | 3-8    | 157.5   | 45        |
-    # | recovery    | Slessor 45                     | 109     | 3-8    | 202.5   | 60        |
-    # | recovery    | Slessor 23                     | 116     | 3-8    | 202.5   | 60        |
-    | recovery    | Recovery IX                    | 153     | 4-7    | 202.5   | 60        |
-    # | recovery    | Recovery 3                     | 157     | 3-8    | 202.5   | 60        |
+    | location            | lake_name                      | lake_id | cycles | azimuth | elevation |
+    # | whillans_downstream | Mercer 2b                      | 21      | 3-8    | 157.5   | 45        |
+    # | whillans_downstream | Lower Subglacial Lake Conway   | 40      | 3-8    | 157.5   | 45        |
+    # | whillans_downstream | Subglacial Lake Conway         | 41      | 3-8    | 157.5   | 45        |
+    # | whillans_downstream | Subglacial Lake Whillans       | 48      | 3-8    | 157.5   | 45        |
+    # | whillans_upstream   | Whillans IX                    | 50      | 3-8    | 157.5   | 45        |
+    # | whillans_upstream   | Kamb 8                         | 62      | 3-8    | 157.5   | 45        |
+    # | whillans_upstream   | Kamb 1                         | 63      | 3-8    | 157.5   | 45        |
+    | whillans_upstream   | Kamb 34                        | 64      | 4-7    | 157.5   | 45        |
+    # | siple_coast         | Kamb 12                        | 65      | 3-8    | 157.5   | 45        |
+    # | siple_coast         | MacAyeal 1                     | 97      | 3-8    | 157.5   | 45        |
+    # | slessor_downstream  | Slessor 45                     | 109     | 3-8    | 202.5   | 60        |
+    # | slessor_downstream  | Slessor 23                     | 116     | 3-8    | 202.5   | 60        |
+    | slessor_downstream  | Recovery IV                    | 151     | 3-8    | 247.5   | 45        |
+    # | slessor_downstream  | Recovery 2                     | 156     | 3-8    | 202.5   | 45        |

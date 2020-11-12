@@ -118,6 +118,7 @@ sources:
           - amundsen_sea_embayment
           - kamb
           - siple_coast
+          - slessor_downstream
           - whillans_upstream
           - whillans_downstream
       cycle:

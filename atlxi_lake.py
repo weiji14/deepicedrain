@@ -365,8 +365,8 @@ lakedict = {
     97: "MacAyeal 1",  # draining lake
     109: "Slessor 45",  # draining lake
     116: "Slessor 23",  # filling lake
-    153: "Recovery IX",  # draining lake
-    157: "Recovery 3",  # filling lake
+    151: "Recovery IV",  # draining lake
+    156: "Recovery 2",  # filling lake
 }
 region = deepicedrain.Region.from_gdf(gdf=lake, name=lakedict[lake.name])
 

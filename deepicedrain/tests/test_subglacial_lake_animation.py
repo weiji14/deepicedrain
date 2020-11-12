@@ -134,8 +134,8 @@ def visualize_grid_in_3D(
             diff_grid_region=diff_grid_region,
             track_points=df_lake[["x", "y", f"h_corr_{cycle}"]].dropna().to_numpy(),
             outline_points=outline_points,
-            azimuth=157.5,  # 202.5  # 270
-            elevation=45,  # 60
+            azimuth=azimuth,
+            elevation=elevation,
             title=context.region.name,
             subtitle=f"Cycle {cycle} at {time_sec}",
         )
