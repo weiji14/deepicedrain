@@ -1,5 +1,5 @@
 """
-Feature tests for analyzing Active Subglacial Lakes in Antactica.
+Feature tests for finding Active Subglacial Lakes in Antactica.
 """
 try:
     import cudf as xpd
@@ -13,22 +13,22 @@ from pytest_bdd import given, scenario, then, when
 @scenario(
     feature_name="features/subglacial_lakes.feature",
     scenario_name="Subglacial Lake Finder",
-    example_converters=dict(placename=str, this_many=int),
+    example_converters=dict(location=str, this_many=int),
 )
 def test_subglacial_lake_finder():
     """Find active subglacial lakes at some place"""
     pass
 
 
-@given("some altimetry data at <placename>", target_fixture="dataframe")
-def altimetry_data(placename):
+@given("some altimetry data at <location>", target_fixture="dataframe")
+def basin_altimetry_data(location):
     """
     Load up some pre-processed ICESat-2 ATL11 altimetry data with x, y,
     dhdt_slope and referencegroundtrack columns from a Parquet file.
     """
     # TODO use intake_parquet after https://github.com/intake/intake-parquet/issues/18
     with fsspec.open(
-        f"simplecache::https://github.com/weiji14/deepicedrain/releases/download/v0.3.1/df_dhdt_{placename}.parquet",
+        f"simplecache::https://github.com/weiji14/deepicedrain/releases/download/v0.3.1/df_dhdt_{location}.parquet",
         simplecache=dict(cache_storage="ATLXI", same_names=True),
     ) as openfile:
         _dataframe: xpd.DataFrame = xpd.read_parquet(

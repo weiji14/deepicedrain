@@ -435,7 +435,7 @@ for cycle in tqdm.tqdm(iterable=cycles):
 fig.show()
 
 # %%
-# Make a animated GIF of changing ice surface from the PNG files
+# Make an animated GIF of changing ice surface from the PNG files
 # !convert -delay 120 -loop 0 figures/{placename}/dsm_*.png {gif_fname}
 gif_fname: str = (
     f"figures/{placename}/dsm_{placename}_cycles_{cycles[0]}-{cycles[-1]}.gif"
