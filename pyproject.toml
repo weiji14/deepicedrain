@@ -51,6 +51,9 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [tool.poetry.plugins."intake.catalogs"]
 "atlas_cat" = "deepicedrain:catalog"
 
+[tool.pytest.ini_options]
+bdd_features_base_dir = "deepicedrain/"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
