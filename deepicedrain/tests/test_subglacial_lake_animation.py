@@ -136,8 +136,7 @@ def visualize_grid_in_3D(
             outline_points=outline_points,
             azimuth=azimuth,
             elevation=elevation,
-            title=context.region.name,
-            subtitle=f"Cycle {cycle} at {time_sec}",
+            title=f"{context.region.name} at Cycle {cycle} ({time_sec})",
         )
         fig.savefig(
             f"figures/{context.placename}/dsm_{context.placename}_cycle_{cycle}.png"

@@ -428,8 +428,7 @@ for cycle in tqdm.tqdm(iterable=cycles):
         outline_points=outline_points,
         azimuth=157.5,  # 202.5  # 270
         elevation=45,  # 60
-        title=region.name,
-        subtitle=f"Cycle {cycle} at {time_sec}",
+        title=f"{region.name} at Cycle {cycle} ({time_sec})",
     )
     fig.savefig(f"figures/{placename}/dsm_{placename}_cycle_{cycle}.png")
 fig.show()
