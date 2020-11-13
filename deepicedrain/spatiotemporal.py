@@ -420,6 +420,7 @@ def spatiotemporal_cube(
             spacing=spacing,
             J=f'"{projection}"',  # projection
             L=limits,  # lower and upper limits
+            M="3c",  # mask values 3 pixel cells outside/away from valid data
             T=0.35,  # tension factor
             V="e",  # error messages only
             outfile=outfile,

@@ -33,3 +33,4 @@ Contents:
   - IceSat2Explorer - Dashboard for interacting with ICESat-2 point clouds on a 2D map
   - plot_alongtrack - Makes a 2D along track figure of height measurements taken at different cycle times
   - plot_crossovers - Makes a figure showing how elevation is changing at many crossover points over time
+  - plot_icesurface - Makes a 3D perspective plot of ice surfaces with ICESat-2 track and lake outline overlays

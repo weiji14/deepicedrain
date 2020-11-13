@@ -16,6 +16,7 @@ from deepicedrain import (
     ndarray_to_parquet,
     plot_alongtrack,
     plot_crossovers,
+    plot_icesurface,
     wide_to_long,
 )
 
@@ -46,6 +47,24 @@ def fixture_dataframe():
         dataframe["cycle_number"] == 1, "0111_pt1x0222_pt2", "0333pt3x0111_pt1"
     )
     return dataframe
+
+
+@pytest.fixture(scope="module", name="region")
+def fixture_region():
+    """
+    Sample grid region.
+    """
+    region = [-155.5, -151.5, -85.0, -83.5, 117.5, 200]
+    return region
+
+
+@pytest.fixture(scope="module", name="grid")
+def fixture_grid(region):
+    """
+    Sample ice surface elevation grid.
+    """
+    grid = pygmt.grdcut(grid="@earth_relief_30m", region=region[:4])
+    return grid
 
 
 @pygmt.helpers.testing.check_figures_equal()
@@ -79,5 +98,23 @@ def test_plot_crossovers(dataframe):
     )
     fig_ref = plot_crossovers(**kwargs)
     fig_test = plot_crossovers(**kwargs, spacing=2.5)
+
+    return fig_ref, fig_test
+
+
+@pygmt.helpers.testing.check_figures_equal()
+def test_plot_icesurface(grid, region):
+    """
+    Tests that a 3D surface plot figure can be produced. Also ensure
+    that the default azimuth and elevation is 157.5 and 45 respectively.
+    """
+    kwargs = dict(
+        grid=grid,
+        grid_region=region,
+        diff_grid=(grid - grid),
+        diff_grid_region=region[:4] + [-1, +1],
+    )
+    fig_ref = plot_icesurface(**kwargs)
+    fig_test = plot_icesurface(**kwargs, azimuth=157.5, elevation=45)
 
     return fig_ref, fig_test
