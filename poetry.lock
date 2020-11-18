@@ -1312,7 +1312,7 @@ numpy = ">=1.9"
 
 [[package]]
 name = "notebook"
-version = "6.1.4"
+version = "6.1.5"
 description = "A web-based notebook environment for interactive computing"
 category = "main"
 optional = false
@@ -2990,8 +2990,8 @@ netcdf4 = [
     {file = "netCDF4-1.5.4.tar.gz", hash = "sha256:941de6f3623b6474ecb4d043be5990690f7af4cf0d593b31be912627fe5aad03"},
 ]
 notebook = [
-    {file = "notebook-6.1.4-py3-none-any.whl", hash = "sha256:07b6e8b8a61aa2f780fe9a97430470485bc71262bc5cae8521f1441b910d2c88"},
-    {file = "notebook-6.1.4.tar.gz", hash = "sha256:687d01f963ea20360c0b904ee7a37c3d8cda553858c8d6e33fd0afd13e89de32"},
+    {file = "notebook-6.1.5-py3-none-any.whl", hash = "sha256:508cf9dad7cdb3188f1aa27017dc78179029dfe83814fc505329f689bc2ab50f"},
+    {file = "notebook-6.1.5.tar.gz", hash = "sha256:3db37ae834c5f3b6378381229d0e5dfcbfb558d08c8ce646b1ad355147f5e91d"},
 ]
 numba = [
     {file = "numba-0.51.2-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:af798310eeb318c56cdb83254abbe9a938cc0182d08671d7f9f032dc817e064d"},
