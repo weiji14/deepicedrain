@@ -1565,7 +1565,7 @@ description = "Utilities for organizing and manipulating point data"
 category = "main"
 optional = false
 python-versions = "*"
-develop = true
+develop = false
 
 [package.dependencies]
 gdal = "3.0.4"
@@ -1579,8 +1579,8 @@ scipy = "*"
 [package.source]
 type = "git"
 url = "https://github.com/SmithB/pointCollection.git"
-reference = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"
-resolved_reference = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"
+reference = "1f6e98fa4156f883ca6a9b2977046f09af23589f"
+resolved_reference = "1f6e98fa4156f883ca6a9b2977046f09af23589f"
 
 [[package]]
 name = "prometheus-client"
@@ -2270,7 +2270,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c8d59e9f8844eb1129d118527a2305dad3d71fbbce93922597ae1e3c2202dfd0"
+content-hash = "0dee9b835137d0f2cdeff5e229df58aa2229192fd8186ae1b45b8f6442eaf6dc"
 
 [metadata.files]
 aiohttp = [

@@ -25,7 +25,7 @@ jupyterlab = "^2.2.9"
 lxml = "^4.5.2"
 matplotlib = "^3.3.3"
 numcodecs = "^0.7.2"
-pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "d7d1b8d88aea3e79abc77c3386a0619abc8dba0c"}
+pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "1f6e98fa4156f883ca6a9b2977046f09af23589f"}
 pyarrow = "1.0.1"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
