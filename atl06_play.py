@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.2
+#       jupytext_version: 1.7.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -119,7 +119,7 @@ dates1 = pd.date_range(start="2018.10.14", end="2018.12.08")  # 1st batch
 dates2 = pd.date_range(start="2018.12.10", end="2019.06.26")  # 2nd batch
 dates3 = pd.date_range(start="2019.07.26", end="2020.05.13")  # 3rd batch
 dates = dates1.append(other=dates2).append(other=dates3)
-# dates = pd.date_range(start="2020.05.14", end="2020.07.16")  # custom batch
+# dates = pd.date_range(start="2020.07.16", end="2020.09.30")  # custom batch
 
 # %%
 # Submit download jobs to Client
@@ -148,7 +148,9 @@ for foo in futures:
     if foo.status != "finished":
         print(foo)
         unfinished.append(foo)
-        # foo.retry()
+        if foo.status == "error":
+            foo.retry()
+            # pass
 
 # %%
 try:
