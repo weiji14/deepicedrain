@@ -41,7 +41,7 @@ def test_calculate_delta_time():
         actual=np.asarray(delta_time.min()), desired=np.timedelta64(7846786703322903)
     )
     npt.assert_equal(
-        actual=np.asarray(delta_time.mean()), desired=np.timedelta64(7846786865357197),
+        actual=np.asarray(delta_time.mean()), desired=np.timedelta64(7846786865357197)
     ),
     npt.assert_equal(
         actual=np.asarray(delta_time.max()), desired=np.timedelta64(7846787022726588)
