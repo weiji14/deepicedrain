@@ -34,7 +34,7 @@ python = "^3.8"
 python-snappy = "^0.5.4"
 pyproj = "^3.0.dev2"
 scikit-learn = "^0.23.2"
-tqdm = "^4.48.2"
+tqdm = "^4.54.0"
 xarray = {git = "https://github.com/pydata/xarray.git", rev = "v0.16.1-18-g49e3032"}
 xrviz = "^0.1.4"
 
