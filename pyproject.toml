@@ -22,7 +22,7 @@ intake-geopandas = "^0.2.4"
 intake-parquet = "^0.2.3"
 intake-xarray = "^0.4.0"
 jupyterlab = "^2.2.9"
-lxml = "^4.5.2"
+lxml = "^4.6.2"
 matplotlib = "^3.3.3"
 numcodecs = "^0.7.2"
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "1f6e98fa4156f883ca6a9b2977046f09af23589f"}
