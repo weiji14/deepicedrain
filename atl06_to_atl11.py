@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.2
+#       jupytext_version: 1.7.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -108,7 +108,6 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 
 # %%
 # !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --resume-failed --results logdir --joblog log --jobs 80 --load 100% > /dev/null
-# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica_20200513_20200716_diff.sh --bar --resume-failed --results logdir --joblog log --jobs 80 --load 100% > /dev/null
 
 # %%
 # df_log = pd.read_csv(filepath_or_buffer="log", sep="\t")
@@ -177,7 +176,7 @@ for rgt in tqdm.trange(1387):
         assert len(atl11files) == 3  # Should be 3 files for Orbital Segments 10,11,12
     except AssertionError:
         # Manually handle exceptional cases
-        if len(atl11files) != 2 or rgt + 1 not in [1036]:
+        if len(atl11files) != 2:  # or rgt + 1 not in [1036]:
             raise ValueError(
                 f"{rgt+1} only has {len(atl11files)} ATL11 files instead of 3"
             )
