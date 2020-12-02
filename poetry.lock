@@ -2201,22 +2201,23 @@ testing = ["pytest (>=3.1.0)", "coverage", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "xarray"
-version = "0.16.2.dev18+g49e3032d"
+version = "0.16.2"
 description = "N-D labeled arrays and datasets in Python"
 category = "main"
 optional = false
 python-versions = ">=3.6"
-develop = true
 
 [package.dependencies]
 numpy = ">=1.15"
 pandas = ">=0.25"
 
-[package.source]
-type = "git"
-url = "https://github.com/pydata/xarray.git"
-reference = "v0.16.1-18-g49e3032"
-resolved_reference = "49e3032ddfa3fe86361300fd08db4764ee718bf1"
+[package.extras]
+accel = ["scipy", "bottleneck", "numbagg"]
+complete = ["netcdf4", "h5netcdf", "scipy", "pydap", "zarr", "fsspec", "cftime", "rasterio", "cfgrib", "bottleneck", "numbagg", "dask", "matplotlib", "seaborn", "nc-time-axis"]
+docs = ["netcdf4", "h5netcdf", "scipy", "pydap", "zarr", "fsspec", "cftime", "rasterio", "cfgrib", "bottleneck", "numbagg", "dask", "matplotlib", "seaborn", "nc-time-axis", "sphinx-autosummary-accessors", "sphinx-rtd-theme", "ipython", "ipykernel", "jupyter-client", "nbsphinx", "scanpydoc"]
+io = ["netcdf4", "h5netcdf", "scipy", "pydap", "zarr", "fsspec", "cftime", "rasterio", "cfgrib"]
+parallel = ["dask"]
+viz = ["matplotlib", "seaborn", "nc-time-axis"]
 
 [[package]]
 name = "xrviz"
@@ -2280,7 +2281,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "52f8d2e6fdb46e424492de39687db6fe491323baf0b6e181fe2ad952fc5859e6"
+content-hash = "0218c3417fc9f48732a860fe1a45cb48dec42c2b675ecaa1531718bee4ee53f6"
 
 [metadata.files]
 aiohttp = [
@@ -3624,7 +3625,10 @@ webob = [
     {file = "WebOb-1.8.6-py2.py3-none-any.whl", hash = "sha256:a3c89a8e9ba0aeb17382836cdb73c516d0ecf6630ec40ec28288f3ed459ce87b"},
     {file = "WebOb-1.8.6.tar.gz", hash = "sha256:aa3a917ed752ba3e0b242234b2a373f9c4e2a75d35291dcbe977649bd21fd108"},
 ]
-xarray = []
+xarray = [
+    {file = "xarray-0.16.2-py3-none-any.whl", hash = "sha256:88d0f80145999443730f87c7575e426d377f0b62677d915f21059cc364b4a1e1"},
+    {file = "xarray-0.16.2.tar.gz", hash = "sha256:38e8439d6c91bcd5b7c0fca349daf8e0643ac68850c987262d53526e9d7d01e4"},
+]
 xrviz = [
     {file = "xrviz-0.1.4.tar.gz", hash = "sha256:65deb63b695f4edcfa5d4eb85319c0f48ac43e2fbc796f7b8fd3e52be2261206"},
 ]
