@@ -134,12 +134,9 @@ for date in dates:
 
 # %%
 # Check download progress here, https://stackoverflow.com/a/37901797/6611055
-responses = []
-for f in tqdm.tqdm(
+responses = [f.result() for f in tqdm.tqdm(
     iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
-):
-    responses.append(f.result())
-
+)]
 # %%
 # In case of error, check which downloads are unfinished
 # Manually delete those folders and retry
@@ -278,7 +275,7 @@ dataset_dict = {}
 for referencegroundtrack in list(crossing_dates_dict)[348:349]:
     # print(referencegroundtrack)
     filepaths = list(crossing_dates_dict[referencegroundtrack].values())
-    if len(filepaths) > 0:
+    if filepaths:
         dataset_dict[referencegroundtrack] = dask.delayed(obj=six_laser_beams)(
             filepaths=filepaths
         )
