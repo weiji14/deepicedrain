@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.2
+#       jupytext_version: 1.7.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -53,7 +53,7 @@ import xarray as xr
 import deepicedrain
 
 # %%
-client = dask.distributed.Client(n_workers=64, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=32, threads_per_worker=1)
 client
 
 # %% [markdown]
@@ -157,7 +157,7 @@ num_cycles: int = len(ds.cycle_number)
 
 # %%
 # Get first and last dates to put into our plots
-min_date, max_date = ("2018-10-14", "2020-07-16")
+min_date, max_date = ("2018-10-14", "2020-09-30")
 if min_date is None:
     min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
     min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
@@ -207,7 +207,7 @@ ds_ht: xr.Dataset = ds[["h_range", "h_corr", "delta_time"]].compute()
 # ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w", consolidated=True)
 ds_ht: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_hrange_time_{placename}.zarr",
-    chunks={"cycle_number": 8},
+    chunks={"cycle_number": 9},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -234,7 +234,7 @@ fig.grdimage(
     region=region.bounds(),
     projection=f"x1:{scale}",
     frame=["afg", f'WSne+t"ICESat-2 Ice Surface Height Range over {region.name}"'],
-    Q=True,
+    nan_transparent=True,
 )
 fig.colorbar(
     position="JCR+e",
@@ -248,7 +248,7 @@ fig.coast(
     area_thresh="+ag",
     resolution="i",
     shorelines="0.5p",
-    V="q",
+    verbose="q",
 )
 fig.savefig(f"figures/plot_atl11_hrange_{placename}_{min_date}_{max_date}.png")
 fig.show(width=600)
@@ -332,7 +332,7 @@ print(agg_grid)
 # Plot our map!
 scale: int = region.scale
 fig = pygmt.Figure()
-pygmt.makecpt(cmap="roma", series=[-5, 5, 0.5])
+pygmt.makecpt(cmap="roma", series=[-5, 5, 0.5], continuous=True)
 fig.grdimage(
     grid=agg_grid,
     region=region.bounds(),
@@ -341,7 +341,7 @@ fig.grdimage(
         "afg",
         f'WSne+t"ICESat-2 Change in Ice Surface Height over Time at {region.name}"',
     ],
-    Q=True,
+    nan_transparent=True,
 )
 fig.colorbar(
     position="JCR+e",
@@ -355,7 +355,7 @@ fig.coast(
     area_thresh="+ag",
     resolution="i",
     shorelines="0.5p",
-    V="q",
+    verbose="q",
 )
 fig.savefig(f"figures/plot_atl11_dhdt_{placename.lower()}_{min_date}_{max_date}.png")
 fig.show(width=600)
@@ -387,7 +387,7 @@ if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
     # of workers (e.g. 72 to 32) so that each worker will have more memory
     deepicedrain.ndarray_to_parquet(
         ndarray=ds_subset,
-        parquetpath=f"ATLXI/df_dhdt_{placename}.parquet",
+        parquetpath=f"ATLXI/df_dhdt_{placename.lower()}.parquet",
         variables=[
             "x",
             "x_atc",
