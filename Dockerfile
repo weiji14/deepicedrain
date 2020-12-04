@@ -18,11 +18,11 @@ RUN adduser --disabled-password \
 # Setup conda
 ENV CONDA_DIR ${HOME}/.conda
 ENV NB_PYTHON_PREFIX ${CONDA_DIR}
-ENV MINICONDA_VERSION 4.8.3
+ENV MINICONDA_VERSION 4.9.2
 
 RUN cd /tmp && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh && \
-    echo "d63adf39f2c220950a063e0529d4ff74 *Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
+    echo "122c8c9beb51e124ab32a0fa6426c656 *Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
     /bin/bash Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-py38_${MINICONDA_VERSION}-Linux-x86_64.sh && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
