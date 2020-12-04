@@ -30,8 +30,8 @@ pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = 
 pyarrow = "1.0.1"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
-pygmt = {git = "https://github.com/GenericMappingTools/pygmt.git", rev = "c7c5eaecf8fedbca584743f6adca4a378851ba9a"}
-python = "^3.8"
+pygmt = "^0.2.1"
+python = "~3.8"
 python-snappy = "^0.5.4"
 pyproj = "^3.0.dev2"
 scikit-learn = "^0.23.2"
