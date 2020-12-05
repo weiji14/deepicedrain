@@ -520,11 +520,20 @@ def plot_icesurface(
         )
     # Plot lake boundary outline as yellow dashed line
     if outline_points is not None:
-        fig.plot3d(
-            data=outline_points.values,
-            region=grid_region,
-            pen="1.5p,yellow2,-",
-            zscale=True,
-            perspective=True,
-        )
+        with pygmt.helpers.GMTTempFile() as tmpfile:
+            pygmt.grdtrack(points=outline_points, grid=grid, outfile=tmpfile.name)
+            _df = pd.read_csv(tmpfile.name, sep="\t", names=["x", "y", "z"])
+            pygmt.grdtrack(
+                points=outline_points,
+                grid=grid,
+                outfile=tmpfile.name,
+                d=f"o{_df.z.median()}",  # fill NaN points with median height
+            )
+            fig.plot3d(
+                data=tmpfile.name,
+                region=grid_region,
+                pen="1.5p,yellow2,-",
+                zscale=True,
+                perspective=True,
+            )
     return fig

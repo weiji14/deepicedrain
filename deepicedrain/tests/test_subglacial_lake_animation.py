@@ -10,8 +10,10 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pygmt
+import pytest
 import tqdm
 import xarray as xr
+from packaging.version import Version
 from pytest_bdd import given, scenario, then, when
 
 import deepicedrain
@@ -21,7 +23,7 @@ import deepicedrain
     feature_name="features/subglacial_lakes.feature",
     scenario_name="Subglacial Lake Animation",
     example_converters=dict(
-        lake_name=str, lake_id=int, cycles=str, azimuth=float, elevation=float
+        lake_name=str, lake_ids=str, cycles=str, azimuth=float, elevation=float
     ),
 )
 def test_subglacial_lake_animation():
@@ -31,12 +33,31 @@ def test_subglacial_lake_animation():
     pass
 
 
+@pytest.mark.skipif(
+    Version(deepicedrain.__version__) < Version("0.4.0"),
+    reason="Requires newer df_dhdt_*.parquet file",
+)
+@scenario(
+    feature_name="features/subglacial_lakes.feature",
+    scenario_name="Subglacial Lake Mega-Cluster Animation",
+    example_converters=dict(
+        lake_name=str, lake_ids=str, cycles=str, azimuth=float, elevation=float
+    ),
+)
+def test_subglacial_lake_megacluster_animation():
+    """
+    Generate an animated time-series visualization for multiple active
+    subglacial lakes in a mega-cluster.
+    """
+    pass
+
+
 @given(
-    "some altimetry data at <location> spatially subsetted to <lake_name> with <lake_id>",
+    "some altimetry data at <location> spatially subsetted to <lake_name> with <lake_ids>",
     target_fixture="df_lake",
 )
 def lake_altimetry_data(
-    location: str, lake_name: str, lake_id: int, context
+    location: str, lake_name: str, lake_ids: str, context
 ) -> pd.DataFrame:
     """
     Load up some pre-processed ICESat-2 ATL11 altimetry data from a Parquet
@@ -50,12 +71,29 @@ def lake_altimetry_data(
         dataframe: pd.DataFrame = pd.read_parquet(openfile)
 
     antarctic_lakes: gpd.GeoDataFrame = deepicedrain.catalog.subglacial_lakes.read()
+    antarctic_lakes = antarctic_lakes.set_crs(epsg=3031, allow_override=True)
 
     context.lake_name: str = lake_name
     context.placename: str = context.lake_name.lower().replace(" ", "_")
 
-    context.lake: pd.Series = antarctic_lakes.loc[lake_id]
+    lake_ids: tuple = tuple(map(int, lake_ids.split(",")))
+    context.lake: pd.Series = (
+        antarctic_lakes.loc[list(lake_ids)]
+        .dissolve(by="basin_name", as_index=False)
+        .squeeze()
+    )
     context.draining = True if context.lake.inner_dhdt < 0 else False
+
+    # Save lake outline to OGR GMT file format
+    os.makedirs(name=f"figures/{context.placename}", exist_ok=True)
+    context.outline_points: str = f"figures/{context.placename}/{context.placename}.gmt"
+    try:
+        os.remove(path=context.outline_points)
+    except FileNotFoundError:
+        pass
+    antarctic_lakes.loc[list(lake_ids)].to_file(
+        filename=context.outline_points, driver="OGR_GMT", mode="w"
+    )
 
     context.region = deepicedrain.Region.from_gdf(
         gdf=context.lake, name=context.lake_name
@@ -72,8 +110,6 @@ def create_spatiotemporal_cube(
     """
     Generate gridded time-series of ice elevation over lake.
     """
-    os.makedirs(name=f"figures/{context.placename}", exist_ok=True)
-
     start, end = cycles.split("-")  # E.g. "3-8"
     context.cycles = tuple(range(int(start), int(end) + 1))  # ICESat-2 cycles
     context.ds_lake: xr.Dataset = deepicedrain.spatiotemporal_cube(
@@ -117,23 +153,14 @@ def visualize_grid_in_3D(
         time_nsec: pd.Timestamp = df_lake[f"utc_time_{cycle}"].mean()
         time_sec: str = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
 
-        grid = (
-            f"figures/{context.placename}/h_corr_{context.placename}_cycle_{cycle}.nc"
-        )
-        points = pd.DataFrame(
-            data=np.vstack(context.lake.geometry.boundary.coords.xy).T,
-            columns=("x", "y"),
-        )
-        outline_points = pygmt.grdtrack(points=points, grid=grid, newcolname="z")
-        outline_points["z"] = outline_points.z.fillna(value=outline_points.z.median())
-
+        # grid = ds_lake.sel(cycle_number=cycle).z
         fig = deepicedrain.plot_icesurface(
-            grid=grid,  # ds_lake.sel(cycle_number=cycle).z
+            grid=f"figures/{context.placename}/h_corr_{context.placename}_cycle_{cycle}.nc",
             grid_region=grid_region,
             diff_grid=ds_lake_diff.sel(cycle_number=cycle).z,
             diff_grid_region=diff_grid_region,
             track_points=df_lake[["x", "y", f"h_corr_{cycle}"]].dropna().to_numpy(),
-            outline_points=outline_points,
+            outline_points=context.outline_points,
             azimuth=azimuth,
             elevation=elevation,
             title=f"{context.region.name} at Cycle {cycle} ({time_sec})",

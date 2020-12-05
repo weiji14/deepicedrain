@@ -76,7 +76,7 @@ class Region:
             import pygmt
 
             xmin, xmax, ymin, ymax = pygmt.info(
-                table=np.vstack(gdf.geometry.exterior.coords.xy).T,
+                table=np.vstack(gdf.geometry.convex_hull.exterior.coords.xy).T,
                 spacing=float(spacing),
             )
         except (ImportError, TypeError):
