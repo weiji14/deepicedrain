@@ -61,9 +61,23 @@ def fixture_region():
 @pytest.fixture(scope="module", name="grid")
 def fixture_grid(region):
     """
-    Sample ice surface elevation grid.
+    Sample ice surface elevation grid randomly generated.
     """
-    grid = pygmt.grdcut(grid="@earth_relief_30m", region=region[:4])
+    longitude = np.arange(region[0], region[1], 0.5)
+    latitude = np.arange(region[2], region[3], 0.5)
+    shape = (len(latitude), len(longitude))
+    data = np.random.RandomState(seed=42).rand(*shape) + np.random.randint(
+        low=region[4], high=region[5], size=shape
+    )
+
+    grid = xr.DataArray(
+        data,
+        coords=[
+            ("latitude", latitude, {"units": "degrees_north"}),
+            ("longitude", longitude, {"units": "degrees_east"}),
+        ],
+        attrs={"actual_range": [region[4], region[5]]},
+    )
     return grid
 
 
