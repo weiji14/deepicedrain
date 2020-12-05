@@ -331,7 +331,7 @@ fig.show()
 
 # %%
 # Save or load dhdt data from Parquet file
-placename: str = "siple_coast"  # "Recovery"  # "Whillans"
+placename: str = "siple_coast"  # "slessor_downstream"  #  "Recovery"  # "Whillans"
 try:
     drainage_basins: gpd.GeoDataFrame = drainage_basins.set_index(keys="NAME")
     region: deepicedrain.Region = deepicedrain.Region.from_gdf(
@@ -347,29 +347,36 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(
 # %%
 # Antarctic subglacial lake polygons with EPSG:3031 coordinates
 antarctic_lakes: gpd.GeoDataFrame = deepicedrain.catalog.subglacial_lakes.read()
+antarctic_lakes = antarctic_lakes.set_crs(epsg=3031, allow_override=True)
 
 # %%
 # Choose one draining/filling lake
 draining: bool = False
 placename: str = "Whillans"  # "Slessor"  # "Kamb"  # "Mercer"  #
-lakes: gpd.GeoDataFrame = antarctic_lakes.query(expr="basin_name == @placename")
-lake = lakes.loc[lakes.inner_dhdt.idxmin() if draining else lakes.inner_dhdt.idxmax()]
-lake = lakes.query(expr="inner_dhdt < 0" if draining else "inner_dhdt > 0").loc[48]
+lakes: gpd.GeoDataFrame = antarctic_lakes  # .query(expr="basin_name == @placename")
+
+lake_ids: int = (44,)  # single lake
+lake_ids: tuple = (41, 43, 45)  # lake mega-cluster
+# TODO handle Lake 78 cross-basin by using dissolve(by=None) available
+# in geopandas v0.9.0 https://github.com/geopandas/geopandas/pull/1568
+lake = lakes.loc[list(lake_ids)].dissolve(by="basin_name", as_index=False).squeeze()
 lakedict = {
-    21: "Mercer 2b",  # filling lake
-    40: "Lower Subglacial Lake Conway",  # draining lake
-    41: "Subglacial Lake Conway",  # draining lake
-    48: "Subglacial Lake Whillans",  # filling lake
-    50: "Whillans IX",  # filling lake
-    63: "Kamb 1",  # filling lake
-    65: "Kamb 12",  # filling lake
-    97: "MacAyeal 1",  # draining lake
-    109: "Slessor 45",  # draining lake
-    116: "Slessor 23",  # filling lake
-    151: "Recovery IV",  # draining lake
-    156: "Recovery 2",  # filling lake
+    (15, 19): "Subglacial Lake Mercer",  # filling lake
+    (32,): "Whillans 7",  # draining lake
+    (34, 35): "Subglacial Lake Conway",  # draining lake
+    (41, 43, 45): "Subglacial Lake Whillans",  # filling lake
+    (16, 46, 48): "Lake 78",  # filling lake
+    (44,): "Whillans IX",  # filling lake
+    (62,): "Kamb 1",  # filling lake
+    # (65): "Kamb 12",  # filling lake
+    (84,): "MacAyeal 1",  # draining lake
+    (95,): "Slessor 45",  # draining lake
+    (101,): "Slessor 23",  # filling lake
+    (141,): "Recovery IV",  # draining lake
+    (143, 144): "Recovery 2",  # filling lake
 }
-region = deepicedrain.Region.from_gdf(gdf=lake, name=lakedict[lake.name])
+region = deepicedrain.Region.from_gdf(gdf=lake, name=lakedict[lake_ids])
+assert (lake.inner_dhdt < 0 and draining) or (lake.inner_dhdt > 0 and not draining)
 
 print(lake)
 lake.geometry
@@ -379,13 +386,17 @@ lake.geometry
 placename: str = region.name.lower().replace(" ", "_")
 df_lake: cudf.DataFrame = region.subset(data=df_dhdt)
 
+# Save lake outline to OGR GMT file format
+outline_points: str = f"figures/{placename}/{placename}.gmt"
+if not os.path.exists(path=outline_points):
+    lakes.loc[list(lake_ids)].to_file(filename=outline_points, driver="OGR_GMT")
 
 # %% [markdown]
 # ## Create an interpolated ice surface elevation grid for each ICESat-2 cycle
 
 # %%
 # Generate gridded time-series of ice elevation over lake
-cycles: tuple = (3, 4, 5, 6, 7, 8)
+cycles: tuple = (3, 4, 5, 6, 7, 8, 9)
 os.makedirs(name=f"figures/{placename}", exist_ok=True)
 ds_lake: xr.Dataset = deepicedrain.spatiotemporal_cube(
     table=df_lake.to_pandas(),
@@ -413,15 +424,9 @@ for cycle in tqdm.tqdm(iterable=cycles):
     time_nsec: pd.Timestamp = df_lake[f"utc_time_{cycle}"].to_pandas().mean()
     time_sec: str = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
 
-    grid = f"figures/{placename}/h_corr_{placename}_cycle_{cycle}.nc"
-    points = pd.DataFrame(
-        data=np.vstack(lake.geometry.boundary.coords.xy).T, columns=("x", "y")
-    )
-    outline_points = pygmt.grdtrack(points=points, grid=grid, newcolname="z")
-    outline_points["z"] = outline_points.z.fillna(value=outline_points.z.median())
-
+    # grid = ds_lake.sel(cycle_number=cycle).z
     fig = deepicedrain.plot_icesurface(
-        grid=grid,  # ds_lake.sel(cycle_number=cycle).z
+        grid=f"figures/{placename}/h_corr_{placename}_cycle_{cycle}.nc",
         grid_region=grid_region,
         diff_grid=ds_lake_diff.sel(cycle_number=cycle).z,
         diff_grid_region=diff_grid_region,

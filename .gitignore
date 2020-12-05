@@ -35,3 +35,8 @@ ATL11.001
 ATL11.001z123
 ATLXI
 Quantarctica3
+
+# Subglacial Lake grid files and figures
+figures/**/*.gif
+figures/**/*.nc
+figures/**/*.png
