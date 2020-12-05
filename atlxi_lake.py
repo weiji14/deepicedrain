@@ -71,7 +71,7 @@ client
 # # Data Preparation
 
 # %%
-min_date, max_date = ("2018-10-14", "2020-07-16")
+min_date, max_date = ("2018-10-14", "2020-09-30")
 
 
 # %%
@@ -80,7 +80,7 @@ if not os.path.exists("ATLXI/df_dhdt_antarctica.parquet"):
     _ = deepicedrain.ndarray_to_parquet(
         ndarray=zarrarray,
         parquetpath="ATLXI/df_dhdt_antarctica.parquet",
-        variables=["x", "y", "dhdt_slope", "referencegroundtrack", "h_corr"],
+        variables=["x", "y", "dhdt_slope", "referencegroundtrack"],  # "h_corr"],
         dropnacols=["dhdt_slope"],
     )
 
@@ -205,6 +205,7 @@ for basin_index in tqdm.tqdm(iterable=basins):
     )
     lake_labels = cudf.concat(objs=[draining_lake_labels, filling_lake_labels])
     lake_labels: cudf.Series = lake_labels.sort_index()
+    assert lake_labels.name == "cluster_id"
 
     # Checking all potential subglacial lakes in a basin
     clusters: cudf.Series = lake_labels.unique()
@@ -623,7 +624,7 @@ fig.basemap(
     region=plotregion / 1000,
     projection="X8c",
 )
-fig.colorbar(position="JMR", frame=['x+l"Crossover Error"', "y+lm"])
+fig.colorbar(position="JMR+e", frame=['x+l"Crossover Error"', "y+lm"])
 fig.savefig(f"figures/{placename}/crossover_area_{placename}_{min_date}_{max_date}.png")
 fig.show()
 
