@@ -287,14 +287,14 @@ def plot_crossovers(
 
     which will produce a plot similar to the following:
 
-      ICESat-2 Crossover Elevations over Time at Some Ice Stream
+              Some Ice Stream crossovers
          ^
-         |                     -a---a---a---a
-         | -a---a---a---a---a-/      -b---b---b          -a- 0111_pt1x0222pt2
-    Elev |   -b---b---b---b---b---b-/  -c-               -b- 0222_pt2x0333pt3
-         |  -c---c---c---c---c---c----/   \-c---c        -c- 0333_pt3x0111pt1
-         |___________________________________________>
-                             Date
+         |             -a---a---a---a
+         | -a---a---a-/      -b---b---b
+    Elev |   -b---b---b---b-/  -c-
+         |  -c---c---c---c----/   \-c---c
+         |_________________________________>
+                      Date
 
     Parameters
     ----------
@@ -347,19 +347,20 @@ def plot_crossovers(
             ]
         )
         # pygmt.info(table=df[[time_var, elev_var]], spacing=f"1W/{spacing}", f="0T")
+        _y_label = "Elevation anomaly" if elev_var == "h_norm" else "Elevation"
         fig.basemap(
             projection="X12c/12c",
             region=plotregion,
             frame=[
-                rf'WSne+t"ICESat-2 Crossover Elevations over Time at {regionname}"',
-                "pxa1Of1o+lDate",  # primary time axis, 1 mOnth annotation and minor axis
+                rf'WSne+t"{regionname} crossovers"',
+                "pxa1Of1o",  # primary time axis, 1 mOnth annotation and minor axis
                 "sx1Y",  # secondary time axis, 1 Year intervals
-                'yaf+l"Elevation at crossover (m)"',
+                f'yaf+l"{_y_label} at crossover (m)"',
             ],
         )
 
     crossovers = df.groupby(by=track_var)
-    pygmt.makecpt(cmap="categorical", series=[1, len(crossovers) + 1, 1])
+    pygmt.makecpt(cmap="batlowS", series=[1, len(crossovers) + 1, 1])
     for i, ((track1_track2), indexes) in enumerate(
         tqdm.tqdm(crossovers.indices.items())
     ):
@@ -374,14 +375,12 @@ def plot_crossovers(
                 style="c0.1c",
                 cmap=True,
                 pen="thin+z",
-                label=f'"Track {track1} {track2}"',
             )
             # Plot line connecting points
             fig.plot(
                 x=df_[time_var], y=df_[elev_var], Z=i, pen=f"faint,+z,-", cmap=True
             )
-    with pygmt.config(FONT_ANNOT_PRIMARY="9p"):
-        fig.legend(S=0.8, position="JTR+jTL+o0.2c", box="+gwhite+p1p")
+
     return fig
 
 
