@@ -265,6 +265,45 @@ def plot_alongtrack(
     return fig
 
 
+def _plot_crossover_area(
+    outline_points: str or pd.DataFrame,
+    df: np.ndarray,
+    fig: pygmt.Figure = None,
+    plotsize: float = 8,
+    cmap: str = "vik",
+    elev_range: list = None,
+    wsne: str = "SE",
+):
+    """"""
+    fig = fig or pygmt.Figure()
+    plotregion: np.ndarray = pygmt.info(outline_points, per_column=True, spacing=1000)
+
+    # Map frame in metre units
+    fig.basemap(frame="+n", region=plotregion, projection=f"X{plotsize}c")
+    # Plot lake boundary in blue
+    fig.plot(data=outline_points, pen="thin,blue,-.")
+    # Plot crossover point locations
+    pygmt.makecpt(cmap=cmap, series=elev_range, reverse=True)
+    fig.plot(
+        data=df,
+        style="d0.1c",
+        cmap=True,
+        # pen="thinnest",
+    )
+    # Map frame in kilometre units
+    with pygmt.config(FONT_ANNOT_PRIMARY=f"{plotsize+2}p", FONT_LABEL=f"{plotsize+2}p"):
+        fig.basemap(
+            frame=[
+                wsne,
+                'xa+l"Polar Stereographic X (km)"',
+                'ya+l"Polar Stereographic Y (km)"',
+            ],
+            region=plotregion / 1000,
+            projection=f"X{plotsize}c",
+        )
+    return fig
+
+
 def plot_crossovers(
     df: pd.DataFrame,
     regionname: str,
@@ -272,7 +311,8 @@ def plot_crossovers(
     time_var: str = "t",
     track_var: str = "track1_track2",
     spacing: float = 2.5,
-    elev_filter: float = 1.0,
+    elev_filter: float = 0.2,
+    outline_points: str or pd.DataFrame = None,
 ) -> pygmt.Figure:
     """
     Plot to show how elevation is changing at many crossover points over time.
@@ -289,8 +329,12 @@ def plot_crossovers(
 
               Some Ice Stream crossovers
          ^
-         |             -a---a---a---a
-         | -a---a---a-/      -b---b---b
+         | --- * |
+         | \ * \ | y
+         |* ---- |          -a---a---a
+         |_______|         /
+         |   x         -a-/      -b---b
+         | -a---a---a-/      -b-/
     Elev |   -b---b---b---b-/  -c-
          |  -c---c---c---c----/   \-c---c
          |_________________________________>
@@ -321,6 +365,11 @@ def plot_crossovers(
     elev_filter : float
         Minimum elevation change required for the crossover point to show up
         on the plot. Default is 1.0 (metres).
+    outline_points : str or pd.DataFrame
+        A set of nodes making up a polygon to be plotted in a 2D inset map at
+        one corner of the figure, provided as a pandas.DataFrame table with xyz
+        columns or a path to an OGR GMT file (necessary for multi-polygons).
+        Optional.
 
     Returns
     -------
@@ -352,7 +401,7 @@ def plot_crossovers(
             projection="X12c/12c",
             region=plotregion,
             frame=[
-                rf'WSne+t"{regionname} crossovers"',
+                rf'wSnE+t"{regionname} crossovers"',
                 "pxa1Of1o",  # primary time axis, 1 mOnth annotation and minor axis
                 "sx1Y",  # secondary time axis, 1 Year intervals
                 f'yaf+l"{_y_label} at crossover (m)"',
@@ -360,26 +409,63 @@ def plot_crossovers(
         )
 
     crossovers = df.groupby(by=track_var)
-    pygmt.makecpt(cmap="batlowS", series=[1, len(crossovers) + 1, 1])
-    for i, ((track1_track2), indexes) in enumerate(
-        tqdm.tqdm(crossovers.indices.items())
-    ):
+    dh_max = df[elev_var].abs().max()
+    elev_range = [-dh_max, +dh_max]
+    pygmt.makecpt(cmap="vik", series=elev_range, reverse=True)
+    xover: dict = {"x": [], "y": [], "dhdt": []}
+    for track1_track2, indexes in tqdm.tqdm(crossovers.indices.items()):
         df_ = df.loc[indexes].sort_values(by=time_var)
-        # plot only > 1 metre height change
-        if df_[elev_var].max() - df_[elev_var].min() > elev_filter:
+        dhdt, _ = np.polyfit(
+            x=df_[time_var].astype(np.int64), y=df_[elev_var], deg=1
+        ) * (365.25 * 24 * 60 * 60 * 1_000_000_000)
+        if abs(dhdt) > elev_filter:  # Plot only > 1 metre height change
             track1, track2 = track1_track2.split("x")
             fig.plot(
                 x=df_[time_var],
                 y=df_[elev_var],
-                Z=i,
+                zvalue=dhdt,
                 style="c0.1c",
                 cmap=True,
                 pen="thin+z",
             )
             # Plot line connecting points
             fig.plot(
-                x=df_[time_var], y=df_[elev_var], Z=i, pen=f"faint,+z,-", cmap=True
+                x=df_[time_var],
+                y=df_[elev_var],
+                zvalue=dhdt,
+                pen=f"faint,+z,-",
+                cmap=True,
             )
+            # Get x, y and color (elev) for inset map
+            if outline_points:
+                _x, _y = df_.iloc[0][["x", "y"]]
+                xover["x"].append(_x)
+                xover["y"].append(_y)
+                xover["dhdt"].append(dhdt)
+
+    # 2D inset map showing lake outline and crossover point locations
+    if outline_points:
+        if df[elev_var].mean() > 0:  # uptrend
+            position, wsne = "TL", "SE"
+        else:  # downtrend
+            position, wsne = "BL", "NE"
+
+        with pygmt.clib.Session() as session:
+            session.call_module(module="inset", args=f"begin -Dj{position}+w4c -N")
+
+        ## Plot insets
+        fig = _plot_crossover_area(
+            outline_points=outline_points,
+            df=pd.DataFrame(data=xover).to_numpy(),
+            fig=fig,
+            plotsize=4,
+            cmap="vik",
+            elev_range=elev_range,
+            wsne=wsne,
+        )
+
+        with pygmt.clib.Session() as session:
+            session.call_module(module="inset", args="end")
 
     return fig
 
@@ -390,7 +476,7 @@ def plot_icesurface(
     diff_grid: xr.DataArray = None,
     diff_grid_region: tuple or np.ndarray = None,
     track_points: pd.DataFrame = None,
-    outline_points: pd.DataFrame = None,
+    outline_points: str or pd.DataFrame = None,
     azimuth: float = 157.5,
     elevation: float = 45,
     title: str = "",
@@ -437,10 +523,10 @@ def plot_icesurface(
     track_points : pd.DataFrame
         Altimetry track points to plot on top of the main grid surface,
         provided as a pandas.DataFrame table with xyz columns. Optional.
-    outline_points : pd.DataFrame
+    outline_points : str or pd.DataFrame
         A set of nodes making up a polygon to be plotted on top of the main
-        grid surface, provided as a pandas.DataFrame table with xyz columns.
-        Optional.
+        grid surface, provided as a pandas.DataFrame table with xyz columns or
+        a path to an OGR GMT file (necessary for multi-polygons). Optional.
     azimuth : float
         Angle of viewpoint in degrees from 0-360. Default is 157.5 (SSE),
     elevation : float

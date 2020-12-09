@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.2
+#       jupytext_version: 1.7.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -704,10 +704,7 @@ normfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
 df_th["h_norm"] = df_th.groupby(by="track1_track2").h.transform(func=normfunc)
 
 fig = deepicedrain.plot_crossovers(
-    df=df_th,
-    regionname=region.name,
-    elev_var="h_norm",
-    elev_filter=3 * abs(df.h_X).median(),
+    df=df_th, regionname=region.name, elev_var="h_norm", outline_points=outline_points
 )
 fig.savefig(
     f"figures/{placename}/crossover_many_normalized_{placename}_{min_date}_{max_date}.png"
