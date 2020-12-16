@@ -635,6 +635,14 @@ smb = ["smbprotocol"]
 ssh = ["paramiko"]
 
 [[package]]
+name = "future"
+version = "0.18.2"
+description = "Clean single-source support for Python 3 and 2"
+category = "main"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
 name = "gdal"
 version = "3.0.4"
 description = "GDAL: Geospatial Data Abstraction Library"
@@ -1601,6 +1609,21 @@ test = ["pytest", "pytest-mpl", "pytest-cov"]
 uncertainties = ["uncertainties (>=3.0)"]
 
 [[package]]
+name = "pint-pandas"
+version = "0.1"
+description = "Physical quantities module"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+pandas = ">=1.0.4"
+pint = ">=0.13"
+
+[package.extras]
+test = ["pytest", "pytest-mpl", "pytest-cov", "codecov", "coveralls", "nbval"]
+
+[[package]]
 name = "pluggy"
 version = "0.13.1"
 description = "plugin and hook calling mechanisms for python"
@@ -2198,6 +2221,23 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "uncertainties"
+version = "3.1.5"
+description = "Transparent calculations with uncertainties on the quantities involved (aka error propagation); fast calculation of derivatives"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+future = "*"
+
+[package.extras]
+all = ["numpy", "sphinx", "nose"]
+docs = ["sphinx"]
+optional = ["numpy"]
+tests = ["nose", "numpy"]
+
+[[package]]
 name = "urllib3"
 version = "1.26.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -2320,7 +2360,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "8adcd15483f6a1c0544eb40b984a0b34f09db16cd0dd96180729acb390210013"
+content-hash = "1e60293d7e260cbbf0a2d65a7399f3e86c628f406a4b34044beffcc62257d096"
 
 [metadata.files]
 aiohttp = [
@@ -2678,6 +2718,9 @@ fiona = [
 fsspec = [
     {file = "fsspec-0.8.4-py3-none-any.whl", hash = "sha256:404194b0cf93128d980689fe9a49013ee9676edd1ab7f0f15b737b2cedb0ab88"},
     {file = "fsspec-0.8.4.tar.gz", hash = "sha256:e1e494d4814f6804769f3c7bfd7a722a15113cc0339d14755297f09306b8f21f"},
+]
+future = [
+    {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
 ]
 gdal = [
     {file = "GDAL-3.0.4.tar.gz", hash = "sha256:a17eaa6872e4b7f7fa82f86aeccecc57d224bd054952a56db64368ecaf18509c"},
@@ -3289,6 +3332,10 @@ pint = [
     {file = "Pint-0.16.1-py2.py3-none-any.whl", hash = "sha256:63ccb7153754923fd95477be69dcf8d7d0764ec2ebb3f6945f920c31fdf13392"},
     {file = "Pint-0.16.1.tar.gz", hash = "sha256:d43a2e9ae003164978b60fdf8cd920d8581e1a5991df8dded29b00f4850ec83a"},
 ]
+pint-pandas = [
+    {file = "Pint-Pandas-0.1.tar.gz", hash = "sha256:c415256474b89ad0e11db6afcb742022757bfb6a6f3195018985682199c54162"},
+    {file = "Pint_Pandas-0.1-py2.py3-none-any.whl", hash = "sha256:2a5bf5ad94bae40051126ebd8abed2f18a7bbb03f6f3a81a7cfafcb378ef15fc"},
+]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
@@ -3591,7 +3638,6 @@ send2trash = [
     {file = "Send2Trash-1.5.0.tar.gz", hash = "sha256:60001cc07d707fe247c94f74ca6ac0d3255aabcb930529690897ca2a39db28b2"},
 ]
 shapely = [
-    {file = "Shapely-1.7.1-1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:46da0ea527da9cf9503e66c18bab6981c5556859e518fe71578b47126e54ca93"},
     {file = "Shapely-1.7.1-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:4c10f317e379cc404f8fc510cd9982d5d3e7ba13a9cfd39aa251d894c6366798"},
     {file = "Shapely-1.7.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:17df66e87d0fe0193910aeaa938c99f0b04f67b430edb8adae01e7be557b141b"},
     {file = "Shapely-1.7.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:da38ed3d65b8091447dc3717e5218cc336d20303b77b0634b261bc5c1aa2bae8"},
@@ -3609,7 +3655,6 @@ shapely = [
     {file = "Shapely-1.7.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:90a3e2ae0d6d7d50ff2370ba168fbd416a53e7d8448410758c5d6a5920646c1d"},
     {file = "Shapely-1.7.1-cp38-cp38-win32.whl", hash = "sha256:a3774516c8a83abfd1ddffb8b6ec1b0935d7fe6ea0ff5c31a18bfdae567b4eba"},
     {file = "Shapely-1.7.1-cp38-cp38-win_amd64.whl", hash = "sha256:6593026cd3f5daaea12bcc51ae5c979318070fefee210e7990cb8ac2364e79a1"},
-    {file = "Shapely-1.7.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:b40cc7bb089ae4aa9ddba1db900b4cd1bce3925d2a4b5837b639e49de054784f"},
     {file = "Shapely-1.7.1-cp39-cp39-win32.whl", hash = "sha256:2df5260d0f2983309776cb41bfa85c464ec07018d88c0ecfca23d40bfadae2f1"},
     {file = "Shapely-1.7.1-cp39-cp39-win_amd64.whl", hash = "sha256:a5c3a50d823c192f32615a2a6920e8c046b09e07a58eba220407335a9cd2e8ea"},
     {file = "Shapely-1.7.1.tar.gz", hash = "sha256:1641724c1055459a7e2b8bbe47ba25bdc89554582e62aec23cb3f3ca25f9b129"},
@@ -3743,6 +3788,10 @@ typing-extensions = [
     {file = "typing_extensions-3.7.4.3-py2-none-any.whl", hash = "sha256:dafc7639cde7f1b6e1acc0f457842a83e722ccca8eef5270af2d74792619a89f"},
     {file = "typing_extensions-3.7.4.3-py3-none-any.whl", hash = "sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918"},
     {file = "typing_extensions-3.7.4.3.tar.gz", hash = "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c"},
+]
+uncertainties = [
+    {file = "uncertainties-3.1.5-py2.py3-none-any.whl", hash = "sha256:9c031773afa85e4bc8067f3be257c718eb7dbef7dffd604aeb315ded85c9c325"},
+    {file = "uncertainties-3.1.5.tar.gz", hash = "sha256:9122c1e7e074196883b4a7a946e8482807b2f89675cb5e3798b87e0608ede903"},
 ]
 urllib3 = [
     {file = "urllib3-1.26.2-py2.py3-none-any.whl", hash = "sha256:d8ff90d979214d7b4f8ce956e80f4028fc6860e4431f731ea4a8c08f23f99473"},
