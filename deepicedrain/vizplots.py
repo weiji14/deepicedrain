@@ -163,12 +163,12 @@ def plot_alongtrack(
 
       Ice Surface Elevation over each ICESat-2 cycle at Some Ice Stream
          ^
-         | Reference Ground Track 1234_pt3
+         |  Reference Ground Track 1234_pt3
          |
          | -----------------------------    --- Cycle 1 at 2020-01-01T01:12:34
     Elev | -.-.-.-.-.-.-.-.-.-.-.-.-.-.-    -.- Cycle 2 at 2020-04-01T12:23:45
          | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    ~~~ Cycle 3 at 2020-07-01T23:34:56
-         |________________________________>
+         |____________________________________________________________________>
                    Along track x
 
     Parameters
@@ -261,7 +261,7 @@ def plot_alongtrack(
         # Plot line connecting points
         # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
 
-    fig.legend(S=3, position="JMR+JMR+o0.2c", box="+gwhite+p1p")
+    fig.legend(S=3, position="jTR+jTR+o0.2c", box="+gwhite+p1p", transparency=20)
     return fig
 
 
@@ -327,18 +327,17 @@ def plot_crossovers(
 
     which will produce a plot similar to the following:
 
-              Some Ice Stream crossovers
-         ^
-         | --- * |
-         | \ * \ | y
-         |* ---- |          -a---a---a
-         |_______|         /
-         |   x         -a-/      -b---b
-         | -a---a---a-/      -b-/
-    Elev |   -b---b---b---b-/  -c-
-         |  -c---c---c---c----/   \-c---c
-         |_________________________________>
-                      Date
+                                           ^
+         | --- * |            Ice Stream W |
+         | \ * \ | y                       |
+         |* ---- |          -a---a---a---a |
+         |_______|         /               |  Xover
+         |   x         -a-/      -b---b    |  Elev (m)
+         | -a---a---a-/      -b-/          |
+         |   -b---b---b---b-/  -c-         |
+         |  -c---c---c---c----/   \-c---c  |
+         |_________________________________|
+                       Date
 
     Parameters
     ----------
@@ -401,11 +400,14 @@ def plot_crossovers(
             projection="X12c/12c",
             region=plotregion,
             frame=[
-                rf'wSnE+t"{regionname} crossovers"',
+                rf"wSnE",
                 "pxa1Of1o",  # primary time axis, 1 mOnth annotation and minor axis
                 "sx1Y",  # secondary time axis, 1 Year intervals
                 f'yaf+l"{_y_label} at crossover (m)"',
             ],
+        )
+        fig.text(
+            text=regionname, position="TR", justify="TR", offset="-0.2c", font="14p"
         )
 
     crossovers = df.groupby(by=track_var)
@@ -491,15 +493,15 @@ def plot_icesurface(
          ___________                     Subglacial Lake X at YYYYMMDD
         |__|__|__|__|                          ^
         |__|__|__|__|                        z |
-      y |__|__z__|__|                          |  ^~^~~^~
-        |__|__|__|__|   ___________  -->        \ ~~^~~~^^~~
-        |__|__|__|__|  |__|__|__|__|             \  ~^^~~^~~~
-              x        |__|__|__|__|           ^  \__ __ __ __
+      y |__|__z__|__|                          |  ^~^~~^~      ^
+        |__|__|__|__|   ___________  -->        \ ~~^~~~^^~~    \  Elev (m)
+        |__|__|__|__|  |__|__|__|__|             \  ~^^~~^~~~    \
+              x        |__|__|__|__|           ^  \__ __ __ __    v
                      y |__|_dz__|__|        dz |
-                       |__|__|__|__|           |  ^~^~~^~
-                       |__|__|__|__|            \ ~~^~~~^^~~
-                             x                 y \  ~^^~~^~~~
-                                                  \__ __ __ __
+                       |__|__|__|__|           |  ^~^~~^~       ^
+                       |__|__|__|__|            \ ~~^~~~^^~~     \  Diff (m)
+                             x                 y \  ~^^~~^~~~     \
+                                                  \__ __ __ __     v
                                                         x
 
     Uses `pygmt.grdview` to produce the figure. The main input grid can be a
@@ -561,7 +563,7 @@ def plot_icesurface(
             f"SWZ",  # plot South, West axes, and Z-axis
             'xaf+l"Polar Stereographic X (m)"',  # add x-axis annotations and minor ticks
             'yaf+l"Polar Stereographic Y (m)"',  # add y-axis annotations and minor ticks
-            f'zaf+l"Elev Change (m)"',  # add z-axis annotations, minor ticks and axis label
+            f"zaf",  # add z-axis annotations, minor ticks and axis label
         ],
         cmap=True,
         zscale=0.1,  # zscaling factor, hardcoded to 0.1x vertical exaggeration
@@ -569,6 +571,12 @@ def plot_icesurface(
         surftype="sim",  # surface, image and mesh plot
         perspective=[azimuth, elevation],  # perspective using azimuth/elevation
         # W="c0.05p,black,solid",  # draw contours
+    )
+    fig.colorbar(
+        cmap=True,
+        position="JMR+o1c/0c+w7c/0.5c+n+mc",
+        frame=['x+l"Elevation Change (m)"', "y+lm"],
+        perspective=True,
     )
 
     ## Top plot
@@ -584,7 +592,7 @@ def plot_icesurface(
             f'SWZ+t"{title}"',  # plot South, West axes, and Z-axis
             "xf",  # add x-axis minor ticks
             "yf",  # add y-axis minor ticks
-            f'zaf+l"Elevation (m)"',  # add z-axis annotations, minor ticks and axis label
+            f"zaf",  # add z-axis annotations, minor ticks and axis label
         ],
         cmap=True,
         zscale=0.1,  # zscaling factor, hardcoded to 0.1x vertical exaggeration
@@ -592,6 +600,12 @@ def plot_icesurface(
         surftype="sim",  # surface, image and mesh plot
         perspective=[azimuth, elevation],  # perspective using azimuth/elevation
         # W="c0.05p,black,solid",  # draw contours
+    )
+    fig.colorbar(
+        cmap=True,
+        position="JMR+o1c/0c+w7c/0.5c+n+mc",
+        frame=['x+l"Elevation (m)"', "y+lm"],
+        perspective=True,
     )
 
     # Plot satellite track line points in green
