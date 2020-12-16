@@ -34,7 +34,6 @@
 
 
 # %%
-import itertools
 import os
 import subprocess
 
@@ -60,19 +59,11 @@ import deepicedrain
 
 
 # %%
-tag: str = "X2SYS"
-os.environ["X2SYS_HOME"] = os.path.abspath(tag)
-client = dask.distributed.Client(
-    n_workers=64, threads_per_worker=1, env={"X2SYS_HOME": os.environ["X2SYS_HOME"]}
-)
+client = dask.distributed.Client(n_workers=8, threads_per_worker=1)
 client
 
 # %% [markdown]
 # # Data Preparation
-
-# %%
-min_date, max_date = ("2018-10-14", "2020-09-30")
-
 
 # %%
 if not os.path.exists("ATLXI/df_dhdt_antarctica.parquet"):
@@ -332,51 +323,29 @@ fig.show()
 # %%
 # Save or load dhdt data from Parquet file
 placename: str = "siple_coast"  # "slessor_downstream"  #  "Recovery"  # "Whillans"
-try:
-    drainage_basins: gpd.GeoDataFrame = drainage_basins.set_index(keys="NAME")
-    region: deepicedrain.Region = deepicedrain.Region.from_gdf(
-        gdf=drainage_basins.loc[placename], name="Recovery Basin"
-    )
-except KeyError:
-    pass
 df_dhdt: cudf.DataFrame = cudf.read_parquet(
     f"ATLXI/df_dhdt_{placename.lower()}.parquet"
 )
 
 
 # %%
-# Antarctic subglacial lake polygons with EPSG:3031 coordinates
-antarctic_lakes: gpd.GeoDataFrame = deepicedrain.catalog.subglacial_lakes.read()
-antarctic_lakes = antarctic_lakes.set_crs(epsg=3031, allow_override=True)
+# Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
+lake_name: str = "Subglacial Lake Conway"
+lake_catalog = deepicedrain.catalog.subglacial_lakes()
+lake_ids: list = (
+    pd.json_normalize(lake_catalog.metadata["lakedict"])
+    .query("lakename == @lake_name")
+    .ids.iloc[0]
+)
+lake = (
+    lake_catalog.read()
+    .loc[lake_ids]
+    .dissolve(by=np.zeros(shape=len(lake_ids), dtype="int64"), as_index=False)
+    .squeeze()
+)
 
-# %%
-# Choose one draining/filling lake
-draining: bool = False
-placename: str = "Whillans"  # "Slessor"  # "Kamb"  # "Mercer"  #
-lakes: gpd.GeoDataFrame = antarctic_lakes  # .query(expr="basin_name == @placename")
-
-lake_ids: int = (44,)  # single lake
-lake_ids: tuple = (41, 43, 45)  # lake mega-cluster
-# TODO handle Lake 78 cross-basin by using dissolve(by=None) available
-# in geopandas v0.9.0 https://github.com/geopandas/geopandas/pull/1568
-lake = lakes.loc[list(lake_ids)].dissolve(by="basin_name", as_index=False).squeeze()
-lakedict = {
-    (15, 19): "Subglacial Lake Mercer",  # filling lake
-    (32,): "Whillans 7",  # draining lake
-    (34, 35): "Subglacial Lake Conway",  # draining lake
-    (41, 43, 45): "Subglacial Lake Whillans",  # filling lake
-    (16, 46, 48): "Lake 78",  # filling lake
-    (44,): "Whillans IX",  # filling lake
-    (62,): "Kamb 1",  # filling lake
-    # (65): "Kamb 12",  # filling lake
-    (84,): "MacAyeal 1",  # draining lake
-    (95,): "Slessor 45",  # draining lake
-    (101,): "Slessor 23",  # filling lake
-    (141,): "Recovery IV",  # draining lake
-    (143, 144): "Recovery 2",  # filling lake
-}
-region = deepicedrain.Region.from_gdf(gdf=lake, name=lakedict[lake_ids])
-assert (lake.inner_dhdt < 0 and draining) or (lake.inner_dhdt > 0 and not draining)
+region = deepicedrain.Region.from_gdf(gdf=lake, name=lake_name)
+draining: bool = lake.inner_dhdt < 0
 
 print(lake)
 lake.geometry
@@ -389,7 +358,9 @@ df_lake: cudf.DataFrame = region.subset(data=df_dhdt)
 # Save lake outline to OGR GMT file format
 outline_points: str = f"figures/{placename}/{placename}.gmt"
 if not os.path.exists(path=outline_points):
+    os.makedirs(name=f"figures/{placename}", exist_ok=True)
     lakes.loc[list(lake_ids)].to_file(filename=outline_points, driver="OGR_GMT")
+
 
 # %% [markdown]
 # ## Create an interpolated ice surface elevation grid for each ICESat-2 cycle
@@ -465,6 +436,7 @@ dashboard: pn.layout.Column = pn.Column(
     # * ds_lake.hvplot.contour(x="x", y="y", clim=z_limits, data_aspect=1)
 )
 dashboard.show(port=30227)
+
 
 # %% [markdown]
 # ## Along track plots of ice surface elevation change over time

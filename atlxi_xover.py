@@ -32,6 +32,31 @@
 
 
 # %%
+import itertools
+import os
+
+import dask
+import deepicedrain
+import geopandas as gpd
+import numpy as np
+import pandas as pd
+import pygmt
+import shapely.geometry
+import tqdm
+
+# %%
+tag: str = "X2SYS"
+os.environ["X2SYS_HOME"] = os.path.abspath(tag)
+client = dask.distributed.Client(
+    n_workers=8, threads_per_worker=1, env={"X2SYS_HOME": os.environ["X2SYS_HOME"]}
+)
+client
+
+
+# %%
+min_date, max_date = ("2018-10-14", "2020-09-30")
+
+# %%
 # Initialize X2SYS database in the X2SYS/ICESAT2 folder
 pygmt.x2sys_init(
     tag="ICESAT2",
@@ -42,6 +67,42 @@ pygmt.x2sys_init(
     force=True,
     verbose="q",
 )
+
+# %% [markdown]
+# # Select a subglacial lake to examine
+
+# %%
+# Save or load dhdt data from Parquet file
+placename: str = "siple_coast"  # "slessor_downstream"  #  "Recovery"  # "Whillans"
+df_dhdt: pd.DataFrame = pd.read_parquet(f"ATLXI/df_dhdt_{placename.lower()}.parquet")
+
+
+# %%
+# Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
+lake_name: str = "Subglacial Lake Conway"
+lake_catalog = deepicedrain.catalog.subglacial_lakes()
+lake_ids: list = (
+    pd.json_normalize(lake_catalog.metadata["lakedict"])
+    .query("lakename == @lake_name")
+    .ids.iloc[0]
+)
+lake = (
+    lake_catalog.read()
+    .loc[lake_ids]
+    .dissolve(by=np.zeros(shape=len(lake_ids), dtype="int64"), as_index=False)
+    .squeeze()
+)
+
+region = deepicedrain.Region.from_gdf(gdf=lake, name=lake_name)
+draining: bool = lake.inner_dhdt < 0
+
+print(lake)
+lake.geometry
+
+# %%
+# Subset data to lake of interest
+placename: str = region.name.lower().replace(" ", "_")
+df_lake: pd.DataFrame = region.subset(data=df_dhdt)
 
 # %%
 # Run crossover analysis on all tracks

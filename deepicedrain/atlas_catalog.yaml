@@ -195,7 +195,42 @@ sources:
         default: 3031
         allowed: [3031, 4326]
     driver: intake_geopandas.geopandas.GeoJSONSource
-    metadata: {}
+    metadata:
+      lakedict:
+        - lakename: Kamb 1
+          ids: [62]
+        - lakename: Kamb 34
+          ids: [63]
+        - lakename: Kamb 8
+          ids: [61]
+        - lakename: MacAyeal 1
+          ids: [84]
+        - lakename: Subglacial Lake Mercer
+          ids: [15, 19]
+        - lakename: Recovery 2
+          ids: [143, 144]
+        - lakename: Recovery IV
+          ids: [141]
+        - lakename: Slessor 23
+          ids: [101]
+        - lakename: Slessor 45
+          ids: [95]
+        - lakename: Lake 78
+          ids: [16, 46, 48]
+        - lakename: Subglacial Lake Conway
+          ids: [34, 35]
+        - lakename: Subglacial Lake Whillans
+          ids: [41, 43, 45]
+        - lakename: Whillans 12
+          ids: [54]
+        - lakename: Whillans 13
+          ids: [39, 40]
+        - lakename: Whillans 6
+          ids: [33]
+        - lakename: Whillans 7
+          ids: [32]
+        - lakename: Whillans IX
+          ids: [44]
   test_data:
     description: 'Sample ICESat-2 datasets for testing purposes'
     args:
