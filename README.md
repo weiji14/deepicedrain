@@ -13,11 +13,12 @@ in Antarctica using remote sensing and machine learning.
 |---|---|
 | ![ICESat-2 ATL11 rate of height change over time in Antarctica 2018-10-14 to 2020-09-30](https://user-images.githubusercontent.com/23487320/100858542-fe69ab00-34f2-11eb-9a0f-87805d00b2ed.png) | ![dsm_whillans_ix_cycles_3-8.gif](https://user-images.githubusercontent.com/23487320/97156701-f1fb7f80-17db-11eb-880c-87df2961e1c3.gif) |
 
-![DeepIceDrain Pipeline](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Ice-Sheet-H(t)-Series|atl11_play.ipynb],[Ice-Sheet-H(t)-Series]->[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb],[Height-Change-over-Time-(dhdt)]->[Subglacial-Lake-Finder|atlxi_lake.ipynb])
+![DeepIceDrain Pipeline Part 1 Exploratory Data Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Land-Ice-Height-time-series|atl11_play.ipynb])
+![DeepIceDrain Pipeline Part 2 Subglacial Lake Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb],[Height-Change-over-Time-(dhdt)]->[Subglacial-Lake-Finder|atlxi_lake.ipynb],[Subglacial-Lake-Finder]->[Crossover-Analysis|atlxi_xover.ipynb])
 
 | Along track view of an ATL11 Ground Track | Elevation time-series at Crossover Points |
 |---|---|
-| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/97514092-ca323480-19f2-11eb-8d5c-c287b42eceda.png) | ![crossover_many_normalized_whillans_ix_2018-10-14_2020-07-16](https://user-images.githubusercontent.com/23487320/97514801-7e808a80-19f4-11eb-82b9-be45fccf2dc9.png) |
+| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/102156291-2210f600-3ee2-11eb-8175-e854b70444df.png) | ![crossover_many_normalized_whillans_ix_2018-10-14_2020-09-30](https://user-images.githubusercontent.com/23487320/102156396-5dabc000-3ee2-11eb-9e42-37463f81058d.png) |
 
 
 
