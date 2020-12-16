@@ -281,7 +281,7 @@ def _plot_crossover_area(
     # Map frame in metre units
     fig.basemap(frame="+n", region=plotregion, projection=f"X{plotsize}c")
     # Plot lake boundary in blue
-    fig.plot(data=outline_points, pen="thin,blue,-.")
+    fig.plot(data=outline_points, region=plotregion, pen="thin,blue,-.")
     # Plot crossover point locations
     pygmt.makecpt(cmap=cmap, series=elev_range, reverse=True)
     fig.plot(
@@ -620,13 +620,21 @@ def plot_icesurface(
     # Plot lake boundary outline as yellow dashed line
     if outline_points is not None:
         with pygmt.helpers.GMTTempFile() as tmpfile:
-            pygmt.grdtrack(points=outline_points, grid=grid, outfile=tmpfile.name)
+            pygmt.grdtrack(
+                points=outline_points,
+                grid=grid,
+                R="/".join(map(str, grid_region[:-2])),
+                outfile=tmpfile.name,
+                verbose="e",
+            )
             _df = pd.read_csv(tmpfile.name, sep="\t", names=["x", "y", "z"])
             pygmt.grdtrack(
                 points=outline_points,
                 grid=grid,
+                R="/".join(map(str, grid_region[:-2])),
                 outfile=tmpfile.name,
                 d=f"o{_df.z.median()}",  # fill NaN points with median height
+                verbose="e",
             )
             fig.plot3d(
                 data=tmpfile.name,

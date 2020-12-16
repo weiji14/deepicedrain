@@ -104,8 +104,10 @@ lake.geometry
 placename: str = region.name.lower().replace(" ", "_")
 df_lake: pd.DataFrame = region.subset(data=df_dhdt)
 
+
 # %%
 # Run crossover analysis on all tracks
+track_dict: dict = deepicedrain.split_tracks(df=df_lake)
 rgts, tracks = track_dict.keys(), track_dict.values()
 # Parallelized paired crossover analysis
 futures: list = []
@@ -116,6 +118,10 @@ for rgt1, rgt2 in itertools.combinations(rgts, r=2):
         continue
     track1 = track_dict[rgt1][["x", "y", "h_corr", "utc_time"]]
     track2 = track_dict[rgt2][["x", "y", "h_corr", "utc_time"]]
+    shape1 = shapely.geometry.LineString(coordinates=track1[["x", "y"]].to_numpy())
+    shape2 = shapely.geometry.LineString(coordinates=track2[["x", "y"]].to_numpy())
+    if not shape1.intersects(shape2):
+        continue
     future = client.submit(
         key=f"{rgt1}x{rgt2}",
         func=pygmt.x2sys_cross,
@@ -279,7 +285,10 @@ normfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
 df_th["h_norm"] = df_th.groupby(by="track1_track2").h.transform(func=normfunc)
 
 fig = deepicedrain.plot_crossovers(
-    df=df_th, regionname=region.name, elev_var="h_norm", outline_points=outline_points
+    df=df_th,
+    regionname=region.name,
+    elev_var="h_norm",
+    outline_points=f"figures/{placename}/{placename}.gmt",
 )
 fig.savefig(
     f"figures/{placename}/crossover_many_normalized_{placename}_{min_date}_{max_date}.png"

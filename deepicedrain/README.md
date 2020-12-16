@@ -24,6 +24,7 @@ Contents:
 - :card_file_box: extraload.py - Convenience functions for extracting, transforming and loading data
   - array_to_dataframe - Turns a 1D/2D numpy/dask array into a tidy pandas/dask dataframe table
   - ndarray_to_parquet - Turns an n-dimensional xarray/zarr array into an a parquet columnar format
+  - split_tracks - Custom function to split a ICESat-2 pointcloud by referencegroundtrack laser
   - wide_to_long - Turns a pandas dataframe table with many columns into one with many rows
 
 - :droplet: lakealgorithms.py - Custom algorithms for detecting and filtering active subglacial lakes

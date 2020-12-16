@@ -443,33 +443,26 @@ dashboard.show(port=30227)
 
 # %%
 # Select a few Reference Ground tracks to look at
+savefig_tasks: list = []  # empty list of save figure tasks
 rgts: list = [int(rgt) for rgt in lake.refgtracks.split("|")]
 print(f"Looking at Reference Ground Tracks: {rgts}")
-os.makedirs(name=f"figures/{placename}", exist_ok=True)
-
-track_dict: dict = {}
-rgt_groups = df_lake.groupby(by="referencegroundtrack")
-for rgt, df_rgt_wide in tqdm.tqdm(rgt_groups, total=len(rgt_groups.groups.keys())):
-    df_rgt: pd.DataFrame = deepicedrain.wide_to_long(
-        df=df_rgt_wide.to_pandas(), stubnames=["h_corr", "utc_time"], j="cycle_number"
+track_dict: dict = deepicedrain.split_tracks(df=df_lake.to_pandas())
+for rgtpair, df_ in track_dict.items():
+    # Transect plot along a reference ground track
+    fig = dask.delayed(obj=deepicedrain.plot_alongtrack)(
+        df=df_, rgtpair=rgtpair, regionname=region.name, oldtonew=draining
     )
-
-    # Split one referencegroundtrack into 3 laser pair tracks pt1, pt2, pt3
-    df_rgt["pairtrack"]: pd.Series = pd.cut(
-        x=df_rgt.y_atc, bins=[-np.inf, -100, 100, np.inf], labels=("pt1", "pt2", "pt3")
+    savefig_task = fig.savefig(
+        fname=f"figures/{placename}/alongtrack_{placename}_{rgtpair}.png"
     )
-    pt_groups = df_rgt.groupby(by="pairtrack")
-    for pairtrack, df_ in pt_groups:
-        if len(df_) > 0:
-            rgtpair = f"{rgt:04d}_{pairtrack}"
-            track_dict[rgtpair] = df_
+    savefig_tasks.append(savefig_task)
 
-            # Transect plot along a reference ground track
-            fig = deepicedrain.plot_alongtrack(
-                df=df_, rgtpair=rgtpair, regionname=region.name, oldtonew=draining
-            )
-            fig.savefig(
-                fname=f"figures/{placename}/alongtrack_{placename}_{rgtpair}.png"
-            )
+
+# %%
+futures = [client.compute(savefig_task) for savefig_task in savefig_tasks]
+for _ in tqdm.tqdm(
+    iterable=dask.distributed.as_completed(futures=futures), total=len(savefig_tasks)
+):
+    pass
 
 # %%

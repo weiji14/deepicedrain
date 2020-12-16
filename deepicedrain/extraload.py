@@ -5,7 +5,9 @@ Copies data seamlessly between different array structures and file formats!
 import functools
 
 import dask
+import numpy as np
 import pandas as pd
+import tqdm
 import zarr
 
 
@@ -118,6 +120,51 @@ def ndarray_to_parquet(
     df.to_parquet(path=parquetpath, engine=engine, **kwargs)
 
     return df
+
+
+def split_tracks(df: pd.DataFrame, by: str = "referencegroundtrack") -> dict:
+    """
+    Splits a point cloud of ICESat-2 laser tracks into separate lasers.
+    Specifically, this function takes a big pandas.DataFrame and separates it
+    into a many smaller ones based on a group 'by' method. Note that this is a
+    hardcoded convenience function that probably has little use elsewhere!
+
+    Parameters
+    ----------
+    df : cudf.DataFrame or pandas.DataFrame
+        A table of X, Y, Z points to be split into separate tracks.
+    by : str
+        The name of the column to use
+        The maximum distance between 2 points such they reside in the same
+        neighborhood. Default is 3000 (metres).
+
+    Returns
+    -------
+    track_dict : dict
+        A Python dictionary with key: rgtpairname (e.g. "1234_pt2"), and
+        value: rgtpairdataframe (a pandas.DataFrame just for that rgtpairname)
+    """
+    track_dict: dict = {}  # key=rgtpairname, value=rgtpairdataframe
+
+    rgt_groups = df.groupby(by=by)
+    for rgt, df_rgt_wide in tqdm.tqdm(rgt_groups, total=len(rgt_groups.groups.keys())):
+        df_rgt: pd.DataFrame = wide_to_long(
+            df=df_rgt_wide, stubnames=["h_corr", "utc_time"], j="cycle_number"
+        )
+
+        # Split one referencegroundtrack into 3 laser pair tracks pt1, pt2, pt3
+        df_rgt["pairtrack"]: pd.Series = pd.cut(
+            x=df_rgt.y_atc,
+            bins=[-np.inf, -100, 100, np.inf],
+            labels=("pt1", "pt2", "pt3"),
+        )
+        pt_groups = df_rgt.groupby(by="pairtrack")
+        for pairtrack, df_ in pt_groups:
+            if len(df_) > 0:
+                rgtpair = f"{rgt:04d}_{pairtrack}"
+                track_dict[rgtpair] = df_
+
+    return track_dict
 
 
 @functools.wraps(wrapped=pd.wide_to_long)
