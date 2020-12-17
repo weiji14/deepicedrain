@@ -1,5 +1,6 @@
 """
-Custom algorithms for helping to detect active subglacial lakes.
+Custom algorithms for detecting active subglacial lakes and estimating ice
+volume displacement over time.
 """
 try:
     import cudf as xpd
@@ -66,3 +67,131 @@ def find_clusters(
     cluster_labels.name = output_colname
 
     return cluster_labels
+
+
+def ice_volume_over_time(
+    df_elev: xpd.DataFrame,
+    surface_area: float,
+    rolling_window: int or str = "91d",
+    elev_col: str = "h_corr",
+    time_col: str = "utc_time",
+) -> xpd.DataFrame:
+    """
+    Generates a time-series of ice volume displacement. Ice volume change (dvol
+    in m^3) is estimated by multiplying the lake area (in m^2) by the mean
+    height change (dh in m), following the methodology of Kim et al. 2016 and
+    Siegfried et al., 2016. Think of it as a multiplying the circle of a
+    cylinder by it's height:
+
+             _~~~~_
+           _~      ~_ <--- Lake area (m^2)
+          |~__   __~ |          *
+          |   ~~~    | <-- Mean height change (m) from many points inside lake
+          |         _|          =
+           ~__   __~  <--- Ice volume displacement (m^3)
+              ~~~
+
+    More specifically, this function will:
+    1) Take a set of raw height and time values and calculate a rolling mean
+       of height change over time.
+    2) Multiply the height change over time sequence in (1) by the lake surface
+       area to obtain an estimate of volume change over time.
+
+    Parameters
+    ----------
+    df_elev : cudf.DataFrame or pandas.DataFrame
+        A table of with raw height and time columns to run the rolling time
+        series calculation on.
+    surface_area : float
+        The ice surface area (of the active lake) experiencing a change in
+        height over time. Recommended to provide in unit metres.
+    rolling_window : str
+        Size of the moving window to calculate the rolling mean, given as a
+        time period. Default is '91d' (91 days = 1 ICESat-2 cycle).
+    elev_col : str
+        The elevation column name to use from the table data, used to calculate
+        the rolling mean height at every time interval. Default is 'h_norm',
+        recommended to provide in unit metres.
+    time_col : str
+        The time-dimension column name to use from the table data, used in the
+        rolling mean algorithm. Default is 'utc_time', ensure that this column
+        is provided in a datetime64 format.
+
+    Returns
+    -------
+    df_dvol : cudf.Series or pd.Series
+        Which cluster each datapoint belongs to. Noisy samples are labeled as
+        NaN.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import pint
+    >>> import pint_pandas
+    >>> ureg = pint.UnitRegistry()
+    >>> pint_pandas.PintType.ureg = ureg
+
+    >>> h_corr = pd.Series(
+    ...     data=np.random.RandomState(seed=42).rand(100), dtype="pint[metre]"
+    ... )
+    >>> utc_time = pd.date_range(
+    ...    start="2018-10-14", end="2020-09-30", periods=100
+    ... )
+    >>> df_elev = pd.DataFrame(data={"h_corr": h_corr, "utc_time": utc_time})
+
+    >>> dvol = ice_volume_over_time(
+    ...     df_elev=df_elev, surface_area=123 * ureg.metre ** 2
+    ... )
+    >>> print(f"{dvol.iloc[len(dvol)//2]:Lx}")
+    \SI[]{12+/-35}{\meter\cubed}
+
+    References:
+    - Kim, B.-H., Lee, C.-K., Seo, K.-W., Lee, W. S., & Scambos, T. A. (2016).
+      Active subglacial lakes and channelized water flow beneath the Kamb Ice
+      Stream. The Cryosphere, 10(6), 2971–2980.
+      https://doi.org/10.5194/tc-10-2971-2016
+    - Siegfried, M. R., Fricker, H. A., Carter, S. P., & Tulaczyk, S. (2016).
+      Episodic ice velocity fluctuations triggered by a subglacial flood in
+      West Antarctica. Geophysical Research Letters, 43(6), 2640–2648.
+      https://doi.org/10.1002/2016GL067758
+    """
+    # Sort by time first
+    df_: pd.DataFrame = df_elev[[elev_col, time_col]].sort_values(by=time_col)
+
+    # Temporarily changing dtype from pint[metre] to float to avoid
+    # "DataError: No numeric types to aggregate" in rolling mean calculation
+    elev_dtype = df_elev[elev_col].dtype
+    if "pint" in str(elev_dtype):
+        df_[elev_col] = df_[elev_col].pint.magnitude  # dequantify unit
+
+    # Calculate rolling mean of elevation
+    df_roll = df_.rolling(window=rolling_window, on=time_col, min_periods=1)
+    elev_mean: np.ndarray = df_roll[elev_col].mean().to_numpy()
+
+    # Calculate elevation anomaly as elevation at time=n minus elevation at time=1
+    elev_anom: np.ndarray = elev_mean - elev_mean[0]
+
+    # Add standard deviation uncertainties to mean if pint units are used
+    # Need to do it in numpy world instead of pandas to workaround issue
+    # in https://github.com/hgrecco/pint-pandas/issues/45, and wait also for
+    # pint.Measurements overhaul in https://github.com/hgrecco/pint/issues/350
+    if "pint" in str(elev_dtype):
+        import uncertainties.unumpy
+
+        elev_std: np.ndarray = df_roll[elev_col].std().to_numpy()
+        elev_anom: np.ndarray = (
+            uncertainties.unumpy.uarray(nominal_values=elev_anom, std_devs=elev_std)
+            * elev_dtype.units
+        )
+
+    # Calculate ice volume displacement (m^3) = area (m^2) x height (m)
+    dvol: np.ndarray = surface_area * elev_anom
+    dvol_dtype: str = (
+        f"pint[{dvol.units}]" if "pint" in str(elev_dtype) else df_elev[elev_col].dtype
+    )
+
+    ice_dvol: pd.Series = df_[elev_col].__class__(
+        data=dvol, dtype=dvol_dtype, index=df_elev.index
+    )
+
+    return ice_dvol
