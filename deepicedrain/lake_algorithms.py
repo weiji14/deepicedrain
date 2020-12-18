@@ -73,35 +73,36 @@ def ice_volume_over_time(
     df_elev: xpd.DataFrame,
     surface_area: float,
     rolling_window: int or str = "91d",
-    elev_col: str = "h_corr",
+    elev_col: str = "h_anom",
     time_col: str = "utc_time",
 ) -> xpd.DataFrame:
     """
     Generates a time-series of ice volume displacement. Ice volume change (dvol
     in m^3) is estimated by multiplying the lake area (in m^2) by the mean
-    height change (dh in m), following the methodology of Kim et al. 2016 and
+    height anomaly (dh in m), following the methodology of Kim et al. 2016 and
     Siegfried et al., 2016. Think of it as a multiplying the circle of a
     cylinder by it's height:
 
              _~~~~_
            _~      ~_ <--- Lake area (m^2)
           |~__   __~ |          *
-          |   ~~~    | <-- Mean height change (m) from many points inside lake
+          |   ~~~    | <-- Mean height anomaly (m) from many points inside lake
           |         _|          =
            ~__   __~  <--- Ice volume displacement (m^3)
               ~~~
 
     More specifically, this function will:
-    1) Take a set of raw height and time values and calculate a rolling mean
-       of height change over time.
+    1) Take a set of height anomaly and time values and calculate a rolling
+       mean of height change over time.
     2) Multiply the height change over time sequence in (1) by the lake surface
        area to obtain an estimate of volume change over time.
 
     Parameters
     ----------
     df_elev : cudf.DataFrame or pandas.DataFrame
-        A table of with raw height and time columns to run the rolling time
-        series calculation on.
+        A table of with time and height anomaly columns to run the rolling time
+        series calculation on. Ensure that the rows are sorted with time in
+        ascending order from oldest to newest.
     surface_area : float
         The ice surface area (of the active lake) experiencing a change in
         height over time. Recommended to provide in unit metres.
@@ -109,9 +110,9 @@ def ice_volume_over_time(
         Size of the moving window to calculate the rolling mean, given as a
         time period. Default is '91d' (91 days = 1 ICESat-2 cycle).
     elev_col : str
-        The elevation column name to use from the table data, used to calculate
-        the rolling mean height at every time interval. Default is 'h_norm',
-        recommended to provide in unit metres.
+        The elevation anomaly column name to use from the table data, used to
+        calculate the rolling mean height anomaly at every time interval.
+        Default is 'h_anom', recommended to provide in unit metres.
     time_col : str
         The time-dimension column name to use from the table data, used in the
         rolling mean algorithm. Default is 'utc_time', ensure that this column
@@ -119,9 +120,10 @@ def ice_volume_over_time(
 
     Returns
     -------
-    df_dvol : cudf.Series or pd.Series
-        Which cluster each datapoint belongs to. Noisy samples are labeled as
-        NaN.
+    dvol : cudf.Series or pd.Series
+        A column of delta volume changes over time. If pint metre units were
+        provided in df_elev, then this output will be given in cubic metres
+        with a one standard deviation uncertainty range.
 
     Examples
     --------
@@ -131,13 +133,13 @@ def ice_volume_over_time(
     >>> ureg = pint.UnitRegistry()
     >>> pint_pandas.PintType.ureg = ureg
 
-    >>> h_corr = pd.Series(
+    >>> h_anom = pd.Series(
     ...     data=np.random.RandomState(seed=42).rand(100), dtype="pint[metre]"
     ... )
     >>> utc_time = pd.date_range(
     ...    start="2018-10-14", end="2020-09-30", periods=100
     ... )
-    >>> df_elev = pd.DataFrame(data={"h_corr": h_corr, "utc_time": utc_time})
+    >>> df_elev = pd.DataFrame(data={"h_anom": h_anom, "utc_time": utc_time})
 
     >>> dvol = ice_volume_over_time(
     ...     df_elev=df_elev, surface_area=123 * ureg.metre ** 2
@@ -155,8 +157,8 @@ def ice_volume_over_time(
       West Antarctica. Geophysical Research Letters, 43(6), 2640–2648.
       https://doi.org/10.1002/2016GL067758
     """
-    # Sort by time first
-    df_: pd.DataFrame = df_elev[[elev_col, time_col]].sort_values(by=time_col)
+    # Get just the elevation anomaly and time columns
+    df_: pd.DataFrame = df_elev[[elev_col, time_col]]
 
     # Temporarily changing dtype from pint[metre] to float to avoid
     # "DataError: No numeric types to aggregate" in rolling mean calculation
@@ -191,7 +193,7 @@ def ice_volume_over_time(
     )
 
     ice_dvol: pd.Series = df_[elev_col].__class__(
-        data=dvol, dtype=dvol_dtype, index=df_elev.index
+        data=dvol, dtype=dvol_dtype, index=df_.index
     )
 
     return ice_dvol

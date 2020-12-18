@@ -40,11 +40,16 @@ import deepicedrain
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import pint
+import pint_pandas
 import pygmt
 import shapely.geometry
 import tqdm
+import uncertainties
 
 # %%
+ureg = pint.UnitRegistry()
+pint_pandas.PintType.ureg = ureg
 tag: str = "X2SYS"
 os.environ["X2SYS_HOME"] = os.path.abspath(tag)
 client = dask.distributed.Client(
@@ -231,13 +236,14 @@ df_th: pd.DataFrame = deepicedrain.wide_to_long(
     stubnames=["t", "h"],
     j="track",
 )
-df_th = df_th.drop_duplicates(ignore_index=True)
+df_th: pd.DataFrame = df_th.drop_duplicates(ignore_index=True)
+df_th: pd.DataFrame = df_th.sort_values(by="t").reset_index(drop=True)
 
 # %%
 # Plot at single location with **maximum** absolute crossover height error (max_h_X)
-df_max = df_th.query(expr="x == @max_h_X.x & y == @max_h_X.y").sort_values(by="t")
+df_max = df_th.query(expr="x == @max_h_X.x & y == @max_h_X.y")
 track1, track2 = df_max.track1_track2.iloc[0].split("x")
-print(f"{round(max_h_X.h_X, 2)} metres height change at {max_h_X.x}, {max_h_X.y}")
+print(f"{max_h_X.h_X:.2f} metres height change at {max_h_X.x}, {max_h_X.y}")
 plotregion = np.array(
     [df_max.t.min(), df_max.t.max(), *pygmt.info(table=df_max[["h"]], spacing=2.5)[:2]]
 )
@@ -279,19 +285,28 @@ fig.savefig(f"figures/{placename}/crossover_many_{placename}_{min_date}_{max_dat
 fig.show()
 
 # %%
-# Plot all crossover height points over time over the lake area
-# with height values normalized to 0 from the first observation date
-normfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
-df_th["h_norm"] = df_th.groupby(by="track1_track2").h.transform(func=normfunc)
+# Calculate height anomaly at crossover point as
+# height at t=n minus height at t=0 (first observation date at crossover point)
+anomfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
+df_th["h_anom"] = df_th.groupby(by="track1_track2").h.transform(func=anomfunc)
+df_th["h_roll"] = (
+    deepicedrain.ice_volume_over_time(
+        df_elev=df_th, surface_area=lake.geometry.area, time_col="t"
+    )
+    / lake.geometry.area
+)
 
+# %%
+# Plot all crossover height point anomalies over time over the lake area
 fig = deepicedrain.plot_crossovers(
     df=df_th,
     regionname=region.name,
-    elev_var="h_norm",
+    elev_var="h_anom",
     outline_points=f"figures/{placename}/{placename}.gmt",
 )
+fig.plot(x=df_th.t, y=df_th.h_roll, pen="thick,-")  # plot rolling mean height anomaly
 fig.savefig(
-    f"figures/{placename}/crossover_many_normalized_{placename}_{min_date}_{max_date}.png"
+    f"figures/{placename}/crossover_anomaly_{placename}_{min_date}_{max_date}.png"
 )
 fig.show()
 

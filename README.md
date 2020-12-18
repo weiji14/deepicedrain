@@ -18,7 +18,7 @@ in Antarctica using remote sensing and machine learning.
 
 | Along track view of an ATL11 Ground Track | Elevation time-series at Crossover Points |
 |---|---|
-| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/102156291-2210f600-3ee2-11eb-8175-e854b70444df.png) | ![crossover_many_normalized_whillans_ix_2018-10-14_2020-09-30](https://user-images.githubusercontent.com/23487320/102156396-5dabc000-3ee2-11eb-9e42-37463f81058d.png) |
+| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/102156291-2210f600-3ee2-11eb-8175-e854b70444df.png) | ![crossover_anomaly_whillans_ix_2018-10-14_2020-09-30](https://user-images.githubusercontent.com/23487320/102610765-9bcf0b00-4192-11eb-803b-247ed960f9bb.png) |
 
 
 
