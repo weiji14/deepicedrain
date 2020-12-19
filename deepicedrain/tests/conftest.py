@@ -24,8 +24,8 @@ def context():
     return Context()
 
 
-@pytest.fixture
-def client():
+@pytest.fixture(scope="session", name="client")
+def fixture_client():
     """
     A dask distributed client to throw compute tasks at!
     """
@@ -33,13 +33,12 @@ def client():
 
     tag: str = "X2SYS"
     os.environ["X2SYS_HOME"] = os.path.abspath(tag)
-    _client = dask.distributed.Client(
+    client = dask.distributed.Client(
         n_workers=8, threads_per_worker=1, env={"X2SYS_HOME": os.environ["X2SYS_HOME"]}
     )
+    yield client
 
-    yield _client
-
-    _client.shutdown()
+    client.shutdown()
 
 
 @given("some altimetry data over <lake_name> at <location>", target_fixture="df_lake")
@@ -74,7 +73,7 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
     context.region = deepicedrain.Region.from_gdf(
         gdf=context.lake, name=context.lake_name
     )
-    context.draining: bool = True if context.lake.inner_dhdt < 0 else False
+    context.draining: bool = context.lake.inner_dhdt < 0
 
     # Subset data to lake of interest
     context.placename: str = context.lake_name.lower().replace(" ", "_")
