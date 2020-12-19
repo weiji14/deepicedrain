@@ -75,6 +75,7 @@ def ice_volume_over_time(
     rolling_window: int or str = "91d",
     elev_col: str = "h_anom",
     time_col: str = "utc_time",
+    outfile: str = None,
 ) -> xpd.DataFrame:
     """
     Generates a time-series of ice volume displacement. Ice volume change (dvol
@@ -117,6 +118,12 @@ def ice_volume_over_time(
         The time-dimension column name to use from the table data, used in the
         rolling mean algorithm. Default is 'utc_time', ensure that this column
         is provided in a datetime64 format.
+    outfile : str
+        Optional. Filename to output the time-series data, containing columns
+        for time, the elevation anomaly (dh in m^2) +/- standard deviation, and
+        the ice volume displacement (dvol in km^3) +/- standard deviation. Note
+        that this export requires 'pint' units in the inputs and the
+        'uncertainties' package to be installed.
 
     Returns
     -------
@@ -158,13 +165,15 @@ def ice_volume_over_time(
       https://doi.org/10.1002/2016GL067758
     """
     # Get just the elevation anomaly and time columns
-    df_: pd.DataFrame = df_elev[[elev_col, time_col]]
+    df_: pd.DataFrame = df_elev[[elev_col, time_col]].copy()
 
     # Temporarily changing dtype from pint[metre] to float to avoid
     # "DataError: No numeric types to aggregate" in rolling mean calculation
     elev_dtype = df_elev[elev_col].dtype
-    if "pint" in str(elev_dtype):
-        df_[elev_col] = df_[elev_col].pint.magnitude  # dequantify unit
+    has_pint: bool = "pint" in str(elev_dtype)
+    if has_pint:
+        df_[elev_col]: pd.Series = df_[elev_col].pint.magnitude  # dequantify unit
+        ureg: pint.UnitRegistry = surface_area._REGISTRY
 
     # Calculate rolling mean of elevation
     df_roll = df_.rolling(window=rolling_window, on=time_col, min_periods=1)
@@ -177,23 +186,50 @@ def ice_volume_over_time(
     # Need to do it in numpy world instead of pandas to workaround issue
     # in https://github.com/hgrecco/pint-pandas/issues/45, and wait also for
     # pint.Measurements overhaul in https://github.com/hgrecco/pint/issues/350
-    if "pint" in str(elev_dtype):
+    if has_pint:
         import uncertainties.unumpy
 
         elev_std: np.ndarray = df_roll[elev_col].std().to_numpy()
-        elev_anom: np.ndarray = (
-            uncertainties.unumpy.uarray(nominal_values=elev_anom, std_devs=elev_std)
-            * elev_dtype.units
-        )
+        elev_anom: np.ndarray = uncertainties.unumpy.uarray(
+            nominal_values=elev_anom, std_devs=elev_std
+        ) * ureg.Unit(elev_dtype.units)
+
+        # Also ensure we are using same pint unit registry consistently
+        import pint_pandas
+
+        pint_pandas.PintType.ureg = surface_area._REGISTRY
+        try:
+            assert id(surface_area._REGISTRY) == id(elev_anom._REGISTRY)
+        except AssertionError:
+            raise ValueError(id(surface_area._REGISTRY), id(elev_anom._REGISTRY))
+            elev_anom._REGISTRY = surface_area._REGISTRY
 
     # Calculate ice volume displacement (m^3) = area (m^2) x height (m)
     dvol: np.ndarray = surface_area * elev_anom
-    dvol_dtype: str = (
-        f"pint[{dvol.units}]" if "pint" in str(elev_dtype) else df_elev[elev_col].dtype
+    ice_dvol: pd.Series = df_[elev_col].__class__(
+        data=dvol,
+        dtype=f"pint[{dvol.units}]" if has_pint else df_elev[elev_col].dtype,
+        index=df_.index,
     )
 
-    ice_dvol: pd.Series = df_[elev_col].__class__(
-        data=dvol, dtype=dvol_dtype, index=df_.index
-    )
+    # Convert dvol from m**3 to km**3 and save to text file
+    if outfile and has_pint:
+        dvol_km3 = ice_dvol.pint.to("kilometre ** 3").pint.magnitude
+        df_dvol: pd.DataFrame = df_.__class__(
+            data={
+                time_col: df_elev[time_col],
+                "dh": uncertainties.unumpy.nominal_values(arr=elev_anom),
+                "dh_std": uncertainties.unumpy.std_devs(arr=elev_anom),
+                "dvol_km3": uncertainties.unumpy.nominal_values(arr=dvol_km3),
+                "dvol_std": uncertainties.unumpy.std_devs(arr=dvol_km3),
+            }
+        )
+        df_dvol.to_csv(
+            path_or_buf=outfile,
+            sep="\t",
+            index=False,
+            na_rep="NaN",
+            date_format="%Y-%m-%dT%H:%M:%S.%fZ",
+        )
 
     return ice_dvol
