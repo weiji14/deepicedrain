@@ -4,6 +4,7 @@ This module contains shared fixtures, steps, and hooks.
 import os
 
 import fsspec
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pytest
@@ -77,7 +78,13 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
 
     # Subset data to lake of interest
     context.placename: str = context.lake_name.lower().replace(" ", "_")
-    df_lake: pd.DataFrame = context.region.subset(data=dataframe)
+    df_lake: cudf.DataFrame = context.region.subset(data=dataframe)  # bbox subset
+    gdf_lake = gpd.GeoDataFrame(
+        df_lake, geometry=gpd.points_from_xy(x=df_lake.x, y=df_lake.y, crs=3031)
+    )
+    df_lake: pd.DataFrame = df_lake.loc[
+        gdf_lake.within(context.lake.geometry)
+    ]  # polygon subset
 
     # Save lake outline to OGR GMT file format
     os.makedirs(name=f"figures/{context.placename}", exist_ok=True)

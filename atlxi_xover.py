@@ -84,7 +84,7 @@ df_dhdt: pd.DataFrame = pd.read_parquet(f"ATLXI/df_dhdt_{placename.lower()}.parq
 
 # %%
 # Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
-lake_name: str = "Subglacial Lake Conway"
+lake_name: str = "Whillans 12"
 lake_catalog = deepicedrain.catalog.subglacial_lakes()
 lake_ids: list = (
     pd.json_normalize(lake_catalog.metadata["lakedict"])
@@ -107,8 +107,11 @@ lake.geometry
 # %%
 # Subset data to lake of interest
 placename: str = region.name.lower().replace(" ", "_")
-df_lake: pd.DataFrame = region.subset(data=df_dhdt)
-
+df_lake: cudf.DataFrame = region.subset(data=df_dhdt)  # bbox subset
+gdf_lake = gpd.GeoDataFrame(
+    df_lake, geometry=gpd.points_from_xy(x=df_lake.x, y=df_lake.y, crs=3031)
+)
+df_lake: pd.DataFrame = df_lake.loc[gdf_lake.within(lake.geometry)]  # polygon subset
 
 # %%
 # Run crossover analysis on all tracks

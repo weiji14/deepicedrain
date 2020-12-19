@@ -222,6 +222,7 @@ def point_in_polygon_gpu(
     points_x_col: str = "x",
     points_y_col: str = "y",
     poly_label_col: str = None,
+    poly_limit: int = 32,
 ):
     """
     Find polygon labels for each of the input points.
@@ -243,6 +244,11 @@ def point_in_polygon_gpu(
         Name of the column in poly_df that will be used to label the points,
         e.g. "placename". Default is to automatically use the first column
         unless otherwise specified.
+
+    poly_limit : int
+        Number of polygons to check in each loop of the point in polygon
+        algorithm, workaround for a limitation in cuspatial. Default is 32
+        (maximum), adjust to lower value (e.g. 16) if hitting MemoryError.
 
     Returns
     -------
@@ -278,11 +284,11 @@ def point_in_polygon_gpu(
         )
 
     # Run the actual point in polygon algorithm!
-    # Note that cuspatial's point_in_polygon function has a 31 polygon limit,
+    # Note that cuspatial's point_in_polygon function has a 32 polygon limit,
     # hence the for-loop code below. See also
     # https://github.com/rapidsai/cuspatial/blob/branch-0.15/notebooks/nyc_taxi_years_correlation.ipynb
     num_poly: int = len(poly_df_)
-    point_in_poly_iter: list = list(np.arange(0, num_poly, 31)) + [num_poly]
+    point_in_poly_iter: list = list(np.arange(0, num_poly, poly_limit - 1)) + [num_poly]
     for i in range(len(point_in_poly_iter) - 1):
         start, end = point_in_poly_iter[i], point_in_poly_iter[i + 1]
         poly_labels: cudf.DataFrame = cuspatial.point_in_polygon(

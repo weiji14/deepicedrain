@@ -59,6 +59,6 @@ Feature: Mapping Antarctic subglacial lakes
     Then we see a trend of active subglacial lake surfaces changing over time
 
     Examples:
-    | lake_name   | location            |
-    | Whillans 7  | whillans_upstream   |
-    | Whillans 12 | whillans_downstream |
+    | lake_name                | location            |
+    | Whillans 7               | whillans_upstream   |
+    | Whillans 12              | whillans_downstream |
