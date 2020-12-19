@@ -74,7 +74,7 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
     context.region = deepicedrain.Region.from_gdf(
         gdf=context.lake, name=context.lake_name
     )
-    context.draining: bool = True if context.lake.inner_dhdt < 0 else False
+    context.draining: bool = context.lake.inner_dhdt < 0
 
     # Subset data to lake of interest
     context.placename: str = context.lake_name.lower().replace(" ", "_")
