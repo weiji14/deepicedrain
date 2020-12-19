@@ -7,12 +7,18 @@ import itertools
 import dask
 import numpy as np
 import pandas as pd
+import pint
+import pint_pandas
 import pygmt
 import shapely
 import tqdm
+import uncertainties
 from pytest_bdd import given, scenario, then, when
 
 import deepicedrain
+
+ureg = pint.UnitRegistry()
+pint_pandas.PintType.ureg = ureg
 
 
 @scenario(
@@ -101,15 +107,20 @@ def crossover_height_anomaly(
     # height at t=n minus height at t=0 (first observation date at crossover point)
     anomfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
     df_th["h_anom"] = df_th.groupby(by="track1_track2").h.transform(func=anomfunc)
-    df_th["h_roll"] = (
-        deepicedrain.ice_volume_over_time(
-            df_elev=df_th, surface_area=context.lake.geometry.area, time_col="t"
-        )
-        / context.lake.geometry.area
+    # Calculate ice volume displacement (dvol) in unit metres^3
+    # and rolling mean height anomaly (h_roll) in unit metres
+    surface_area: pint.Quantity = context.lake.geometry.area * ureg.metre ** 2
+    ice_dvol: pd.Series = deepicedrain.ice_volume_over_time(
+        df_elev=df_th.astype(dtype={"h_anom": "pint[metre]"}),
+        surface_area=surface_area,
+        time_col="t",
+        outfile=f"figures/{context.placename}/ice_dvol_dt_{context.placename}.txt",
+    )
+    df_th["h_roll"]: pd.Series = uncertainties.unumpy.nominal_values(
+        arr=ice_dvol.pint.magnitude / surface_area.magnitude
     )
 
     context.df_th = df_th
-
     return context.df_th
 
 

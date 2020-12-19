@@ -289,11 +289,17 @@ fig.show()
 # height at t=n minus height at t=0 (first observation date at crossover point)
 anomfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
 df_th["h_anom"] = df_th.groupby(by="track1_track2").h.transform(func=anomfunc)
-df_th["h_roll"] = (
-    deepicedrain.ice_volume_over_time(
-        df_elev=df_th, surface_area=lake.geometry.area, time_col="t"
-    )
-    / lake.geometry.area
+# Calculate ice volume displacement (dvol) in unit metres^3
+# and rolling mean height anomaly (h_roll) in unit metres
+surface_area: pint.Quantity = lake.geometry.area * ureg.metre ** 2
+ice_dvol: pd.Series = deepicedrain.ice_volume_over_time(
+    df_elev=df_th.astype(dtype={"h_anom": "pint[metre]"}),
+    surface_area=surface_area,
+    time_col="t",
+    outfile=f"figures/{placename}/ice_dvol_dt_{placename}.txt",
+)
+df_th["h_roll"]: pd.Series = uncertainties.unumpy.nominal_values(
+    arr=ice_dvol.pint.magnitude / surface_area.magnitude
 )
 
 # %%
