@@ -202,8 +202,6 @@ def ice_volume_over_time(
             assert id(surface_area._REGISTRY) == id(elev_anom._REGISTRY)
         except AssertionError:
             raise ValueError(id(surface_area._REGISTRY), id(elev_anom._REGISTRY))
-            elev_anom._REGISTRY = surface_area._REGISTRY
-
     # Calculate ice volume displacement (m^3) = area (m^2) x height (m)
     dvol: np.ndarray = surface_area * elev_anom
     ice_dvol: pd.Series = df_[elev_col].__class__(
