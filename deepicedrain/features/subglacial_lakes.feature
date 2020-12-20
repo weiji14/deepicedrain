@@ -61,4 +61,6 @@ Feature: Mapping Antarctic subglacial lakes
     Examples:
     | lake_name                | location            |
     | Whillans 7               | whillans_upstream   |
+    # | Whillans IX              | whillans_upstream   |
+    # | Subglacial Lake Whillans | whillans_downstream |
     | Whillans 12              | whillans_downstream |

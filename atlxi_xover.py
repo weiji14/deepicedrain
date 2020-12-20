@@ -113,6 +113,7 @@ gdf_lake = gpd.GeoDataFrame(
 )
 df_lake: pd.DataFrame = df_lake.loc[gdf_lake.within(lake.geometry)]  # polygon subset
 
+
 # %%
 # Run crossover analysis on all tracks
 track_dict: dict = deepicedrain.split_tracks(df=df_lake)
@@ -222,7 +223,6 @@ fig.colorbar(position="JMR+e", frame=['x+l"Crossover Error"', "y+lm"])
 fig.savefig(f"figures/{placename}/crossover_area_{placename}_{min_date}_{max_date}.png")
 fig.show()
 
-
 # %% [markdown]
 # ### Plot Crossover Elevation time-series
 #
@@ -317,6 +317,43 @@ fig.plot(x=df_th.t, y=df_th.h_roll, pen="thick,-")  # plot rolling mean height a
 fig.savefig(
     f"figures/{placename}/crossover_anomaly_{placename}_{min_date}_{max_date}.png"
 )
+fig.show()
+
+# %%
+
+# %% [markdown]
+# ## Combined ice volume displacement plot
+#
+# Showing how subglacial water cascades down a drainage basin!
+
+# %%
+fig = pygmt.Figure()
+fig.basemap(
+    region=f"2019-02-28/2020-09-30/-0.3/0.5",
+    frame=["wSnE", "xaf", 'yaf+l"Ice Volume Displacement (km@+3@+)"'],
+)
+pygmt.makecpt(cmap="davosS", color_model="+c", series=(-2, 4, 0.5))
+for i, (_placename, linestyle) in enumerate(
+    iterable=zip(
+        ["whillans_ix", "subglacial_lake_whillans", "whillans_12", "whillans_7"],
+        ["", ".-", "-", "..-"],
+    )
+):
+    fig.plot(
+        data=f"figures/{_placename}/ice_dvol_dt_{_placename}.txt",
+        cmap=True,
+        pen=f"thick,{linestyle}",
+        zvalue=i,
+        label=_placename,
+        columns="0,3",  # time column (0), ice_dvol column (3)
+    )
+fig.text(
+    position="TL",
+    offset="j0.2c",
+    text="Whillans Ice Stream Central Catchment active subglacial lakes",
+)
+fig.legend(position="jML+jML+o0.2c", box="+gwhite")
+fig.savefig("figures/cascade_whillans_ice_stream.png")
 fig.show()
 
 # %%
