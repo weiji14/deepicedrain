@@ -11,7 +11,7 @@ Feature: Mapping Antarctic subglacial lakes
 
     Examples:
     |  location            | this_many |
-    |  whillans_downstream | 7         |
+    |  slessor_downstream  | 15        |
 
 
   Scenario Outline: Subglacial Lake Animation
@@ -24,7 +24,7 @@ Feature: Mapping Antarctic subglacial lakes
     | lake_name    | location            | cycles | azimuth | elevation |
     # | Mercer XV    | whillans_downstream | 3-8    | 157.5   | 45        |
     # | Whillans 7   | whillans_upstream   | 3-8    | 157.5   | 45        |
-    # | Whillans 6   | whillans_upstream   | 3-8    | 157.5   | 45        |
+    | Whillans 6   | whillans_upstream   | 3-8    | 157.5   | 45        |
     # | Whillans X   | whillans_upstream   | 3-8    | 157.5   | 45        |
     # | Whillans XI  | whillans_upstream   | 3-8    | 157.5   | 45        |
     # | Whillans IX  | whillans_upstream   | 3-8    | 157.5   | 45        |

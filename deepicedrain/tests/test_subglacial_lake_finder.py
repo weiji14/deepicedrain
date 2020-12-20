@@ -28,7 +28,7 @@ def basin_altimetry_data(location):
     """
     # TODO use intake_parquet after https://github.com/intake/intake-parquet/issues/18
     with fsspec.open(
-        f"simplecache::https://github.com/weiji14/deepicedrain/releases/download/v0.3.1/df_dhdt_{location}.parquet",
+        f"simplecache::https://github.com/weiji14/deepicedrain/releases/download/v0.4.0/df_dhdt_{location}.parquet",
         simplecache=dict(cache_storage="ATLXI", same_names=True),
     ) as openfile:
         _dataframe: xpd.DataFrame = xpd.read_parquet(

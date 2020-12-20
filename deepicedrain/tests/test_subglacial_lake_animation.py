@@ -12,7 +12,6 @@ import pygmt
 import pytest
 import tqdm
 import xarray as xr
-from packaging.version import Version
 from pytest_bdd import scenario, then, when
 
 import deepicedrain
@@ -32,10 +31,6 @@ def test_subglacial_lake_animation():
     pass
 
 
-@pytest.mark.skipif(
-    Version(deepicedrain.__version__) < Version("0.4.0"),
-    reason="Requires newer df_dhdt_*.parquet file",
-)
 @scenario(
     feature_name="features/subglacial_lakes.feature",
     scenario_name="Subglacial Lake Mega-Cluster Animation",

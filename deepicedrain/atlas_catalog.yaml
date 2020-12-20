@@ -125,7 +125,7 @@ sources:
         description: ICESat-2 Cycle number
         type: int
         default: 7
-        allowed: [1, 2, 3, 4, 5, 6, 7]
+        allowed: [1, 2, 3, 4, 5, 6, 7, 8, 9]
     driver: intake_parquet.source.ParquetSource
     metadata:
       fields:
