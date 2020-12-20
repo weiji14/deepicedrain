@@ -5,7 +5,6 @@ Feature tests for animating Active Subglacial Lakes in Antactica.
 import os
 import subprocess
 
-import fsspec
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -14,7 +13,7 @@ import pytest
 import tqdm
 import xarray as xr
 from packaging.version import Version
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import scenario, then, when
 
 import deepicedrain
 
@@ -50,57 +49,6 @@ def test_subglacial_lake_megacluster_animation():
     subglacial lakes in a mega-cluster.
     """
     pass
-
-
-@given(
-    "some altimetry data at <location> spatially subsetted to <lake_name> with <lake_ids>",
-    target_fixture="df_lake",
-)
-def lake_altimetry_data(
-    location: str, lake_name: str, lake_ids: str, context
-) -> pd.DataFrame:
-    """
-    Load up some pre-processed ICESat-2 ATL11 altimetry data from a Parquet
-    file and subset it to a specific lake region.
-    """
-    # TODO use intake_parquet after https://github.com/intake/intake-parquet/issues/18
-    with fsspec.open(
-        f"simplecache::https://github.com/weiji14/deepicedrain/releases/download/v0.3.1/df_dhdt_{location}.parquet",
-        simplecache=dict(cache_storage="ATLXI", same_names=True),
-    ) as openfile:
-        dataframe: pd.DataFrame = pd.read_parquet(openfile)
-
-    antarctic_lakes: gpd.GeoDataFrame = deepicedrain.catalog.subglacial_lakes.read()
-    antarctic_lakes = antarctic_lakes.set_crs(epsg=3031, allow_override=True)
-
-    context.lake_name: str = lake_name
-    context.placename: str = context.lake_name.lower().replace(" ", "_")
-
-    lake_ids: tuple = tuple(map(int, lake_ids.split(",")))
-    context.lake: pd.Series = (
-        antarctic_lakes.loc[list(lake_ids)]
-        .dissolve(by="basin_name", as_index=False)
-        .squeeze()
-    )
-    context.draining = True if context.lake.inner_dhdt < 0 else False
-
-    # Save lake outline to OGR GMT file format
-    os.makedirs(name=f"figures/{context.placename}", exist_ok=True)
-    context.outline_points: str = f"figures/{context.placename}/{context.placename}.gmt"
-    try:
-        os.remove(path=context.outline_points)
-    except FileNotFoundError:
-        pass
-    antarctic_lakes.loc[list(lake_ids)].to_file(
-        filename=context.outline_points, driver="OGR_GMT", mode="w"
-    )
-
-    context.region = deepicedrain.Region.from_gdf(
-        gdf=context.lake, name=context.lake_name
-    )
-    df_lake: pd.DataFrame = context.region.subset(data=dataframe)
-
-    return df_lake
 
 
 @when("it is turned into a spatiotemporal cube over ICESat-2 cycles <cycles>")

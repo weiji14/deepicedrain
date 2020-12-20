@@ -29,6 +29,7 @@ Contents:
 
 - :droplet: lakealgorithms.py - Custom algorithms for detecting and filtering active subglacial lakes
   - find_clusters - Density based clustering algorithm (DBSCAN) to group points into lakes
+  - ice_volume_over_time - Calculate a rolling mean time-series of ice volume displacement over a lake area
 
 - :world_map: vizplots.py - Makes interactive dashboard plots and publication quality figures
   - IceSat2Explorer - Dashboard for interacting with ICESat-2 point clouds on a 2D map

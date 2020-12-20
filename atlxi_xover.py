@@ -40,11 +40,16 @@ import deepicedrain
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import pint
+import pint_pandas
 import pygmt
 import shapely.geometry
 import tqdm
+import uncertainties
 
 # %%
+ureg = pint.UnitRegistry()
+pint_pandas.PintType.ureg = ureg
 tag: str = "X2SYS"
 os.environ["X2SYS_HOME"] = os.path.abspath(tag)
 client = dask.distributed.Client(
@@ -79,7 +84,7 @@ df_dhdt: pd.DataFrame = pd.read_parquet(f"ATLXI/df_dhdt_{placename.lower()}.parq
 
 # %%
 # Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
-lake_name: str = "Subglacial Lake Conway"
+lake_name: str = "Whillans 12"
 lake_catalog = deepicedrain.catalog.subglacial_lakes()
 lake_ids: list = (
     pd.json_normalize(lake_catalog.metadata["lakedict"])
@@ -102,7 +107,11 @@ lake.geometry
 # %%
 # Subset data to lake of interest
 placename: str = region.name.lower().replace(" ", "_")
-df_lake: pd.DataFrame = region.subset(data=df_dhdt)
+df_lake: cudf.DataFrame = region.subset(data=df_dhdt)  # bbox subset
+gdf_lake = gpd.GeoDataFrame(
+    df_lake, geometry=gpd.points_from_xy(x=df_lake.x, y=df_lake.y, crs=3031)
+)
+df_lake: pd.DataFrame = df_lake.loc[gdf_lake.within(lake.geometry)]  # polygon subset
 
 
 # %%
@@ -214,7 +223,6 @@ fig.colorbar(position="JMR+e", frame=['x+l"Crossover Error"', "y+lm"])
 fig.savefig(f"figures/{placename}/crossover_area_{placename}_{min_date}_{max_date}.png")
 fig.show()
 
-
 # %% [markdown]
 # ### Plot Crossover Elevation time-series
 #
@@ -231,13 +239,14 @@ df_th: pd.DataFrame = deepicedrain.wide_to_long(
     stubnames=["t", "h"],
     j="track",
 )
-df_th = df_th.drop_duplicates(ignore_index=True)
+df_th: pd.DataFrame = df_th.drop_duplicates(ignore_index=True)
+df_th: pd.DataFrame = df_th.sort_values(by="t").reset_index(drop=True)
 
 # %%
 # Plot at single location with **maximum** absolute crossover height error (max_h_X)
-df_max = df_th.query(expr="x == @max_h_X.x & y == @max_h_X.y").sort_values(by="t")
+df_max = df_th.query(expr="x == @max_h_X.x & y == @max_h_X.y")
 track1, track2 = df_max.track1_track2.iloc[0].split("x")
-print(f"{round(max_h_X.h_X, 2)} metres height change at {max_h_X.x}, {max_h_X.y}")
+print(f"{max_h_X.h_X:.2f} metres height change at {max_h_X.x}, {max_h_X.y}")
 plotregion = np.array(
     [df_max.t.min(), df_max.t.max(), *pygmt.info(table=df_max[["h"]], spacing=2.5)[:2]]
 )
@@ -279,20 +288,72 @@ fig.savefig(f"figures/{placename}/crossover_many_{placename}_{min_date}_{max_dat
 fig.show()
 
 # %%
-# Plot all crossover height points over time over the lake area
-# with height values normalized to 0 from the first observation date
-normfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
-df_th["h_norm"] = df_th.groupby(by="track1_track2").h.transform(func=normfunc)
+# Calculate height anomaly at crossover point as
+# height at t=n minus height at t=0 (first observation date at crossover point)
+anomfunc = lambda h: h - h.iloc[0]  # lambda h: h - h.mean()
+df_th["h_anom"] = df_th.groupby(by="track1_track2").h.transform(func=anomfunc)
+# Calculate ice volume displacement (dvol) in unit metres^3
+# and rolling mean height anomaly (h_roll) in unit metres
+surface_area: pint.Quantity = lake.geometry.area * ureg.metre ** 2
+ice_dvol: pd.Series = deepicedrain.ice_volume_over_time(
+    df_elev=df_th.astype(dtype={"h_anom": "pint[metre]"}),
+    surface_area=surface_area,
+    time_col="t",
+    outfile=f"figures/{placename}/ice_dvol_dt_{placename}.txt",
+)
+df_th["h_roll"]: pd.Series = uncertainties.unumpy.nominal_values(
+    arr=ice_dvol.pint.magnitude / surface_area.magnitude
+)
 
+# %%
+# Plot all crossover height point anomalies over time over the lake area
 fig = deepicedrain.plot_crossovers(
     df=df_th,
     regionname=region.name,
-    elev_var="h_norm",
+    elev_var="h_anom",
     outline_points=f"figures/{placename}/{placename}.gmt",
 )
+fig.plot(x=df_th.t, y=df_th.h_roll, pen="thick,-")  # plot rolling mean height anomaly
 fig.savefig(
-    f"figures/{placename}/crossover_many_normalized_{placename}_{min_date}_{max_date}.png"
+    f"figures/{placename}/crossover_anomaly_{placename}_{min_date}_{max_date}.png"
 )
+fig.show()
+
+# %%
+
+# %% [markdown]
+# ## Combined ice volume displacement plot
+#
+# Showing how subglacial water cascades down a drainage basin!
+
+# %%
+fig = pygmt.Figure()
+fig.basemap(
+    region=f"2019-02-28/2020-09-30/-0.3/0.5",
+    frame=["wSnE", "xaf", 'yaf+l"Ice Volume Displacement (km@+3@+)"'],
+)
+pygmt.makecpt(cmap="davosS", color_model="+c", series=(-2, 4, 0.5))
+for i, (_placename, linestyle) in enumerate(
+    iterable=zip(
+        ["whillans_ix", "subglacial_lake_whillans", "whillans_12", "whillans_7"],
+        ["", ".-", "-", "..-"],
+    )
+):
+    fig.plot(
+        data=f"figures/{_placename}/ice_dvol_dt_{_placename}.txt",
+        cmap=True,
+        pen=f"thick,{linestyle}",
+        zvalue=i,
+        label=_placename,
+        columns="0,3",  # time column (0), ice_dvol column (3)
+    )
+fig.text(
+    position="TL",
+    offset="j0.2c",
+    text="Whillans Ice Stream Central Catchment active subglacial lakes",
+)
+fig.legend(position="jML+jML+o0.2c", box="+gwhite")
+fig.savefig("figures/cascade_whillans_ice_stream.png")
 fig.show()
 
 # %%

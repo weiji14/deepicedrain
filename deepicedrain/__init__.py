@@ -11,7 +11,7 @@ from deepicedrain.extraload import (
     split_tracks,
     wide_to_long,
 )
-from deepicedrain.lake_algorithms import find_clusters
+from deepicedrain.lake_algorithms import find_clusters, ice_volume_over_time
 from deepicedrain.spatiotemporal import (
     Region,
     deltatime_to_utctime,
