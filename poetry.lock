@@ -378,7 +378,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "dask"
-version = "2.30.0"
+version = "2020.12.0"
 description = "Parallel PyData with Task Scheduling"
 category = "main"
 optional = false
@@ -389,24 +389,24 @@ bokeh = {version = ">=1.0.0,<2.0.0 || >2.0.0", optional = true, markers = "extra
 cloudpickle = {version = ">=0.2.2", optional = true, markers = "extra == \"bag\""}
 distributed = {version = ">=2.0", optional = true, markers = "extra == \"complete\""}
 fsspec = {version = ">=0.6.0", optional = true, markers = "extra == \"bag\""}
-numpy = {version = ">=1.13.0", optional = true, markers = "extra == \"complete\""}
-pandas = {version = ">=0.23.0", optional = true, markers = "extra == \"complete\""}
+numpy = {version = ">=1.15.1", optional = true, markers = "extra == \"complete\""}
+pandas = {version = ">=0.25.0", optional = true, markers = "extra == \"complete\""}
 partd = {version = ">=0.3.10", optional = true, markers = "extra == \"bag\""}
 pyyaml = "*"
 toolz = {version = ">=0.8.2", optional = true, markers = "extra == \"bag\""}
 
 [package.extras]
-array = ["numpy (>=1.13.0)", "toolz (>=0.8.2)"]
+array = ["numpy (>=1.15.1)", "toolz (>=0.8.2)"]
 bag = ["cloudpickle (>=0.2.2)", "fsspec (>=0.6.0)", "toolz (>=0.8.2)", "partd (>=0.3.10)"]
-complete = ["bokeh (>=1.0.0,!=2.0.0)", "cloudpickle (>=0.2.2)", "distributed (>=2.0)", "fsspec (>=0.6.0)", "numpy (>=1.13.0)", "pandas (>=0.23.0)", "partd (>=0.3.10)", "toolz (>=0.8.2)"]
-dataframe = ["numpy (>=1.13.0)", "pandas (>=0.23.0)", "toolz (>=0.8.2)", "partd (>=0.3.10)", "fsspec (>=0.6.0)"]
+complete = ["bokeh (>=1.0.0,!=2.0.0)", "cloudpickle (>=0.2.2)", "distributed (>=2.0)", "fsspec (>=0.6.0)", "numpy (>=1.15.1)", "pandas (>=0.25.0)", "partd (>=0.3.10)", "toolz (>=0.8.2)"]
+dataframe = ["numpy (>=1.15.1)", "pandas (>=0.25.0)", "toolz (>=0.8.2)", "partd (>=0.3.10)", "fsspec (>=0.6.0)"]
 delayed = ["cloudpickle (>=0.2.2)", "toolz (>=0.8.2)"]
 diagnostics = ["bokeh (>=1.0.0,!=2.0.0)"]
 distributed = ["distributed (>=2.0)"]
 
 [[package]]
 name = "dask-cuda"
-version = "0.16.0"
+version = "0.17.0"
 description = "Utilities for Dask and CUDA interactions"
 category = "main"
 optional = true
@@ -421,7 +421,7 @@ pynvml = ">=8.0.3"
 
 [[package]]
 name = "dask-labextension"
-version = "3.0.0"
+version = "4.0.1"
 description = "A Jupyter Notebook server extension manages Dask clusters."
 category = "main"
 optional = false
@@ -494,7 +494,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "distributed"
-version = "2.30.0"
+version = "2020.12.0"
 description = "Distributed scheduler for Dask"
 category = "main"
 optional = false
@@ -503,7 +503,7 @@ python-versions = ">=3.6"
 [package.dependencies]
 click = ">=6.6"
 cloudpickle = ">=1.5.0"
-dask = ">=2.9.0"
+dask = ">=2020.12.0"
 msgpack = ">=0.6.0"
 psutil = ">=5.0"
 pyyaml = "*"
@@ -2360,7 +2360,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "87939c2013481c6b80e9e4e420ecb50f64e7a720ded6f97b4e71d5b1cc6989e1"
+content-hash = "9944eb4cfe80b93e8ab7b1081b7dbe6c907a4e243a3d3e5510fb74f2360f9e14"
 
 [metadata.files]
 aiohttp = [
@@ -2627,15 +2627,15 @@ cython = [
     {file = "Cython-0.29.21.tar.gz", hash = "sha256:e57acb89bd55943c8d8bf813763d20b9099cc7165c0f16b707631a7654be9cad"},
 ]
 dask = [
-    {file = "dask-2.30.0-py3-none-any.whl", hash = "sha256:4c215aa55951f570b5a294b2ce964ed801c6efd766231c53447460e60f73ea14"},
-    {file = "dask-2.30.0.tar.gz", hash = "sha256:a1669022e25de99b227c3d83da4801f032415962dac431099bf0534648e41a54"},
+    {file = "dask-2020.12.0-py3-none-any.whl", hash = "sha256:5741db6e2426c001cecd374cba3bba8fea16a2da081089376ebcad9f8cf32aca"},
+    {file = "dask-2020.12.0.tar.gz", hash = "sha256:43e745afd4b464e6c0113131e430a16dce6ac42460b06e24d799093d098f7ab0"},
 ]
 dask-cuda = [
-    {file = "dask-cuda-0.16.0.tar.gz", hash = "sha256:11e68fdba64a6644eb26cdfaab874507523a5465db950e7259f470e764b867a4"},
-    {file = "dask_cuda-0.16.0-py3-none-any.whl", hash = "sha256:5ce1725cdc88ad0cfd5f576447ab747e5260c0aaeb24239f70221f983557b471"},
+    {file = "dask-cuda-0.17.0.tar.gz", hash = "sha256:c8e8b5bec315bc4b1c8629db7363e147a8b792e7d93a8c05c8c4ad6d06f9cc53"},
+    {file = "dask_cuda-0.17.0-py3-none-any.whl", hash = "sha256:93a494f53633c8a3c79083ca5f3faf9b8d98bdc3835f16f16230b1cdcf14ac22"},
 ]
 dask-labextension = [
-    {file = "dask_labextension-3.0.0.tar.gz", hash = "sha256:c613f5c76b8fce4fae167eeab3377e0706e5045a27da1200b3b173025a94d94b"},
+    {file = "dask_labextension-4.0.1.tar.gz", hash = "sha256:131adfc9afa10ffaffa6ac5d120fcf47ff572db1cf11392c29aa457094b1b921"},
 ]
 datashader = [
     {file = "datashader-0.11.1-py2.py3-none-any.whl", hash = "sha256:83f2fdbcbf92a57979d5ad2b55d5fe3582248de8b28a6411b5311f722725af0d"},
@@ -2653,8 +2653,8 @@ defusedxml = [
     {file = "defusedxml-0.6.0.tar.gz", hash = "sha256:f684034d135af4c6cbb949b8a4d2ed61634515257a67299e5f940fbaa34377f5"},
 ]
 distributed = [
-    {file = "distributed-2.30.0-py3-none-any.whl", hash = "sha256:5c9078eb8e95a17d482cad74022aafdf8af1870c2fc4fbe51071dab474e42ffb"},
-    {file = "distributed-2.30.0.tar.gz", hash = "sha256:3eb8e4173625cea6ebda2f0a079b813eeabbffd1b24584855cf063ed1cca60b3"},
+    {file = "distributed-2020.12.0-py3-none-any.whl", hash = "sha256:532294b005009ce7c480073e467f9043c5292a735ed535f3fd00517a83a51bfc"},
+    {file = "distributed-2020.12.0.tar.gz", hash = "sha256:2a0b6acc921cd4e0143a7c4383cdcbed7defbc4bd9dc3aab0c7f1c45f14f80e1"},
 ]
 docopt = [
     {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
