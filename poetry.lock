@@ -1869,7 +1869,7 @@ testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xm
 
 [[package]]
 name = "pytest-bdd"
-version = "4.0.1"
+version = "4.0.2"
 description = "BDD for pytest"
 category = "dev"
 optional = false
@@ -2360,7 +2360,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "9944eb4cfe80b93e8ab7b1081b7dbe6c907a4e243a3d3e5510fb74f2360f9e14"
+content-hash = "a82071ea47b8bf9c7730d783aa77abdb615a4a8bf60f06f4d142c5e6a6a5eab6"
 
 [metadata.files]
 aiohttp = [
@@ -3444,8 +3444,8 @@ pytest = [
     {file = "pytest-6.2.1.tar.gz", hash = "sha256:66e419b1899bc27346cb2c993e12c5e5e8daba9073c1fbce33b9807abc95c306"},
 ]
 pytest-bdd = [
-    {file = "pytest-bdd-4.0.1.tar.gz", hash = "sha256:0b8467fe4c6effe0d5d11919eec1808da07752c68332d776bb9eb2a6cbdbd8f1"},
-    {file = "pytest_bdd-4.0.1-py2.py3-none-any.whl", hash = "sha256:cbe1d932be237e6cbe1c855f18bb797911f40c4fa11d033c59f55bed99633481"},
+    {file = "pytest-bdd-4.0.2.tar.gz", hash = "sha256:982489f2f036c7561affe4eeb5b392a37e1ace2a9f260cad747b1c8119e63cfd"},
+    {file = "pytest_bdd-4.0.2-py2.py3-none-any.whl", hash = "sha256:74ea5a147ea558c99ae83d838e6acbe5c9e6843884a958f8231615d96838733d"},
 ]
 pytest-forked = [
     {file = "pytest-forked-1.3.0.tar.gz", hash = "sha256:6aa9ac7e00ad1a539c41bec6d21011332de671e938c7637378ec9710204e37ca"},
