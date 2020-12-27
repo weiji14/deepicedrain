@@ -1086,14 +1086,14 @@ test = ["pytest", "requests"]
 
 [[package]]
 name = "jupytext"
-version = "1.7.1"
+version = "1.8.0"
 description = "Jupyter notebooks as Markdown documents, Julia, Python or R scripts"
 category = "dev"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-markdown-it-py = {version = ">=0.5.2,<0.6.0", markers = "python_version >= \"3.6\""}
+markdown-it-py = ">=0.6.0,<0.7.0"
 nbformat = ">=4.0.0"
 pyyaml = "*"
 toml = "*"
@@ -1168,7 +1168,7 @@ testing = ["coverage", "pyyaml"]
 
 [[package]]
 name = "markdown-it-py"
-version = "0.5.6"
+version = "0.6.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
 category = "dev"
 optional = false
@@ -1176,10 +1176,12 @@ python-versions = "~=3.6"
 
 [package.dependencies]
 attrs = ">=19,<21"
+mdit-py-plugins = ">=0.2.1,<0.3.0"
 
 [package.extras]
 code_style = ["pre-commit (==2.6)"]
 compare = ["commonmark (>=0.9.1,<0.10.0)", "markdown (>=3.2.2,<3.3.0)", "mistune (>=0.8.4,<0.9.0)", "mistletoe-ebp (>=0.10.0,<0.11.0)", "panflute (>=1.12,<2.0)"]
+linkify = ["linkify-it-py (>=1.0,<2.0)"]
 rtd = ["myst-nb (>=0.10.0,<0.11.0)", "sphinx-book-theme", "sphinx-panels (>=0.4.0,<0.5.0)", "sphinx-copybutton", "sphinx (>=2,<4)", "pyyaml"]
 testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions", "pytest-benchmark (>=3.2,<4.0)", "psutil"]
 
@@ -1206,6 +1208,21 @@ numpy = ">=1.15"
 pillow = ">=6.2.0"
 pyparsing = ">=2.0.3,<2.0.4 || >2.0.4,<2.1.2 || >2.1.2,<2.1.6 || >2.1.6"
 python-dateutil = ">=2.1"
+
+[[package]]
+name = "mdit-py-plugins"
+version = "0.2.4"
+description = "Collection of plugins for markdown-it-py"
+category = "dev"
+optional = false
+python-versions = "~=3.6"
+
+[package.dependencies]
+markdown-it-py = ">=0.5.8,<2.0.0"
+
+[package.extras]
+code_style = ["pre-commit (==2.6)"]
+testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions"]
 
 [[package]]
 name = "mistune"
@@ -2360,7 +2377,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "a82071ea47b8bf9c7730d783aa77abdb615a4a8bf60f06f4d142c5e6a6a5eab6"
+content-hash = "bf846b370dd335d86cb9a5b07d9cfc5304fdc0afb172b0d2b4bb1372ee2681a0"
 
 [metadata.files]
 aiohttp = [
@@ -2847,8 +2864,8 @@ jupyterlab-server = [
     {file = "jupyterlab_server-1.2.0.tar.gz", hash = "sha256:5431d9dde96659364b7cc877693d5d21e7b80cea7ae3959ecc2b87518e5f5d8c"},
 ]
 jupytext = [
-    {file = "jupytext-1.7.1-py3-none-any.whl", hash = "sha256:e48f57afdc807cc2d2920bd6ae18455264db78b1fc78061ad70dcc26dc45a2cb"},
-    {file = "jupytext-1.7.1.tar.gz", hash = "sha256:23123b90c267c67716fe6a022dfae49b84fd3809370d83211f2920eb3106bf40"},
+    {file = "jupytext-1.8.0-py3-none-any.whl", hash = "sha256:0643797c30e7a2b15a4d2d269a74b52ca1a6e982f7927c4da03e339cd7214437"},
+    {file = "jupytext-1.8.0.tar.gz", hash = "sha256:e7f85424b4bd7c012ea0b9f1232f1da27b099aa9d818b8d95c4af108607d9254"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.3.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:fd34fbbfbc40628200730bc1febe30631347103fc8d3d4fa012c21ab9c11eca9"},
@@ -2953,8 +2970,8 @@ markdown = [
     {file = "Markdown-3.3.3.tar.gz", hash = "sha256:5d9f2b5ca24bc4c7a390d22323ca4bad200368612b5aaa7796babf971d2b2f18"},
 ]
 markdown-it-py = [
-    {file = "markdown-it-py-0.5.6.tar.gz", hash = "sha256:6143d11221495edbf71beb7e455821ae6c8f0156710a1b11812662ed6dbd165b"},
-    {file = "markdown_it_py-0.5.6-py3-none-any.whl", hash = "sha256:dcfe4a0c6bef711cb6c42494ebf23a3cfe6f249bf995556498497dd8193bfc22"},
+    {file = "markdown-it-py-0.6.0.tar.gz", hash = "sha256:1c1413df39ef7baa55bca755d32c565d72e8b4114dcdd3da65eb468a61886659"},
+    {file = "markdown_it_py-0.6.0-py3-none-any.whl", hash = "sha256:f90912a0ff1ac328627d1551bd5a17bce0ef1d483df222d460336e59213c6d29"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -3017,6 +3034,10 @@ matplotlib = [
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:746897fbd72bd462b888c74ed35d812ca76006b04f717cd44698cdfc99aca70d"},
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:5ed3d3342698c2b1f3651f8ea6c099b0f196d16ee00e33dc3a6fee8cb01d530a"},
     {file = "matplotlib-3.3.3.tar.gz", hash = "sha256:b1b60c6476c4cfe9e5cf8ab0d3127476fd3d5f05de0f343a452badaad0e4bdec"},
+]
+mdit-py-plugins = [
+    {file = "mdit-py-plugins-0.2.4.tar.gz", hash = "sha256:e7db0de4a3466941faa433f77a98d09a09a0b877e79eace79506fd0d083e490f"},
+    {file = "mdit_py_plugins-0.2.4-py3-none-any.whl", hash = "sha256:f13ad035e977db0dd268af4a372716f3b555f1435f9623b4aed10c3c8bbf618c"},
 ]
 mistune = [
     {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},
