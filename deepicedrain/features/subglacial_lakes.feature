@@ -28,7 +28,7 @@ Feature: Mapping Antarctic subglacial lakes
     # | Whillans X   | whillans_upstream   | 3-8    | 157.5   | 45        |
     # | Whillans XI  | whillans_upstream   | 3-8    | 157.5   | 45        |
     # | Whillans IX  | whillans_upstream   | 3-8    | 157.5   | 45        |
-    # | Whillans 12  | whillans_downstream | 3-8    | 157.5   | 45        |
+    # | Lake 12      | whillans_downstream | 3-8    | 157.5   | 45        |
     # | Kamb 8       | whillans_upstream   | 3-8    | 157.5   | 45        |
     # | Kamb 1       | whillans_upstream   | 3-8    | 157.5   | 45        |
     | Kamb 34      | whillans_upstream   | 4-7    | 157.5   | 45        |
@@ -63,4 +63,4 @@ Feature: Mapping Antarctic subglacial lakes
     | Whillans 7               | whillans_upstream   |
     # | Whillans IX              | whillans_upstream   |
     # | Subglacial Lake Whillans | whillans_downstream |
-    | Whillans 12              | whillans_downstream |
+    | Lake 12                  | whillans_downstream |

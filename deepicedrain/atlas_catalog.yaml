@@ -201,10 +201,14 @@ sources:
           ids: [62]
         - lakename: Kamb 34
           ids: [63]
+        - lakename: Kamb 6
+          ids: [60]
         - lakename: Kamb 8
           ids: [61]
         - lakename: MacAyeal 1
           ids: [84]
+        - lakename: MacAyeal 4
+          ids: [83]
         - lakename: Subglacial Lake Mercer
           ids: [15, 19]
         - lakename: Recovery 2
@@ -215,22 +219,36 @@ sources:
           ids: [101]
         - lakename: Slessor 45
           ids: [95]
-        - lakename: Lake 78
-          ids: [16, 46, 48]
         - lakename: Subglacial Lake Conway
           ids: [34, 35]
         - lakename: Subglacial Lake Whillans
           ids: [41, 43, 45]
-        - lakename: Whillans 12
-          ids: [54]
-        - lakename: Whillans 13
-          ids: [39, 40]
+          transect: 0989_pt1
         - lakename: Whillans 6
           ids: [33]
         - lakename: Whillans 7
           ids: [32]
+          transect: 0531_pt1
         - lakename: Whillans IX
           ids: [44]
+          transect: 1080_pt3
+        - lakename: Subglacial Lake Engelhardt 2
+          ids: [42]
+        - lakename: Lake 78
+          ids: [16, 46, 48]
+        - lakename: Lake 12
+          ids: [54]
+          transect: 0593_pt1
+        - lakename: \* 1
+          ids: [36]
+        - lakename: \* 2
+          ids: [39, 40]
+        - lakename: \* 3
+          ids: [56]
+        - lakename: \* 4
+          ids: [69]
+        - lakename: \* 5
+          ids: [130]
   test_data:
     description: 'Sample ICESat-2 datasets for testing purposes'
     args:

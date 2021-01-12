@@ -330,12 +330,12 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(
 
 # %%
 # Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
-lake_name: str = "Subglacial Lake Conway"
+lake_name: str = "Lake 12"
 lake_catalog = deepicedrain.catalog.subglacial_lakes()
-lake_ids: list = (
+lake_ids, transect_id = (
     pd.json_normalize(lake_catalog.metadata["lakedict"])
-    .query("lakename == @lake_name")
-    .ids.iloc[0]
+    .query("lakename == @lake_name")[["ids", "transect"]]
+    .iloc[0]
 )
 lake = (
     lake_catalog.read()
@@ -354,6 +354,14 @@ lake.geometry
 # Subset data to lake of interest
 placename: str = region.name.lower().replace(" ", "_")
 df_lake: cudf.DataFrame = region.subset(data=df_dhdt)
+# Get transect line xyz data
+try:
+    _rgt, _pt = transect_id.split("_")
+    df_transect: pd.DataFrame = deepicedrain.split_tracks(
+        df=df_lake.query(expr=f"referencegroundtrack == {int(_rgt)}").to_pandas()
+    )[transect_id][["x", "y", "h_corr", "cycle_number"]]
+except AttributeError:
+    pass
 
 # Save lake outline to OGR GMT file format
 outline_points: str = f"figures/{placename}/{placename}.gmt"
@@ -407,6 +415,16 @@ for cycle in tqdm.tqdm(iterable=cycles):
         elevation=45,  # 60
         title=f"{region.name} at Cycle {cycle} ({time_sec})",
     )
+    # Plot crossing transect line
+    _xyz = df_transect.query(expr=f"cycle_number == {cycle}")[["x", "y", "h_corr"]]
+    if len(_xyz) > 0:
+        fig.plot3d(
+            data=_xyz.to_numpy(),
+            color="yellow2",
+            style="c0.1c",
+            zscale=True,
+            perspective=True,
+        )
     fig.savefig(f"figures/{placename}/dsm_{placename}_cycle_{cycle}.png")
 fig.show()
 

@@ -5,7 +5,6 @@ Feature tests for animating Active Subglacial Lakes in Antactica.
 import os
 import subprocess
 
-import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pygmt
@@ -108,6 +107,19 @@ def visualize_grid_in_3D(
             elevation=elevation,
             title=f"{context.region.name} at Cycle {cycle} ({time_sec})",
         )
+        # Plot crossing transect line
+        if hasattr(context, "df_transect"):
+            _xyz = context.df_transect.query(expr=f"cycle_number == {cycle}")[
+                ["x", "y", "h_corr"]
+            ]
+            if len(_xyz) > 0:
+                fig.plot3d(
+                    data=_xyz.to_numpy(),
+                    color="yellow2",
+                    style="c0.1c",
+                    zscale=True,
+                    perspective=True,
+                )
         fig.savefig(
             f"figures/{context.placename}/dsm_{context.placename}_cycle_{cycle}.png"
         )

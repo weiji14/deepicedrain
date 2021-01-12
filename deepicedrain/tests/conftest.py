@@ -58,10 +58,10 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
 
     # Get lake outline from intake catalog
     lake_catalog = deepicedrain.catalog.subglacial_lakes()
-    lake_ids: list = (
+    lake_ids, transect_id = (
         pd.json_normalize(lake_catalog.metadata["lakedict"])
-        .query("lakename == @lake_name")
-        .ids.iloc[0]
+        .query("lakename == @lake_name")[["ids", "transect"]]
+        .iloc[0]
     )
     context.lake: pd.Series = (
         lake_catalog.read()
@@ -79,12 +79,14 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
     # Subset data to lake of interest
     context.placename: str = context.lake_name.lower().replace(" ", "_")
     df_lake: cudf.DataFrame = context.region.subset(data=dataframe)  # bbox subset
-    gdf_lake = gpd.GeoDataFrame(
-        df_lake, geometry=gpd.points_from_xy(x=df_lake.x, y=df_lake.y, crs=3031)
-    )
-    df_lake: pd.DataFrame = df_lake.loc[
-        gdf_lake.within(context.lake.geometry)
-    ]  # polygon subset
+    # Get transect line xyz data
+    try:
+        _rgt, _pt = transect_id.split("_")
+        context.df_transect: pd.DataFrame = deepicedrain.split_tracks(
+            df=df_lake.query(expr=f"referencegroundtrack == {int(_rgt)}")
+        )[transect_id][["x", "y", "h_corr", "cycle_number"]]
+    except AttributeError:
+        pass
 
     # Save lake outline to OGR GMT file format
     os.makedirs(name=f"figures/{context.placename}", exist_ok=True)

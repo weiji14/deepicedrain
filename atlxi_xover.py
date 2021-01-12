@@ -84,7 +84,7 @@ df_dhdt: pd.DataFrame = pd.read_parquet(f"ATLXI/df_dhdt_{placename.lower()}.parq
 
 # %%
 # Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
-lake_name: str = "Whillans 12"
+lake_name: str = "Lake 12"
 lake_catalog = deepicedrain.catalog.subglacial_lakes()
 lake_ids: list = (
     pd.json_normalize(lake_catalog.metadata["lakedict"])
@@ -335,7 +335,7 @@ fig.basemap(
 pygmt.makecpt(cmap="davosS", color_model="+c", series=(-2, 4, 0.5))
 for i, (_placename, linestyle) in enumerate(
     iterable=zip(
-        ["whillans_ix", "subglacial_lake_whillans", "whillans_12", "whillans_7"],
+        ["whillans_ix", "subglacial_lake_whillans", "lake_12", "whillans_7"],
         ["", ".-", "-", "..-"],
     )
 ):

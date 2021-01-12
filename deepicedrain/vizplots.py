@@ -280,16 +280,11 @@ def _plot_crossover_area(
 
     # Map frame in metre units
     fig.basemap(frame="+n", region=plotregion, projection=f"X{plotsize}c")
-    # Plot lake boundary in blue
-    fig.plot(data=outline_points, region=plotregion, pen="thin,blue,-.")
+    # Plot lake boundary in cyan
+    fig.plot(data=outline_points, region=plotregion, pen="thin,cyan2,-.")
     # Plot crossover point locations
     pygmt.makecpt(cmap=cmap, series=elev_range, reverse=True)
-    fig.plot(
-        data=df,
-        style="d0.1c",
-        cmap=True,
-        # pen="thinnest",
-    )
+    fig.plot(data=df, style="d0.1c", cmap=True)
     # Map frame in kilometre units
     with pygmt.config(FONT_ANNOT_PRIMARY=f"{plotsize+2}p", FONT_LABEL=f"{plotsize+2}p"):
         fig.basemap(
@@ -603,6 +598,7 @@ def plot_icesurface(
     )
     fig.colorbar(
         cmap=True,
+        I=True,  # shading
         position="JMR+o1c/0c+w7c/0.5c+n+mc",
         frame=['x+l"Elevation (m)"', "y+lm"],
         perspective=True,
@@ -617,7 +613,7 @@ def plot_icesurface(
             zscale=True,
             perspective=True,
         )
-    # Plot lake boundary outline as yellow dashed line
+    # Plot lake boundary outline as cyan dashed line
     if outline_points is not None:
         with pygmt.helpers.GMTTempFile() as tmpfile:
             pygmt.grdtrack(
@@ -639,7 +635,7 @@ def plot_icesurface(
             fig.plot3d(
                 data=tmpfile.name,
                 region=grid_region,
-                pen="1.5p,yellow2,-",
+                pen="thicker,cyan2,-.",
                 zscale=True,
                 perspective=True,
             )
