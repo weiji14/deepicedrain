@@ -44,7 +44,7 @@ xrviz = "^0.1.4"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
-jupytext = "^1.7.1"
+jupytext = "^1.9.1"
 pytest = "^6.2.1"
 pytest-bdd = "^4.0.2"
 pytest-xdist = "^2.2.0"
