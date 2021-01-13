@@ -313,6 +313,7 @@ def spatiotemporal_cube(
     x_var: str = "x",
     y_var: str = "y",
     z_var: str = "h_corr",
+    dhdt_var: str = "dhdt_slope",
     spacing: int = 250,
     clip_limits: bool = True,
     cycles: list = None,
@@ -376,8 +377,8 @@ def spatiotemporal_cube(
         +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84
         +units=m +no_defs', i.e. Antarctic Polar Stereographic EPSG:3031.
     folder : str
-        The folder to keep the intermediate NetCDF file in. Default is to place
-        the files in the current working directory.
+        The folder to keep the intermediate NetCDF files in. Default is to
+        place the files in the current working directory.
 
     Returns
     -------
@@ -413,6 +414,14 @@ def spatiotemporal_cube(
 
     # Create one grid surface for each time cycle
     _placename = f"_{placename}" if placename else ""
+    surface_kwargs = dict(
+        region=grid_region,
+        spacing=spacing,
+        J=f'"{projection}"',  # projection
+        M="3c",  # mask values 3 pixel cells outside/away from valid data
+        T=0.35,  # tension factor
+        V="e",  # error messages only
+    )
     for cycle in tqdm.tqdm(iterable=cycles):
         df_trimmed = pygmt.blockmedian(
             table=table[[x_var, y_var, f"{z_var}_{cycle}"]].dropna(),
@@ -421,17 +430,8 @@ def spatiotemporal_cube(
         )
         outfile = f"{z_var}{_placename}_cycle_{cycle}.nc"
         pygmt.surface(
-            data=df_trimmed.values,
-            region=grid_region,
-            spacing=spacing,
-            J=f'"{projection}"',  # projection
-            L=limits,  # lower and upper limits
-            M="3c",  # mask values 3 pixel cells outside/away from valid data
-            T=0.35,  # tension factor
-            V="e",  # error messages only
-            outfile=outfile,
+            data=df_trimmed.values, outfile=outfile, L=limits, **surface_kwargs
         )
-        # print(pygmt.grdinfo(outfile))
 
     # Move files into new folder if requested
     paths: list = [f"{z_var}{_placename}_cycle_{cycle}.nc" for cycle in cycles]
@@ -447,5 +447,31 @@ def spatiotemporal_cube(
         concat_dim=[pd.Index(data=cycles, name="cycle_number")],
         attrs_file=paths[-1],
     )
+
+    # Extra data variables, calculated using point data and then interpolated to grid
+    if dhdt_var in table.columns:
+        # Mean elevation (<z>)
+        df_zmean: pd.DataFrame = pygmt.blockmedian(
+            table=pd.concat(
+                objs=[table[[x_var, y_var]], z_values.mean(axis="columns")], axis=1
+            ),
+            region=grid_region,
+            spacing=f"{spacing}+e",
+        )
+        dataset["z_mean"]: xr.DataArray = pygmt.surface(
+            data=df_zmean.values, **surface_kwargs
+        )
+        dataset["z_mean"].attrs["long_name"] = f"Mean {z_var}"
+
+        # Rate of elevation change (dhdt)
+        df_dhdt: pd.DataFrame = pygmt.blockmedian(
+            table=table[[x_var, y_var, "dhdt_slope"]],
+            region=grid_region,
+            spacing=f"{spacing}+e",
+        )
+        dataset["dhdt"]: xr.DataArray = pygmt.surface(
+            data=df_dhdt.values, **surface_kwargs
+        )
+        dataset["dhdt"].attrs["long_name"] = f"Rate of elevation change over time"
 
     return dataset

@@ -79,12 +79,22 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
     # Subset data to lake of interest
     context.placename: str = context.lake_name.lower().replace(" ", "_")
     df_lake: cudf.DataFrame = context.region.subset(data=dataframe)  # bbox subset
-    # Get transect line xyz data
+    # Get all raw xyz points and one transect line dataframe
+    track_dict: dict = deepicedrain.split_tracks(df=df_lake)
+    context.track_points: pd.DataFrame = (
+        pd.concat(track_dict.values())
+        .groupby(by=["x", "y"])
+        .mean()  # z value is mean h_corr over all cycles
+        .reset_index()[["x", "y", "h_corr"]]
+    )
     try:
         _rgt, _pt = transect_id.split("_")
-        context.df_transect: pd.DataFrame = deepicedrain.split_tracks(
-            df=df_lake.query(expr=f"referencegroundtrack == {int(_rgt)}")
-        )[transect_id][["x", "y", "h_corr", "cycle_number"]]
+        context.df_transect: pd.DataFrame = (
+            track_dict[transect_id][["x", "y", "h_corr", "cycle_number"]]
+            .groupby(by=["x", "y"])
+            .max()  # z value is maximum h_corr over all cycles
+            .reset_index()
+        )
     except AttributeError:
         pass
 
