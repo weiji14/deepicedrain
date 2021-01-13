@@ -57,12 +57,6 @@ RUN conda activate deepicedrain && \
     poetry env info && \
     poetry show
 
-# Install jupyterlab extensions
-RUN conda activate deepicedrain && \
-    jupyter labextension install @pyviz/jupyterlab_pyviz && \
-    jupyter labextension install dask-labextension && \
-    jupyter labextension list
-
 # Setup DeepBedMap virtual environment properly
 RUN conda activate deepicedrain && \
     python -m ipykernel install --user --name deepicedrain && \
