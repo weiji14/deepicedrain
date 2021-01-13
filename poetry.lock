@@ -32,6 +32,24 @@ scipy = ">=1.0.0"
 shapely = ">=1.4.0"
 
 [[package]]
+name = "anyio"
+version = "2.0.2"
+description = "High level compatibility layer for multiple asynchronous event loop implementations"
+category = "main"
+optional = false
+python-versions = ">=3.6.2"
+
+[package.dependencies]
+idna = ">=2.8"
+sniffio = ">=1.1"
+
+[package.extras]
+curio = ["curio (>=1.4)"]
+doc = ["sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
+test = ["coverage (>=4.5)", "hypothesis (>=4.0)", "pytest (>=4.3)", "trustme", "uvloop"]
+trio = ["trio (>=0.16)"]
+
+[[package]]
 name = "apipkg"
 version = "1.5"
 description = "apipkg: namespace control and lazy-import mechanism"
@@ -117,6 +135,17 @@ dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", 
 docs = ["furo", "sphinx", "zope.interface"]
 tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface"]
 tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
+
+[[package]]
+name = "babel"
+version = "2.9.0"
+description = "Internationalization utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+pytz = ">=2015.7"
 
 [[package]]
 name = "backcall"
@@ -421,17 +450,17 @@ pynvml = ">=8.0.3"
 
 [[package]]
 name = "dask-labextension"
-version = "4.0.1"
-description = "A Jupyter Notebook server extension manages Dask clusters."
+version = "5.0.0"
+description = "A JupyterLab extension for Dask."
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
 bokeh = ">=1.0.0,<2.0.0 || >2.0.0"
 distributed = ">=1.24.1"
 jupyter-server-proxy = ">=1.3.2"
-notebook = ">=4.3.1"
+jupyterlab = ">=3.0.0"
 
 [[package]]
 name = "datashader"
@@ -1025,6 +1054,33 @@ pywin32 = {version = ">=1.0", markers = "sys_platform == \"win32\""}
 traitlets = "*"
 
 [[package]]
+name = "jupyter-server"
+version = "1.2.1"
+description = "The backend—i.e. core services, APIs, and REST endpoints—to Jupyter web applications."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+anyio = ">=2.0.2"
+ipython-genutils = "*"
+jinja2 = "*"
+jupyter-client = ">=6.1.1"
+jupyter-core = ">=4.4.0"
+nbconvert = "*"
+nbformat = "*"
+prometheus-client = "*"
+pywin32 = {version = ">=1.0", markers = "sys_platform == \"win32\""}
+pyzmq = ">=17"
+Send2Trash = "*"
+terminado = ">=0.8.3"
+tornado = ">=6.1.0"
+traitlets = ">=4.2.1"
+
+[package.extras]
+test = ["coverage", "requests", "pytest", "pytest-cov", "pytest-tornasync", "pytest-console-scripts", "ipykernel"]
+
+[[package]]
 name = "jupyter-server-proxy"
 version = "1.5.0"
 description = "Jupyter server extension to supervise and proxy web services"
@@ -1039,21 +1095,25 @@ simpervisor = ">=0.2"
 
 [[package]]
 name = "jupyterlab"
-version = "2.2.9"
-description = "The JupyterLab notebook server extension."
+version = "3.0.4"
+description = "The JupyterLab server extension."
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
+ipython = "*"
 jinja2 = ">=2.10"
-jupyterlab-server = ">=1.1.5,<2.0"
-notebook = ">=4.3.1"
-tornado = "<6.0.0 || >6.0.0,<6.0.1 || >6.0.1,<6.0.2 || >6.0.2"
+jupyter-core = "*"
+jupyter-server = ">=1.2,<2.0"
+jupyterlab-server = ">=2.0,<3.0"
+nbclassic = ">=0.2,<1.0"
+packaging = "*"
+tornado = ">=6.1.0"
 
 [package.extras]
 docs = ["jsx-lexer", "recommonmark", "sphinx", "sphinx-rtd-theme", "sphinx-copybutton"]
-test = ["pytest", "pytest-check-links", "requests", "wheel", "virtualenv"]
+test = ["pytest (>=6.0)", "pytest-cov", "pytest-console-scripts", "pytest-check-links", "jupyterlab-server[test] (>=2.0,<3.0)", "requests", "wheel", "virtualenv", "nose-exclude"]
 
 [[package]]
 name = "jupyterlab-pygments"
@@ -1068,32 +1128,34 @@ pygments = ">=2.4.1,<3"
 
 [[package]]
 name = "jupyterlab-server"
-version = "1.2.0"
+version = "2.1.2"
 description = "JupyterLab Server"
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
+babel = "*"
 jinja2 = ">=2.10"
 json5 = "*"
 jsonschema = ">=3.0.1"
-notebook = ">=4.2.0"
+jupyter-server = ">=1.1,<2.0"
+packaging = "*"
 requests = "*"
 
 [package.extras]
-test = ["pytest", "requests"]
+test = ["codecov", "ipykernel", "pytest (>=5.3.2)", "pytest-cov", "jupyter-server", "pytest-console-scripts", "strict-rfc3339", "wheel"]
 
 [[package]]
 name = "jupytext"
-version = "1.7.1"
+version = "1.9.1"
 description = "Jupyter notebooks as Markdown documents, Julia, Python or R scripts"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = "~=3.6"
 
 [package.dependencies]
-markdown-it-py = {version = ">=0.5.2,<0.6.0", markers = "python_version >= \"3.6\""}
+markdown-it-py = ">=0.6.0,<0.7.0"
 nbformat = ">=4.0.0"
 pyyaml = "*"
 toml = "*"
@@ -1168,7 +1230,7 @@ testing = ["coverage", "pyyaml"]
 
 [[package]]
 name = "markdown-it-py"
-version = "0.5.6"
+version = "0.6.1"
 description = "Python port of markdown-it. Markdown parsing, done right!"
 category = "dev"
 optional = false
@@ -1176,11 +1238,13 @@ python-versions = "~=3.6"
 
 [package.dependencies]
 attrs = ">=19,<21"
+mdit-py-plugins = ">=0.2.1,<0.3.0"
 
 [package.extras]
 code_style = ["pre-commit (==2.6)"]
 compare = ["commonmark (>=0.9.1,<0.10.0)", "markdown (>=3.2.2,<3.3.0)", "mistune (>=0.8.4,<0.9.0)", "mistletoe-ebp (>=0.10.0,<0.11.0)", "panflute (>=1.12,<2.0)"]
-rtd = ["myst-nb (>=0.10.0,<0.11.0)", "sphinx-book-theme", "sphinx-panels (>=0.4.0,<0.5.0)", "sphinx-copybutton", "sphinx (>=2,<4)", "pyyaml"]
+linkify = ["linkify-it-py (>=1.0,<2.0)"]
+rtd = ["myst-nb (==0.11.0a1)", "sphinx-book-theme", "sphinx-panels (>=0.4.0,<0.5.0)", "sphinx-copybutton", "sphinx (>=2,<4)", "pyyaml"]
 testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions", "pytest-benchmark (>=3.2,<4.0)", "psutil"]
 
 [[package]]
@@ -1206,6 +1270,21 @@ numpy = ">=1.15"
 pillow = ">=6.2.0"
 pyparsing = ">=2.0.3,<2.0.4 || >2.0.4,<2.1.2 || >2.1.2,<2.1.6 || >2.1.6"
 python-dateutil = ">=2.1"
+
+[[package]]
+name = "mdit-py-plugins"
+version = "0.2.4"
+description = "Collection of plugins for markdown-it-py"
+category = "dev"
+optional = false
+python-versions = "~=3.6"
+
+[package.dependencies]
+markdown-it-py = ">=0.5.8,<2.0.0"
+
+[package.extras]
+code_style = ["pre-commit (==2.6)"]
+testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions"]
 
 [[package]]
 name = "mistune"
@@ -1284,6 +1363,21 @@ description = "Experimental type system extensions for programs checked with the
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "nbclassic"
+version = "0.2.6"
+description = "Jupyter Notebook as a Jupyter Server Extension."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+jupyter-server = ">=1.1,<2.0"
+notebook = "<7"
+
+[package.extras]
+test = ["pytest", "pytest-tornasync", "pytest-console-scripts"]
 
 [[package]]
 name = "nbclient"
@@ -1942,8 +2036,8 @@ python-versions = "*"
 
 [[package]]
 name = "pyviz-comms"
-version = "0.7.6"
-description = "Bidirectional communication for the PyViz ecosystem."
+version = "2.0.1"
+description = "Bidirectional communication for the HoloViz ecosystem."
 category = "main"
 optional = false
 python-versions = "*"
@@ -1952,8 +2046,8 @@ python-versions = "*"
 param = "*"
 
 [package.extras]
-all = ["flake8", "nose", "param (>=1.7.0)", "setuptools"]
-build = ["param (>=1.7.0)", "setuptools"]
+all = ["flake8", "jupyter-packaging (>=0.7.9,<0.8.0)", "jupyterlab (>=3.0,<4.0)", "nose", "setuptools"]
+build = ["setuptools", "jupyterlab (>=3.0,<4.0)", "jupyter-packaging (>=0.7.9,<0.8.0)"]
 tests = ["flake8", "nose"]
 
 [[package]]
@@ -2082,6 +2176,14 @@ description = "Python 2 and 3 compatibility utilities"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
+name = "sniffio"
+version = "1.2.0"
+description = "Sniff out which async library your code is running under"
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [[package]]
 name = "sortedcontainers"
@@ -2360,7 +2462,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "a82071ea47b8bf9c7730d783aa77abdb615a4a8bf60f06f4d142c5e6a6a5eab6"
+content-hash = "a07c3fcf9df9e3b2fc886f43cb7dd5424e5368883cb05b0a2df387aaefbc510b"
 
 [metadata.files]
 aiohttp = [
@@ -2405,6 +2507,10 @@ aiohttp = [
 alphashape = [
     {file = "alphashape-1.1.0-py2.py3-none-any.whl", hash = "sha256:d4efab9fb154ce3b992c3026a0a14482406a92913ff9057581d6087fbf88f23c"},
     {file = "alphashape-1.1.0.tar.gz", hash = "sha256:33d2bf4b7c4eeb413e071521d38535441f25218afc12a8804ac693d9e93bb94e"},
+]
+anyio = [
+    {file = "anyio-2.0.2-py3-none-any.whl", hash = "sha256:01cce0087b8fd8b6b7e629dc11505dcde02f916ce903332892cb2ae9817b597d"},
+    {file = "anyio-2.0.2.tar.gz", hash = "sha256:35075abd32cf20fd7e0be2fee3614e80b92d5392eba257c8d2f33de3df7ca237"},
 ]
 apipkg = [
     {file = "apipkg-1.5-py2.py3-none-any.whl", hash = "sha256:58587dd4dc3daefad0487f6d9ae32b4542b185e1c36db6993290e7c41ca2b47c"},
@@ -2456,6 +2562,10 @@ atomicwrites = [
 attrs = [
     {file = "attrs-20.3.0-py2.py3-none-any.whl", hash = "sha256:31b2eced602aa8423c2aea9c76a724617ed67cf9513173fd3a4f03e3a929c7e6"},
     {file = "attrs-20.3.0.tar.gz", hash = "sha256:832aa3cde19744e49938b91fea06d69ecb9e649c93ba974535d08ad92164f700"},
+]
+babel = [
+    {file = "Babel-2.9.0-py2.py3-none-any.whl", hash = "sha256:9d35c22fcc79893c3ecc85ac4a56cde1ecf3f19c540bba0922308a6c06ca6fa5"},
+    {file = "Babel-2.9.0.tar.gz", hash = "sha256:da031ab54472314f210b0adcff1588ee5d1d1d0ba4dbd07b94dba82bde791e05"},
 ]
 backcall = [
     {file = "backcall-0.2.0-py2.py3-none-any.whl", hash = "sha256:fbbce6a29f263178a1f7915c1940bde0ec2b2a967566fe1c65c1dfb7422bd255"},
@@ -2635,7 +2745,8 @@ dask-cuda = [
     {file = "dask_cuda-0.17.0-py3-none-any.whl", hash = "sha256:93a494f53633c8a3c79083ca5f3faf9b8d98bdc3835f16f16230b1cdcf14ac22"},
 ]
 dask-labextension = [
-    {file = "dask_labextension-4.0.1.tar.gz", hash = "sha256:131adfc9afa10ffaffa6ac5d120fcf47ff572db1cf11392c29aa457094b1b921"},
+    {file = "dask_labextension-5.0.0-py3-none-any.whl", hash = "sha256:b186b518721bfc57a800f418641245b5333e19645ee8ce4dad3557f354d04ea4"},
+    {file = "dask_labextension-5.0.0.tar.gz", hash = "sha256:f6045d6f4ee41bf0f50cbb013b9043c82e527f8726e6c61681265e553d4726c8"},
 ]
 datashader = [
     {file = "datashader-0.11.1-py2.py3-none-any.whl", hash = "sha256:83f2fdbcbf92a57979d5ad2b55d5fe3582248de8b28a6411b5311f722725af0d"},
@@ -2830,25 +2941,29 @@ jupyter-core = [
     {file = "jupyter_core-4.7.0-py3-none-any.whl", hash = "sha256:0a451c9b295e4db772bdd8d06f2f1eb31caeec0e81fbb77ba37d4a3024e3b315"},
     {file = "jupyter_core-4.7.0.tar.gz", hash = "sha256:aa1f9496ab3abe72da4efe0daab0cb2233997914581f9a071e07498c6add8ed3"},
 ]
+jupyter-server = [
+    {file = "jupyter_server-1.2.1-py3-none-any.whl", hash = "sha256:27d0f7e28bf356d4e016b9a5bdc179321b7df5ad48ed9098aa0a963ddb06e498"},
+    {file = "jupyter_server-1.2.1.tar.gz", hash = "sha256:5c55bdd098159f3e57faad102fa91de5b3f2f46ca8be01ad3d289e85a5beba9c"},
+]
 jupyter-server-proxy = [
     {file = "jupyter-server-proxy-1.5.0.tar.gz", hash = "sha256:5576248f44e8ee05317050f03503d3b775d188818ab3bdab6133b1df2279c1c2"},
     {file = "jupyter_server_proxy-1.5.0-py3-none-any.whl", hash = "sha256:f8055e9cf33fec68f1f1bf497a2b786e815db7b738a6f561680752532c08ac77"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-2.2.9-py3-none-any.whl", hash = "sha256:59af02c26a15ec2d2862a15bc72e41ae304b406a0b0d3f4f705eeb7caf91902b"},
-    {file = "jupyterlab-2.2.9.tar.gz", hash = "sha256:3be8f8edea173753dd838c1b6d3bbcb6f5c801121f824a477025c1b6a1d33dc6"},
+    {file = "jupyterlab-3.0.4-py3-none-any.whl", hash = "sha256:b6f25f46ca369c969ced21535e50ee6f2544bcfa3f2917a8c3e62b430e73b3b0"},
+    {file = "jupyterlab-3.0.4.tar.gz", hash = "sha256:c70a638907a1cdad499fe39b3388a1dbce257ab4e76b05d08c9791b94ad79b94"},
 ]
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
     {file = "jupyterlab_pygments-0.1.2.tar.gz", hash = "sha256:cfcda0873626150932f438eccf0f8bf22bfa92345b814890ab360d666b254146"},
 ]
 jupyterlab-server = [
-    {file = "jupyterlab_server-1.2.0-py3-none-any.whl", hash = "sha256:55d256077bf13e5bc9e8fbd5aac51bef82f6315111cec6b712b9a5ededbba924"},
-    {file = "jupyterlab_server-1.2.0.tar.gz", hash = "sha256:5431d9dde96659364b7cc877693d5d21e7b80cea7ae3959ecc2b87518e5f5d8c"},
+    {file = "jupyterlab_server-2.1.2-py3-none-any.whl", hash = "sha256:8e9f35ac7ac411d0c94b66e7d72ca1ef7f2d33ab78090523adcfa42afe862940"},
+    {file = "jupyterlab_server-2.1.2.tar.gz", hash = "sha256:a71ebeb89eb2ab49eca41768f9840bb6896c264203ea755990313d4dfa610a74"},
 ]
 jupytext = [
-    {file = "jupytext-1.7.1-py3-none-any.whl", hash = "sha256:e48f57afdc807cc2d2920bd6ae18455264db78b1fc78061ad70dcc26dc45a2cb"},
-    {file = "jupytext-1.7.1.tar.gz", hash = "sha256:23123b90c267c67716fe6a022dfae49b84fd3809370d83211f2920eb3106bf40"},
+    {file = "jupytext-1.9.1-py3-none-any.whl", hash = "sha256:fc79de8d76ab75aa768a8f6316db020c9dc3b8a602af7077aaafedb40842c881"},
+    {file = "jupytext-1.9.1.tar.gz", hash = "sha256:d10e6826125e203c2c70b93f04768944cd86d110bd69dc8e247ece5d06174d63"},
 ]
 kiwisolver = [
     {file = "kiwisolver-1.3.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:fd34fbbfbc40628200730bc1febe30631347103fc8d3d4fa012c21ab9c11eca9"},
@@ -2953,8 +3068,8 @@ markdown = [
     {file = "Markdown-3.3.3.tar.gz", hash = "sha256:5d9f2b5ca24bc4c7a390d22323ca4bad200368612b5aaa7796babf971d2b2f18"},
 ]
 markdown-it-py = [
-    {file = "markdown-it-py-0.5.6.tar.gz", hash = "sha256:6143d11221495edbf71beb7e455821ae6c8f0156710a1b11812662ed6dbd165b"},
-    {file = "markdown_it_py-0.5.6-py3-none-any.whl", hash = "sha256:dcfe4a0c6bef711cb6c42494ebf23a3cfe6f249bf995556498497dd8193bfc22"},
+    {file = "markdown-it-py-0.6.1.tar.gz", hash = "sha256:3ef7346879c931684500cf2ec35c2545b617dd49e8ce3ea4287bb66405913c1a"},
+    {file = "markdown_it_py-0.6.1-py3-none-any.whl", hash = "sha256:f22808fed0fd5c006c5c1626ea4e6c68123d5af54eb54712af77a4c57ad34ebc"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -3017,6 +3132,10 @@ matplotlib = [
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:746897fbd72bd462b888c74ed35d812ca76006b04f717cd44698cdfc99aca70d"},
     {file = "matplotlib-3.3.3-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:5ed3d3342698c2b1f3651f8ea6c099b0f196d16ee00e33dc3a6fee8cb01d530a"},
     {file = "matplotlib-3.3.3.tar.gz", hash = "sha256:b1b60c6476c4cfe9e5cf8ab0d3127476fd3d5f05de0f343a452badaad0e4bdec"},
+]
+mdit-py-plugins = [
+    {file = "mdit-py-plugins-0.2.4.tar.gz", hash = "sha256:e7db0de4a3466941faa433f77a98d09a09a0b877e79eace79506fd0d083e490f"},
+    {file = "mdit_py_plugins-0.2.4-py3-none-any.whl", hash = "sha256:f13ad035e977db0dd268af4a372716f3b555f1435f9623b4aed10c3c8bbf618c"},
 ]
 mistune = [
     {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},
@@ -3101,6 +3220,10 @@ munch = [
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
+]
+nbclassic = [
+    {file = "nbclassic-0.2.6-py3-none-any.whl", hash = "sha256:0248333262d6f90c2fbe05aacb4f008f1d71b5250a9f737488e0a03cfa1c6ed5"},
+    {file = "nbclassic-0.2.6.tar.gz", hash = "sha256:b649436ff85dc731ba8115deef089e5abbe827d7a6dccbad42c15b8d427104e8"},
 ]
 nbclient = [
     {file = "nbclient-0.5.1-py3-none-any.whl", hash = "sha256:4d6b116187c795c99b9dba13d46e764d596574b14c296d60670c8dfe454db364"},
@@ -3468,8 +3591,8 @@ pytz = [
     {file = "pytz-2020.4.tar.gz", hash = "sha256:3e6b7dd2d1e0a59084bcee14a17af60c5c562cdc16d828e8eba2e683d3a7e268"},
 ]
 pyviz-comms = [
-    {file = "pyviz_comms-0.7.6-py2.py3-none-any.whl", hash = "sha256:34061314830765a14fe2f445b83b83021d2a1207eccbecc8835c3219a72b6ba5"},
-    {file = "pyviz_comms-0.7.6.tar.gz", hash = "sha256:cd9649a9ea9dfcb9b34d78f9a64e1870aa8b6b94de546e2c99c6bb53d64ab5d1"},
+    {file = "pyviz_comms-2.0.1-py2.py3-none-any.whl", hash = "sha256:cb464384d3ee130169f2eb52c262c8377615a46c92ce3f2a620394d92c2dbc9b"},
+    {file = "pyviz_comms-2.0.1.tar.gz", hash = "sha256:be63957a49772895ddebeac02c697e1675e0bdf1515824f60fcc261914f23624"},
 ]
 pywin32 = [
     {file = "pywin32-300-cp35-cp35m-win32.whl", hash = "sha256:1c204a81daed2089e55d11eefa4826c05e604d27fe2be40b6bf8db7b6a39da63"},
@@ -3667,6 +3790,10 @@ simpervisor = [
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
+]
+sniffio = [
+    {file = "sniffio-1.2.0-py3-none-any.whl", hash = "sha256:471b71698eac1c2112a40ce2752bb2f4a4814c22a54a3eed3676bc0f5ca9f663"},
+    {file = "sniffio-1.2.0.tar.gz", hash = "sha256:c4666eecec1d3f50960c6bdf61ab7bc350648da6c126e3cf6898d8cd4ddcd3de"},
 ]
 sortedcontainers = [
     {file = "sortedcontainers-2.3.0-py2.py3-none-any.whl", hash = "sha256:37257a32add0a3ee490bb170b599e93095eed89a55da91fa9f48753ea12fd73f"},
