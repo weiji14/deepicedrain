@@ -464,7 +464,7 @@ jupyterlab = ">=3.0.0"
 
 [[package]]
 name = "datashader"
-version = "0.11.1"
+version = "0.12.0"
 description = "Data visualization toolchain based on aggregating into a grid"
 category = "main"
 optional = false
@@ -480,17 +480,17 @@ numpy = ">=1.7"
 pandas = ">=0.24.1"
 param = ">=1.6.0"
 pillow = ">=3.1.1"
-pyct = {version = "0.4.6", extras = ["cmd"]}
+pyct = ">=0.4.4"
 scipy = "*"
 toolz = ">=0.7.4"
 xarray = ">=0.9.6"
 
 [package.extras]
-all = ["pytest-benchmark (>=3.0.0)", "pytest-cov", "python-graphviz", "python-snappy", "rasterio", "scikit-image", "snappy", "sphinx-holoviz-theme", "statsmodels", "streamz (>=0.2.0)", "codecov", "distributed", "fastparquet", "fastparquet (>=0.1.6)", "flake8", "graphviz", "holoviews (>=1.10.0)", "matplotlib", "nbsite (>=0.5.2)", "nbsmoke[all] (>=0.4.0)", "networkx (>=2.0)", "numpydoc", "pyarrow", "pytest (>=3.9.3,<6.0)", "tornado"]
+all = ["codecov", "distributed", "fastparquet", "fastparquet (>=0.1.6)", "flake8", "graphviz", "holoviews (>=1.10.0)", "ipympl", "keyring", "matplotlib", "nbconvert (<6)", "nbsite (>=0.5.2)", "nbsmoke[all] (>=0.4.0)", "netcdf4", "networkx (>=2.0)", "numpydoc", "pyarrow", "pytest (>=3.9.3,<6.0)", "pytest-benchmark (>=3.0.0)", "pytest-cov", "python-graphviz", "python-snappy", "rasterio", "rfc3986", "scikit-image", "snappy", "spatialpandas", "sphinx-holoviz-theme", "statsmodels", "streamz (>=0.2.0)", "tornado", "twine"]
 doc = ["distributed", "holoviews (>=1.10.0)", "scikit-image", "matplotlib", "networkx (>=2.0)", "streamz (>=0.2.0)", "graphviz", "python-graphviz", "fastparquet", "python-snappy", "rasterio", "snappy", "statsmodels", "nbsite (>=0.5.2)", "sphinx-holoviz-theme", "tornado", "numpydoc"]
 examples = ["distributed", "holoviews (>=1.10.0)", "scikit-image", "matplotlib"]
 examples_extra = ["distributed", "holoviews (>=1.10.0)", "scikit-image", "matplotlib", "networkx (>=2.0)", "streamz (>=0.2.0)", "graphviz", "python-graphviz", "fastparquet", "python-snappy", "rasterio", "snappy", "statsmodels"]
-tests = ["pytest (>=3.9.3,<6.0)", "pytest-benchmark (>=3.0.0)", "pytest-cov", "codecov", "flake8", "nbsmoke[all] (>=0.4.0)", "fastparquet (>=0.1.6)", "holoviews (>=1.10.0)", "pyarrow"]
+tests = ["pytest (>=3.9.3,<6.0)", "pytest-benchmark (>=3.0.0)", "pytest-cov", "codecov", "flake8", "nbconvert (<6)", "nbsmoke[all] (>=0.4.0)", "fastparquet (>=0.1.6)", "holoviews (>=1.10.0)", "pyarrow", "netcdf4", "twine", "rfc3986", "keyring", "spatialpandas", "ipympl"]
 
 [[package]]
 name = "datashape"
@@ -1830,8 +1830,6 @@ python-versions = ">=2.7"
 
 [package.dependencies]
 param = ">=1.7.0"
-pyyaml = {version = "*", optional = true, markers = "extra == \"cmd\""}
-requests = {version = "*", optional = true, markers = "extra == \"cmd\""}
 
 [package.extras]
 cmd = ["pyyaml", "requests"]
@@ -2462,7 +2460,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "7c105275bfbc214e5d0a34692bae223fe753bfc4dbeaf046528a4e6aea72770d"
+content-hash = "ffaa703b76cc742de5d1164125d387f91e7236cf9819d0f086e016cd93c16cdb"
 
 [metadata.files]
 aiohttp = [
@@ -2749,8 +2747,8 @@ dask-labextension = [
     {file = "dask_labextension-5.0.0.tar.gz", hash = "sha256:f6045d6f4ee41bf0f50cbb013b9043c82e527f8726e6c61681265e553d4726c8"},
 ]
 datashader = [
-    {file = "datashader-0.11.1-py2.py3-none-any.whl", hash = "sha256:83f2fdbcbf92a57979d5ad2b55d5fe3582248de8b28a6411b5311f722725af0d"},
-    {file = "datashader-0.11.1.tar.gz", hash = "sha256:b1f80415f72f92ccb660aaea7b2881ddd35d07254f7c44101709d42e819d6be6"},
+    {file = "datashader-0.12.0-py2.py3-none-any.whl", hash = "sha256:ca71bec34f9339ce6c30ad3652ae796743cc6c406ce728526c8ef9701a49a88e"},
+    {file = "datashader-0.12.0.tar.gz", hash = "sha256:0a757a9deddc6ccb68554043a977f89f7b6510ccee2a9ec7f09bbb42bce7f5eb"},
 ]
 datashape = [
     {file = "datashape-0.5.2.tar.gz", hash = "sha256:2356ea690c3cf003c1468a243a9063144235de45b080b3652de4f3d44e57d783"},
