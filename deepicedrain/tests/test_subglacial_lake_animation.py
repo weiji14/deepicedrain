@@ -5,7 +5,6 @@ Feature tests for animating Active Subglacial Lakes in Antactica.
 import os
 import subprocess
 
-import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pygmt
@@ -91,6 +90,31 @@ def visualize_grid_in_3D(
 
     print(f"Elevation limits are: {z_limits}")
 
+    # %%
+    # 3D plot of mean ice surface elevation (<z>) and rate of ice elevation change (dhdt)
+    fig = deepicedrain.plot_icesurface(
+        grid=f"figures/{context.placename}/xyht_{context.placename}.nc?z_mean",
+        grid_region=grid_region,
+        diff_grid=f"figures/{context.placename}/xyht_{context.placename}.nc?dhdt",
+        track_points=context.track_points.to_numpy(),
+        outline_points=context.outline_points,
+        azimuth=azimuth,
+        elevation=elevation,
+        title=f"{context.region.name} Ice Surface",
+    )
+    # Plot crossing transect line
+    if hasattr(context, "df_transect"):
+        fig.plot3d(
+            data=context.df_transect[["x", "y", "h_corr"]].to_numpy(),
+            color="yellow2",
+            style="c0.1c",
+            zscale=True,
+            perspective=True,
+        )
+    fig.savefig(
+        f"figures/{context.placename}/dsm_{context.placename}_cycles_{context.cycles[0]}-{context.cycles[-1]}.png"
+    )
+
     # 3D plots of gridded ice surface elevation over time
     for cycle in tqdm.tqdm(iterable=context.cycles):
         time_nsec: pd.Timestamp = df_lake[f"utc_time_{cycle}"].mean()
@@ -132,7 +156,7 @@ def animated_dsm_gif(context) -> str:
             "120",
             "-loop",
             "0",
-            f"figures/{context.placename}/dsm_*.png",
+            f"figures/{context.placename}/dsm_*cycle_*.png",
             gif_fname,
         ]
     )

@@ -330,12 +330,12 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(
 
 # %%
 # Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
-lake_name: str = "Subglacial Lake Conway"
+lake_name: str = "Lake 12"
 lake_catalog = deepicedrain.catalog.subglacial_lakes()
-lake_ids: list = (
+lake_ids, transect_id = (
     pd.json_normalize(lake_catalog.metadata["lakedict"])
-    .query("lakename == @lake_name")
-    .ids.iloc[0]
+    .query("lakename == @lake_name")[["ids", "transect"]]
+    .iloc[0]
 )
 lake = (
     lake_catalog.read()
@@ -354,6 +354,24 @@ lake.geometry
 # Subset data to lake of interest
 placename: str = region.name.lower().replace(" ", "_")
 df_lake: cudf.DataFrame = region.subset(data=df_dhdt)
+# Get all raw xyz points and one transect line dataframe
+track_dict: dict = deepicedrain.split_tracks(df=df_lake.to_pandas())
+track_points: pd.DataFrame = (
+    pd.concat(track_dict.values())
+    .groupby(by=["x", "y"])
+    .mean()  # z value is mean h_corr over all cycles
+    .reset_index()[["x", "y", "h_corr"]]
+)
+try:
+    _rgt, _pt = transect_id.split("_")
+    df_transect: pd.DataFrame = (
+        track_dict[transect_id][["x", "y", "h_corr", "cycle_number"]]
+        .groupby(by=["x", "y"])
+        .max()  # z value is maximum h_corr over all cycles
+        .reset_index()
+    )
+except AttributeError:
+    pass
 
 # Save lake outline to OGR GMT file format
 outline_points: str = f"figures/{placename}/{placename}.gmt"
@@ -390,7 +408,30 @@ diff_grid_region: np.ndarray = np.append(arr=grid_region[:4], values=z_diff_limi
 print(f"Elevation limits are: {z_limits}")
 
 # %%
-# 3D plots of gridded ice surface elevation over time
+# 3D plot of mean ice surface elevation (<z>) and rate of ice elevation change (dhdt)
+fig = deepicedrain.plot_icesurface(
+    grid=f"figures/{placename}/xyht_{placename}.nc?z_mean",
+    grid_region=grid_region,
+    diff_grid=f"figures/{placename}/xyht_{placename}.nc?dhdt",
+    track_points=track_points.to_numpy(),
+    outline_points=outline_points,
+    azimuth=157.5,  # 202.5  # 270
+    elevation=45,  # 60
+    title=f"{region.name} Ice Surface",
+)
+# Plot crossing transect line
+fig.plot3d(
+    data=df_transect[["x", "y", "h_corr"]].to_numpy(),
+    color="yellow2",
+    style="c0.1c",
+    zscale=True,
+    perspective=True,
+)
+fig.savefig(f"figures/{placename}/dsm_{placename}_cycles_{cycles[0]}-{cycles[-1]}.png")
+fig.show()
+
+# %%
+# 3D plots of gridded ice surface elevation over time (one per cycle)
 for cycle in tqdm.tqdm(iterable=cycles):
     time_nsec: pd.Timestamp = df_lake[f"utc_time_{cycle}"].to_pandas().mean()
     time_sec: str = np.datetime_as_string(arr=time_nsec.to_datetime64(), unit="s")
@@ -423,7 +464,7 @@ subprocess.check_call(
         "120",
         "-loop",
         "0",
-        f"figures/{placename}/dsm_*.png",
+        f"figures/{placename}/dsm_*cycle_*.png",
         gif_fname,
     ]
 )

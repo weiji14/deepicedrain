@@ -5,6 +5,7 @@ in Antactica.
 import itertools
 
 import dask
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pint
@@ -38,6 +39,14 @@ def test_subglacial_lake_anomalies():
 def crossover_height_anomaly(
     df_lake: pd.DataFrame, client: dask.distributed.Client, context
 ) -> pd.DataFrame:
+
+    # Subset data to lake of interest
+    gdf_lake = gpd.GeoDataFrame(
+        df_lake, geometry=gpd.points_from_xy(x=df_lake.x, y=df_lake.y, crs=3031)
+    )
+    df_lake: pd.DataFrame = df_lake.loc[
+        gdf_lake.within(context.lake.geometry)
+    ]  # polygon subset
 
     # Run crossover analysis on all tracks
     track_dict: dict = deepicedrain.split_tracks(df=df_lake)
