@@ -9,7 +9,6 @@ dependencies:
   - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
   - conda-forge/label/dev::gmt=6.2.0.dev4+92c5676[md5=a60d72bf5a32f10e96c4ad23df5e8f28]
   - conda-forge::gxx_linux-64=7.5.0[md5=36f3b65563c9264b6d1e04369f0456ba]
-  - conda-forge::nodejs=13.13.0[md5=cf25f8cee7aad7f417980872d34d8fd6]
   - conda-forge::parallel=20200522[md5=8fa06db0afc1e7b1f136277557a4b65e]
   - conda-forge::pip=20.3.1[md5=bd6aa73eed4afc399688200778a609f6]
   - conda-forge::poetry=1.1.4[md5=b5667d3b89efebef72ceca2809fddb87]
