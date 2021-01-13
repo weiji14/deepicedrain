@@ -1749,8 +1749,8 @@ scipy = "*"
 [package.source]
 type = "git"
 url = "https://github.com/SmithB/pointCollection.git"
-reference = "1f6e98fa4156f883ca6a9b2977046f09af23589f"
-resolved_reference = "1f6e98fa4156f883ca6a9b2977046f09af23589f"
+reference = "c31939ea70eeffdc1b00ffe9cd574c67c8fc6062"
+resolved_reference = "c31939ea70eeffdc1b00ffe9cd574c67c8fc6062"
 
 [[package]]
 name = "prometheus-client"
@@ -2462,7 +2462,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "a07c3fcf9df9e3b2fc886f43cb7dd5424e5368883cb05b0a2df387aaefbc510b"
+content-hash = "7c105275bfbc214e5d0a34692bae223fe753bfc4dbeaf046528a4e6aea72770d"
 
 [metadata.files]
 aiohttp = [

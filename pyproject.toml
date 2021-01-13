@@ -28,7 +28,7 @@ matplotlib = "^3.3.3"
 numcodecs = "^0.7.2"
 Pint = "^0.16.1"
 Pint-Pandas = "^0.1"
-pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "1f6e98fa4156f883ca6a9b2977046f09af23589f"}
+pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "c31939ea70eeffdc1b00ffe9cd574c67c8fc6062"}
 pyarrow = "1.0.1"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
