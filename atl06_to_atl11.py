@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.9.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -23,6 +23,7 @@
 # %%
 import os
 import glob
+import shutil
 import sys
 import subprocess
 
@@ -42,39 +43,65 @@ import zarr
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
-client = dask.distributed.Client(n_workers=72, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=10, threads_per_worker=1)
 client
 
+# %% [markdown]
+# ## Download ATL11 from [NSIDC](https://doi.org/10.5067/ATLAS/ATL11.002) up to cycle 8
+
 # %%
-def first_last_cycle_numbers(referencegroundtrack: int, orbitalsegment: int):
-    """
-    Obtain the first and last cycle numbers for an ATL06 track, given the
-    reference ground track and orbital segment number as input.
-    """
-    files = glob.glob(
-        f"ATL06.003/**/ATL06*_*_{referencegroundtrack:04d}??{orbitalsegment:02d}_*.h5"
-    )
+# Submit download jobs to Client
+catalog = intake.open_catalog("deepicedrain/atlas_catalog.yaml")
+with open(file="ATL11_to_download.txt", mode="r") as f:
+    urlpaths = f.readlines()
+dates: set = set(url.split("/")[-2] for url in urlpaths)
+len(dates)
 
-    first_cycle = min(files)[-14:-12]  # e.g. '02'
-    last_cycle = max(files)[-14:-12]  # e.g. '07'
+# %%
+# Submit download jobs to Client
+futures = []
+for date in dates:
+    # date = "2019.11.01"  # sorted(dates)[-1]
+    source = catalog.icesat2atl11(date=date)
+    future = client.submit(
+        func=source.discover, key=f"download-{date}"
+    )  # triggers download of the file(s), or loads from cache
+    futures.append(future)
+    # break
+    # source.urlpath
 
-    return first_cycle, last_cycle
+# %%
+# Check download progress here, https://stackoverflow.com/a/37901797/6611055
+responses = []
+for f in tqdm.tqdm(
+    iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
+):
+    responses.append(f.result())
 
+
+# %%
+
+# %% [markdown]
+# ## Process ATL06 to ATL11 for cycle 9 or newer
 
 # %%
 # Create ATL06_to_ATL11 processing script, if not already present
 if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
-    # find first and last cycles for each reference ground track and each orbital segment
+    # find last cycle for each reference ground track and each orbital segment
+    last_cycle_func = lambda rgt, ost: int(
+        max(glob.glob(f"ATL06.003/**/ATL06*_*_{rgt:04d}??{ost:02d}_*.h5"))[-14:-12]
+    )
     futures = []
-    for referencegroundtrack in range(1387, 0, -1):
-        for orbitalsegment in [10, 11, 12]:  # loop through Antarctic orbital segments
-            cyclenums = client.submit(
-                first_last_cycle_numbers,
-                referencegroundtrack,
-                orbitalsegment,
-                key=f"{referencegroundtrack:04d}-{orbitalsegment}",
-            )
-            futures.append(cyclenums)
+    for referencegroundtrack, orbitalsegment in itertools.product(
+        range(1387, 0, -1), [10, 11, 12]
+    ):
+        cyclenum = client.submit(
+            last_cycle_func,
+            referencegroundtrack,
+            orbitalsegment,
+            key=f"{referencegroundtrack:04d}-{orbitalsegment}",
+        )
+        futures.append(cyclenum)
 
     # Prepare string to write into ATL06_to_ATL11_Antarctica.sh bash script
     writelines = []
@@ -82,15 +109,24 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
         iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
     ):
         referencegroundtrack, orbitalsegment = f.key.split("-")
-        first_cycle, last_cycle = f.result()
-        writelines.append(
-            f"python3 ATL11/ATL06_to_ATL11.py"
-            f" {referencegroundtrack} {orbitalsegment}"
-            f" --cycles {first_cycle} {last_cycle}"
-            f" --Release 3"
-            f" --directory 'ATL06.003/**/'"
-            f" --out_dir ATL11.001\n"
-        )
+        last_cycle = f.result()
+        if last_cycle > 8:  # Only process those with Cycle 9 and newer locally
+            writelines.append(
+                f"python3 ATL11/ATL06_to_ATL11.py"
+                f" {referencegroundtrack} {orbitalsegment}"
+                f" --cycles 03 {last_cycle:02d}"
+                f" --Release 2"
+                f" --directory 'ATL06.003/**/'"
+                f" --out_dir ATL11.002\n"
+            )
+            fname = f"ATL11_{referencegroundtrack}{orbitalsegment}_0308_002_01.h5"
+            if not os.path.exists(f"ATL11.002/official/{fname}"):
+                try:
+                    shutil.move(src=f"ATL11.002/{fname}", dst="ATL11.002/official")
+                except FileNotFoundError:
+                    pass
+        # else:  # Just use official NSIDC version for Cycle 8 or older
+        # pass
     writelines.sort()  # sort writelines in place
 
     # Finally create the bash script
@@ -129,10 +165,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 #         - Attributes (longitude, latitude, h_corr, delta_time, etc)
 
 # %%
-# for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
-#     name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
-
-max_cycles: int = max(int(f[-11:-10]) for f in glob.glob("ATL11.001/*.h5"))
+max_cycles: int = max(int(f[-11:-10]) for f in glob.glob("ATL11.002/*.h5"))
 print(f"{max_cycles} ICESat-2 cycles available")
 
 # %%
@@ -143,7 +176,7 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
     - Mask values using _FillValue ??
     - Convert attribute format from binary to str
     """
-    ds = xr.open_dataset(
+    ds: xr.Dataset = xr.open_dataset(
         filename_or_obj=atl11file, group=group, engine="h5netcdf", mask_and_scale=True
     )
 
@@ -170,7 +203,7 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
 # Also consolidate all three laser pairs pt1, pt2, pt3 into one file
 atl11_dict = {}
 for rgt in tqdm.trange(1387):
-    atl11files: list = glob.glob(f"ATL11.001/ATL11_{rgt+1:04d}1?_????_00?_0?.h5")
+    atl11files: list = glob.glob(f"ATL11.002/ATL11_{rgt+1:04d}1?_????_00?_0?.h5")
 
     try:
         assert len(atl11files) == 3  # Should be 3 files for Orbital Segments 10,11,12
@@ -183,10 +216,10 @@ for rgt in tqdm.trange(1387):
 
     if atl11files:
         pattern: dict = intake.source.utils.reverse_format(
-            format_string="ATL11.001/ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5",
+            format_string="ATL11.002/ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5",
             resolved_string=sorted(atl11files)[1],  # get the '11' one, not '10' or '12'
         )
-        zarrfilepath: str = "ATL11.001z123/ATL11_{referencegroundtrack}1x_{cycles}_{version}_{revision}.zarr".format(
+        zarrfilepath: str = "ATL11.002z123/ATL11_{referencegroundtrack}1x_{cycles}_{version}_{revision}.zarr".format(
             **pattern
         )
         atl11_dict[zarrfilepath] = atl11files
@@ -253,11 +286,11 @@ ds.h_corr.__array__().shape
 # %% [raw]
 # # Note, this raw conversion below takes about 11 hours
 # # because HDF5 files work on a single thread...
-# for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.001/*.h5"))):
+# for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.002/*.h5"))):
 #     name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
 #     zarr.convenience.copy_all(
 #         source=h5py.File(name=atl11file, mode="r"),
-#         dest=zarr.open_group(store=f"ATL11.001z/{name}.zarr", mode="w"),
+#         dest=zarr.open_group(store=f"ATL11.002z/{name}.zarr", mode="w"),
 #         if_exists="skip",
 #         without_attrs=True,
 #     )
