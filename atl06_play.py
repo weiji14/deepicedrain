@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.9.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -87,7 +87,7 @@ except FileNotFoundError as error_msg:
     raise
 
 # data download will depend on having a .netrc file in home folder
-dataset = catalog.icesat2atl06.to_dask().unify_chunks()
+dataset: xr.Dataset = catalog.icesat2atl06.to_dask().unify_chunks()
 print(dataset)
 
 # %%
@@ -117,9 +117,9 @@ catalog.icesat2atl06.hvplot.quickview()
 # Download all ICESAT2 ATLAS hdf files from start to end date
 dates1 = pd.date_range(start="2018.10.14", end="2018.12.08")  # 1st batch
 dates2 = pd.date_range(start="2018.12.10", end="2019.06.26")  # 2nd batch
-dates3 = pd.date_range(start="2019.07.26", end="2020.05.13")  # 3rd batch
+dates3 = pd.date_range(start="2019.07.26", end="2020.11.11")  # 3rd batch
 dates = dates1.append(other=dates2).append(other=dates3)
-# dates = pd.date_range(start="2020.07.16", end="2020.09.30")  # custom batch
+# dates = pd.date_range(start="2020.09.30", end="2020.11.11")  # custom batch
 
 # %%
 # Submit download jobs to Client
@@ -374,61 +374,7 @@ dfs.hvplot.scatter(x="x", y="h_li", by="laser")
 # ## Experimental Work-in-Progress stuff below
 
 # %% [markdown]
-# ### Old way of making a DEM grid surface from points
-
-# %%
-import scipy
-
-
-# %%
-# https://github.com/ICESAT-2HackWeek/gridding/blob/master/notebook/utils.py#L23
-def make_grid(xmin, xmax, ymin, ymax, dx, dy):
-    """Construct output grid-coordinates."""
-
-    # Setup grid dimensions
-    Nn = int((np.abs(ymax - ymin)) / dy) + 1
-    Ne = int((np.abs(xmax - xmin)) / dx) + 1
-
-    # Initiate x/y vectors for grid
-    x_i = np.linspace(xmin, xmax, num=Ne)
-    y_i = np.linspace(ymin, ymax, num=Nn)
-
-    return np.meshgrid(x_i, y_i)
-
-
-# %%
-xi, yi = make_grid(
-    xmin=dfs.x.min(), xmax=dfs.x.max(), ymin=dfs.y.max(), ymax=dfs.y.min(), dx=10, dy=10
-)
-
-# %%
-ar = scipy.interpolate.griddata(points=(dfs.x, dfs.y), values=dfs.h_li, xi=(xi, yi))
-
-# %%
-plt.imshow(ar, extent=(dfs.x.min(), dfs.x.max(), dfs.y.min(), dfs.y.max()))
-
-# %%
-
-# %%
-import plotly.express as px
-
-# %%
-px.scatter_3d(data_frame=dfs, x="longitude", y="latitude", z="h_li", color="laser")
-
-# %%
-
-# %% [markdown]
 # ### Play using XrViz
-#
-# Install the PyViz JupyterLab extension first using the [extension manager](https://jupyterlab.readthedocs.io/en/stable/user/extensions.html#using-the-extension-manager) or via the command below:
-#
-# ```bash
-# jupyter labextension install @pyviz/jupyterlab_pyviz@v0.8.0 --no-build
-# jupyter labextension list  # check to see that extension is installed
-# jupyter lab build --debug  # build extension ??? with debug messages printed
-# ```
-#
-# Note: Had to add `network-timeout 600000` to `.yarnrc` file to resolve university network issues.
 
 # %%
 import xrviz

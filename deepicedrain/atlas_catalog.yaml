@@ -26,9 +26,9 @@ sources:
       date:
         description: Year, month, and day of data acquisition
         type: datetime
-        default: 2020.09.30
+        default: 2020.11.11
         min: 2018.10.14
-        max: 2020.09.30  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
+        max: 2020.11.11  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
       orbitalsegment:
         description: Orbital Segment
         type: list
@@ -50,7 +50,7 @@ sources:
       chunks:
         delta_time: 50000
       path_as_pattern: ATL06_{datetime:%Y%m%d%H%M%S}_{referencegroundtrack:4}{cyclenumber:2}{orbitalsegment:2}_{version:3}_{revision:2}.h5
-      # urlpath: https://n5eil02u.ecs.nsidc.org/opendap/hyrax/ATLAS/ATL06.003/{{date.strftime("%Y.%m.%d")}}/ATL06_*_*{{orbitalsegment}}_003_01.h5
+      # urlpath: simplecache::s3://its-live-data.jpl.nasa.gov/icesat2/alt06/rel00{{version}}/ATL06_{{date.strftime("%Y%m%d")}}*_{{referencegroundtrack}}*{{orbitalsegment}}_00{{version}}_0*.h5
       urlpath: simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL06.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL06_*_{{referencegroundtrack}}*{{orbitalsegment}}_00{{version}}_0*.h5
       xarray_kwargs:
         combine: by_coords
@@ -59,6 +59,8 @@ sources:
         mask_and_scale: true
         parallel: true
       storage_options:
+        # s3:
+        #   anon: True
         simplecache:
           cache_storage: ATL06.00{{version}}/{{date.strftime("%Y.%m.%d")}}
           same_names: True
@@ -67,9 +69,9 @@ sources:
         date:
           description: Year, month, and day of data acquisition
           type: datetime
-          default: 2020.09.30
+          default: 2020.11.11
           min: 2018.10.14
-          max: 2020.09.30  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
+          max: 2020.11.11  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
         referencegroundtrack:
           description: ICESat-2 Reference Ground Track number
           type: str
@@ -97,6 +99,61 @@ sources:
           x: longitude
           y: latitude
           c: h_li
+          cmap: Blues
+          rasterize: True
+          hover: True
+          width: 800
+          height: 500
+          geo: True
+          coastline: True
+  icesat2atl11:
+    description: 'Reads in ICESat-2 ATL11 data into an xarray.Dataset, one laser pair at a time'
+    args:
+      path_as_pattern: ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{}_{version:3}_{revision:2}.h5
+      urlpath:
+        - simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL11.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL11_*{{referencegroundtrack}}10_*_00{{version}}_0*.h5
+        - simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL11.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL11_*{{referencegroundtrack}}11_*_00{{version}}_0*.h5
+        - simplecache::https://n5eil01u.ecs.nsidc.org/ATLAS/ATL11.00{{version}}/{{date.strftime("%Y.%m.%d")}}/ATL11_*{{referencegroundtrack}}12_*_00{{version}}_0*.h5
+      xarray_kwargs:
+        combine: nested
+        concat_dim: ""
+        engine: h5netcdf
+        group: /{{laser}} # /{{laser}}/ref_surf
+        mask_and_scale: true
+        parallel: true
+      storage_options:
+        simplecache:
+          cache_storage: ATL11.00{{version}}
+          same_names: True
+    parameters:
+        date:
+          description: Year, month, and day of data acquisition
+          type: datetime
+          default: 2020.03.11
+          min: 2019.03.29
+          max: 2020.03.11
+        referencegroundtrack:
+          description: ICESat-2 Reference Ground Track number
+          type: str
+          default: ""  # Default: "" (all), min: "0000", max: "1387"
+        laser:
+          description: Name of laser pair
+          type: str
+          default: pt2
+          allowed: ["pt1", "pt2", "pt3"]
+        version:
+          description: Version number
+          type: int
+          default: 2
+          allowed: [1, 2]
+    driver: intake_xarray.netcdf.NetCDFSource
+    metadata:
+      plots:
+        quickview:
+          kind: points
+          x: longitude
+          y: latitude
+          c: h_corr
           cmap: Blues
           rasterize: True
           hover: True
