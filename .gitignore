@@ -29,10 +29,9 @@ MANIFEST
 
 # Data files and folders
 **/*.h5
-**/*.tsv
 ATL06.003
-ATL11.001
-ATL11.001z123
+ATL11.00?
+ATL11.00?z123
 ATLXI
 Quantarctica3
 

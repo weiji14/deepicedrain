@@ -15,6 +15,7 @@ def test_deepicedrain_catalog():
     catalog_entries = [
         "icesat2atlasdownloader",
         "icesat2atl06",
+        "icesat2atl11",
         "icesat2dhdt",
         "measures_antarctic_boundaries",
         "subglacial_lakes",
