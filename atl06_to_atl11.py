@@ -54,7 +54,7 @@ client
 catalog = intake.open_catalog("deepicedrain/atlas_catalog.yaml")
 with open(file="ATL11_to_download.txt", mode="r") as f:
     urlpaths = f.readlines()
-dates: set = set(url.split("/")[-2] for url in urlpaths)
+dates: set = {url.split("/")[-2] for url in urlpaths}
 len(dates)
 
 # %%
@@ -72,13 +72,9 @@ for date in dates:
 
 # %%
 # Check download progress here, https://stackoverflow.com/a/37901797/6611055
-responses = []
-for f in tqdm.tqdm(
+responses = [f.result() for f in tqdm.tqdm(
     iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
-):
-    responses.append(f.result())
-
-
+)]
 # %%
 
 # %% [markdown]
