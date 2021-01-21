@@ -366,11 +366,11 @@ tests_extra = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)", "pytest-mpl"]
 
 [[package]]
 name = "cupy-cuda102"
-version = "8.0.0"
-description = "CuPy: NumPy-like API accelerated with CUDA"
+version = "9.0.0b1"
+description = "CuPy: A NumPy-compatible array library accelerated by CUDA"
 category = "main"
 optional = true
-python-versions = ">=3.5.0"
+python-versions = ">=3.6.0"
 
 [package.dependencies]
 fastrlock = ">=0.3"
@@ -380,11 +380,10 @@ numpy = ">=1.15"
 appveyor = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
 docs = ["sphinx (==3.0.4)", "sphinx-rtd-theme"]
 doctest = ["matplotlib", "optuna"]
-jenkins = ["pytest (<4.2.0)", "attrs (<19.2.0)", "pytest-timeout", "pytest-cov", "coveralls", "codecov"]
+jenkins = ["pytest (<4.2.0)", "attrs (<19.2.0)", "pytest-timeout", "pytest-cov (<2.10)", "coveralls", "codecov", "coverage (<5)"]
 setup = ["fastrlock (>=0.3)"]
 stylecheck = ["autopep8 (==1.4.4)", "flake8 (==3.7.9)", "pbr (==4.0.4)", "pycodestyle (==2.5.0)"]
 test = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
-travis = ["autopep8 (==1.4.4)", "flake8 (==3.7.9)", "pbr (==4.0.4)", "pycodestyle (==2.5.0)", "sphinx (==3.0.4)", "sphinx-rtd-theme"]
 
 [[package]]
 name = "cycler"
@@ -2466,7 +2465,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "b3bbf34a018372046876acd0be99bf92126f58eb2dbeec6f81cd319ab1350a65"
+content-hash = "6e741e6e1576c893eef3e4e30550c191613e7773b18a98667bad253a4aaa5ee7"
 
 [metadata.files]
 aiohttp = [
@@ -2691,13 +2690,12 @@ colorcet = [
     {file = "colorcet-2.0.2.tar.gz", hash = "sha256:514813790a74b578c3eaff76b2102274c2ba8b0239c9504586df685223007dee"},
 ]
 cupy-cuda102 = [
-    {file = "cupy_cuda102-8.0.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:c9d77f99ac94ae2c1ce172b3b679bc079df42f3a47a28ee726d203ed17684cd2"},
-    {file = "cupy_cuda102-8.0.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:9dc2039d5929cfdb877c53baf925a525539e027d3e5d8e6772f555a17bdc0b89"},
-    {file = "cupy_cuda102-8.0.0-cp36-cp36m-win_amd64.whl", hash = "sha256:ef1c5fe0341de05751424a7c427c309e4afc25fed978a351309581db13ed1781"},
-    {file = "cupy_cuda102-8.0.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:c7f0c7fbda8c17e81474483451a8563eb46ef7606d4b530751c8f2887247365c"},
-    {file = "cupy_cuda102-8.0.0-cp37-cp37m-win_amd64.whl", hash = "sha256:af2d835b68d101343bdac4c572a7a19986f83489a78745bb54cda59d667a3c07"},
-    {file = "cupy_cuda102-8.0.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:7686148ceaf62cd11baf16500f74e2833fda7392d22b1f63c8c500967e220f44"},
-    {file = "cupy_cuda102-8.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:cc6aaa1c7943187e18a9afe64da1503161ad7fa2d68f279888c364497367b1be"},
+    {file = "cupy_cuda102-9.0.0b1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:892a82f9fe875184f40697fc5fe980edd29f84853376784a5dba509e4ba7fb0f"},
+    {file = "cupy_cuda102-9.0.0b1-cp36-cp36m-win_amd64.whl", hash = "sha256:7e7e2b8df8fabf0e38adaf545ee144ab89654e2c33b8aa62f7083e694494d923"},
+    {file = "cupy_cuda102-9.0.0b1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:4ed8822b395e99d9dcf7b05b9d8245adb0719082e7afccc9b5648a9c63830bcb"},
+    {file = "cupy_cuda102-9.0.0b1-cp37-cp37m-win_amd64.whl", hash = "sha256:36a26d76a13c7622b2daa05cb25be95840502401b9819c2c4c000697ec284c0d"},
+    {file = "cupy_cuda102-9.0.0b1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:3ea648107ab02d0e6660af72a0b7dc77a1fed33ba448924c9cf1411575a21f8f"},
+    {file = "cupy_cuda102-9.0.0b1-cp38-cp38-win_amd64.whl", hash = "sha256:277c3e8d763396ed325647c5ee8ce9783a0b475545248826a216e765f86037df"},
 ]
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
