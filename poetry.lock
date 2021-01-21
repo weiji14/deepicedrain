@@ -2018,7 +2018,7 @@ six = ">=1.5"
 
 [[package]]
 name = "python-snappy"
-version = "0.5.4"
+version = "0.6.0"
 description = "Python library for the snappy compression library from Google"
 category = "main"
 optional = false
@@ -2463,7 +2463,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "8ba0c620e9b01dc37b40526f5bcd0bfebc4e41fc28a3299dda85ddd34cdf3d52"
+content-hash = "d63a25bab4dd5c1cdf83cdb8ba230b71de454ad0ec0759ecba7dc6979c615bb1"
 
 [metadata.files]
 aiohttp = [
@@ -3584,8 +3584,13 @@ python-dateutil = [
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
 python-snappy = [
-    {file = "python-snappy-0.5.4.tar.gz", hash = "sha256:d9c26532cfa510f45e8d135cde140e8a5603d3fb254cfec273ebc0ecf9f668e2"},
-    {file = "python_snappy-0.5.4-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:9c0ba725755b749ef9b03f6ed7582cefb957c0d9f6f064a7c4314148a9dbdb61"},
+    {file = "python-snappy-0.6.0.tar.gz", hash = "sha256:168a98d3f597b633cfeeae7fe1c78a8dfd81f018b866cf7ce9e4c56086af891a"},
+    {file = "python_snappy-0.6.0-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:87f5994aef0a1f1fde01904421106c9006015d97e7b13aa72998f5a942093603"},
+    {file = "python_snappy-0.6.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:71472441b63c0d5afbb9b81a19c0dafbaf073d8ab1bbfc70450ec81d3c4b86dc"},
+    {file = "python_snappy-0.6.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:1ddc688d2164f3b99f1c7caf1cf137d70af201fe97fd727c5dbe7ec92ac0f1e6"},
+    {file = "python_snappy-0.6.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:131edc7701d3def8b72ef6cd61ab491d9efd7b92976dbababb424d74b9c7b180"},
+    {file = "python_snappy-0.6.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:7ef899f2704784032a1f020e983b29ef5c519203ffd0d5a17ff5e1f751b8dba6"},
+    {file = "python_snappy-0.6.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:2efb42b0fcfa77c361a13951393b33cca60c02144b857e919d26aa0778c44994"},
 ]
 pytz = [
     {file = "pytz-2020.4-py2.py3-none-any.whl", hash = "sha256:5c55e189b682d420be27c6995ba6edce0c0a77dd67bfbe2ae6607134d5851ffd"},
