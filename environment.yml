@@ -2,16 +2,16 @@ name: deepicedrain
 channels:
   - conda-forge
   - nvidia
-  - rapidsai
+  - rapidsai-nightly
 dependencies:
-  - rapidsai::cuml=0.16.0[md5=860bf18db9682fbf2b679e33b2163fe9]
-  - rapidsai::cuspatial=0.16.0[md5=135a197274994aae324c439c19431ba7]
+  - rapidsai-nightly::cuml=0.18.0a210120[md5=25ea9c768d67181d4f8d93c35f87b31b]
+  - rapidsai-nightly::cuspatial=0.18.0a210120[md5=a484cd6bc8e30a169e7ae7e73db427bb]
   - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
-  - conda-forge/label/dev::gmt=6.2.0.dev4+92c5676[md5=a60d72bf5a32f10e96c4ad23df5e8f28]
+  - conda-forge/label/dev::gmt=6.2.0.dev6+98bb060[md5=87a76d183125b5576414fc401a3fa448]
   - conda-forge::gxx_linux-64=7.5.0[md5=36f3b65563c9264b6d1e04369f0456ba]
   - conda-forge::parallel=20200522[md5=8fa06db0afc1e7b1f136277557a4b65e]
   - conda-forge::pip=20.3.1[md5=bd6aa73eed4afc399688200778a609f6]
   - conda-forge::poetry=1.1.4[md5=b5667d3b89efebef72ceca2809fddb87]
-  - conda-forge::proj=7.0.0[md5=6c84860aef0eeb9a547dbbb849e964fe]
+  - conda-forge::proj=7.1.1[md5=560bd5e04a47521884aefa6d33ea2799]
   - conda-forge::python=3.8.6[md5=dd65401dfb61ac030edc0dc4d15c2c51]
   - conda-forge::snappy=1.1.8[md5=83f1dc295c711bdbaf97e1f3bedf2f52]
