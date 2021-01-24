@@ -899,7 +899,7 @@ pyarrow = "*"
 
 [[package]]
 name = "intake-xarray"
-version = "0.4.0"
+version = "0.4.1"
 description = "xarray plugins for Intake"
 category = "main"
 optional = false
@@ -2452,7 +2452,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "9326ff0d5c240b287975a0ba35c7f83a37ff69627939ea9f062991c650435c52"
+content-hash = "5268baac41eab88f886c5bb0672e9c75921ba77e53c2e5ff8fb73c2781b2d616"
 
 [metadata.files]
 aiohttp = [
@@ -2629,6 +2629,8 @@ cftime = [
     {file = "cftime-1.3.1-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:20fb70d9729cb4abf986e7e7aba7322d0f0914c5cc8a43668f40e1301cd04637"},
     {file = "cftime-1.3.1-cp36-cp36m-manylinux2014_i686.whl", hash = "sha256:68f9ee1a04d3cf660ac0bbd8a3f2b79832f4bd2a546932eb8fae5aadde40122f"},
     {file = "cftime-1.3.1-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:851255aab314f4c01029b53449132bd2696a43dd1b461d658a2b8d42384395cc"},
+    {file = "cftime-1.3.1-cp36-cp36m-win32.whl", hash = "sha256:b9a11d56862c2b5017a35b3645c322ee7afe6e743009c3240bab1f9056c423fd"},
+    {file = "cftime-1.3.1-cp36-cp36m-win_amd64.whl", hash = "sha256:4a59dfc73ab57b33f472ee7876d0c03fbfd34c96987fe766476b1308172fa36e"},
     {file = "cftime-1.3.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:83e55ba95a2e6adf943d8c5acf089b8c86235a166bae241459b557b63c0671b5"},
     {file = "cftime-1.3.1-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:ead5ea211d89bef05763956b54d7a963ddf8c23a1b082f72095df53619bd4a43"},
     {file = "cftime-1.3.1-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:7468505772fae6ae3936a01cdd1e5d7547c0f58f33c860510d4f68de4d0b6971"},
@@ -2900,8 +2902,8 @@ intake-parquet = [
     {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
 ]
 intake-xarray = [
-    {file = "intake-xarray-0.4.0.tar.gz", hash = "sha256:319d62a8854ad8de6e3d5db245f9d1441f9a8b08549351d367ff7d98a7e8535a"},
-    {file = "intake_xarray-0.4.0-py3-none-any.whl", hash = "sha256:32025dd3f69204c6f5e976159b20a61d2902843af77c4b3e36f676715184c850"},
+    {file = "intake-xarray-0.4.1.tar.gz", hash = "sha256:f3779fc1e1aea83eb48e845f922b3aa7daa7f838890357e9e6c26aa5155f9d95"},
+    {file = "intake_xarray-0.4.1-py3-none-any.whl", hash = "sha256:f5ef3e5996e939c7967f5809e66098f2c2abf735a29bc02b5da7fd26d701a3b4"},
 ]
 ipykernel = [
     {file = "ipykernel-5.4.3-py3-none-any.whl", hash = "sha256:4ed205700001a83b5832d4821c46a5733f1bf4b1c55744314ae3c756be6b6095"},
