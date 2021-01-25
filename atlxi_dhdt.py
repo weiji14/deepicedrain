@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.9.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -54,7 +54,7 @@ import xarray as xr
 import deepicedrain
 
 # %%
-client = dask.distributed.Client(n_workers=32, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=16, threads_per_worker=1)
 client
 
 # %% [markdown]
@@ -64,14 +64,14 @@ client
 # Xarray open_dataset preprocessor to add fields based on input filename.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
+        format_string="ATL11.002z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
 
 # Load ATL11 data from Zarr
 ds: xr.Dataset = xr.open_mfdataset(
-    paths="ATL11.001z123/ATL11_*_003_01.zarr",
+    paths="ATL11.002z123/ATL11_*_002_01.zarr",
     chunks="auto",
     engine="zarr",
     combine="nested",
@@ -158,7 +158,7 @@ num_cycles: int = len(ds.cycle_number)
 
 # %%
 # Get first and last dates to put into our plots
-min_date, max_date = ("2018-10-14", "2020-09-30")
+min_date, max_date = ("2018-10-14", "2020-11-11")
 if min_date is None:
     min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
     min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
@@ -208,7 +208,7 @@ ds_ht: xr.Dataset = ds[["h_range", "h_corr", "delta_time"]].compute()
 # ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w", consolidated=True)
 ds_ht: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_hrange_time_{placename}.zarr",
-    chunks={"cycle_number": 9},
+    chunks={"cycle_number": 7},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
