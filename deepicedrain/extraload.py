@@ -56,6 +56,7 @@ def ndarray_to_parquet(
     parquetpath: str,
     variables: list = None,
     dropnacols: list = None,
+    startcol: int = 1,
     engine: str = "pyarrow",
     **kwargs,
 ) -> pd.DataFrame:
@@ -79,6 +80,9 @@ def ndarray_to_parquet(
     dropnacols : list
         Drop rows containing NaN values in these fields before saving to the
         Parquet file.
+    startcol : int
+        Adjust the starting column number, helpful if you prefer starting from
+        another number like 3, e.g. 'col_3', 'col_4', etc. Default is 1.
     engine : str
         Parquet library to use. Choose from 'auto', 'fastparquet', 'pyarrow'.
         Default is "pyarrow".
@@ -103,7 +107,9 @@ def ndarray_to_parquet(
         array_func = lambda varname: ndarray[varname].data
 
     dataframes: list = [
-        array_to_dataframe(array=array_func(varname), colname=varname, startcol=1)
+        array_to_dataframe(
+            array=array_func(varname), colname=varname, startcol=startcol
+        )
         for varname in variables
     ]
     dataframe: dask.dataframe.core.DataFrame = dask.dataframe.concat(

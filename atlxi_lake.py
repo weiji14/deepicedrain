@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.9.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -37,7 +37,7 @@
 import os
 import subprocess
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 import cudf
 import cuml
@@ -59,7 +59,17 @@ import deepicedrain
 
 
 # %%
-client = dask.distributed.Client(n_workers=8, threads_per_worker=1)
+use_cupy: bool = True
+if use_cupy:
+    import cupy
+    import dask_cuda
+    import dask_cudf
+
+    cluster = dask_cuda.LocalCUDACluster(n_workers=2, threads_per_worker=1)
+else:
+    cluster = dask.distributed.LocalCluster(n_workers=8, threads_per_worker=1)
+
+client = dask.distributed.Client(address=cluster)
 client
 
 # %% [markdown]
@@ -88,13 +98,18 @@ drainage_basins: gpd.GeoDataFrame = ice_boundaries.query(expr="TYPE == 'GR'")
 
 # %%
 # Read in raw x, y, dhdt_slope and referencegroundtrack data into the GPU
-cudf_raw: cudf.DataFrame = cudf.read_parquet(
-    filepath_or_buffer="ATLXI/df_dhdt_antarctica.parquet",
+cudf_raw: cudf.DataFrame = dask_cudf.read_parquet(
+    path="ATLXI/df_dhdt_antarctica.parquet",
     columns=["x", "y", "dhdt_slope", "referencegroundtrack"],
+    # filters=[[('dhdt_slope', '<', -0.2)], [('dhdt_slope', '>', 0.2)]],
 )
-# Filter to points with dhdt that is less than -0.2 m/yr or more than +0.2 m/yr
-cudf_many = cudf_raw.loc[abs(cudf_raw.dhdt_slope) > 0.2]
+# Filter to points with dhdt that is less than -0.105 m/yr or more than +0.105 m/yr
+# Based on ICESat-2 ATL06's accuracy and precision of 3.3 ± 7.2cm from Brunt et al 2020
+# See  https://doi.org/10.1029/2020GL090572
+cudf_many = cudf_raw.loc[abs(cudf_raw.dhdt_slope) > 0.105].compute()
 print(f"Trimmed {len(cudf_raw)} -> {len(cudf_many)}")
+if "cudf_raw" in globals():
+    del cudf_raw
 
 # %%
 # Clip outlier values to 3 sigma (standard deviations) from mean
@@ -116,7 +131,7 @@ cudf_many.dhdt_slope.clip(
 # %%
 # Use point in polygon to label points according to the drainage basins they fall in
 cudf_many["drainage_basin"]: cudf.Series = deepicedrain.point_in_polygon_gpu(
-    points_df=cudf_many, poly_df=drainage_basins
+    points_df=cudf_many, poly_df=drainage_basins, poly_limit=16
 )
 X_many = cudf_many.dropna()  # drop points that are not in a drainage basin
 print(f"Trimmed {len(cudf_many)} -> {len(X_many)}")
@@ -157,27 +172,34 @@ print(f"Trimmed {len(cudf_many)} -> {len(X_many)}")
 # Subglacial lake finder
 activelakes: dict = {
     "basin_name": [],  # Antarctic drainage basin name
+    "refgtracks": [],  # Pipe-delimited list of ICESat-2 reference ground tracks
     "num_points": [],  # Number of clustered data points
+    "maxabsdhdt": [],  # Maximum absolute dhdt value inside of lake boundary
+    "inner_dhdt": [],  # Median elev change over time (dhdt) inside of lake bounds
+    "mean_dhdt": [],  # Mean elev change over time (dhdt) inside of lake bounds
     "outer_dhdt": [],  # Median elevation change over time (dhdt) outside of lake
     "outer_std": [],  # Standard deviation of dhdt outside of lake
     "outer_mad": [],  # Median absolute deviation of dhdt outside of lake
-    "inner_dhdt": [],  # Median elev change over time (dhdt) inside of lake bounds
-    "maxabsdhdt": [],  # Maximum absolute dhdt value inside of lake boundary
-    "refgtracks": [],  # Pipe-delimited list of ICESat-2 reference ground tracks
     "geometry": [],  # Shapely Polygon geometry holding lake boundary coordinates
 }
-basin_name: str = "Whillans"  # Set a basin name here
+basin_name: str = "Cook"  # Set a basin name here
 basins = drainage_basins[drainage_basins.NAME == basin_name].index  # one specific basin
+# basins = drainage_basins[
+#     drainage_basins.NAME.isin(("Cook", "Whillans"))
+# ].index  # some specific basins
 basins: pd.core.indexes.numeric.Int64Index = drainage_basins.index  # run on all basins
+
+eps: int = 3000  # ICESat-2 tracks are separated by ~3 km across track, with each laser pair ~90 m apart
+min_samples: int = 300
 for basin_index in tqdm.tqdm(iterable=basins):
     # Initial data cleaning, filter to rows that are in the drainage basin
     basin = drainage_basins.loc[basin_index]
     X_local = X_many.loc[X_many.drainage_basin == basin.NAME]  # .reset_index(drop=True)
 
-    # Get points with dhdt_slope higher than 2x the median dhdt_slope for the basin
-    # E.g. if median dhdt_slope is 0.35 m/yr, then we cluster points over 0.70 m/yr
+    # Get points with dhdt_slope higher than 3x the median dhdt_slope for the basin
+    # E.g. if median dhdt_slope is 0.30 m/yr, then we cluster points over 0.90 m/yr
     abs_dhdt = X_local.dhdt_slope.abs()
-    tolerance: float = 2 * abs_dhdt.median()
+    tolerance: float = 3 * abs_dhdt.median()
     X = X_local.loc[abs_dhdt > tolerance]
 
     if len(X) <= 1000:  # don't run on too few points
@@ -189,10 +211,10 @@ for basin_index in tqdm.tqdm(iterable=basins):
     # Noise points have NaN labels (i.e. NaN)
     cluster_vars = ["x", "y", "dhdt_slope"]
     draining_lake_labels = -deepicedrain.find_clusters(
-        X=X.loc[X.dhdt_slope < 0][cluster_vars]
+        X=X.loc[X.dhdt_slope < 0][cluster_vars], eps=eps, min_samples=min_samples
     )
     filling_lake_labels = deepicedrain.find_clusters(
-        X=X.loc[X.dhdt_slope > 0][cluster_vars]
+        X=X.loc[X.dhdt_slope > 0][cluster_vars], eps=eps, min_samples=min_samples
     )
     lake_labels = cudf.concat(objs=[draining_lake_labels, filling_lake_labels])
     lake_labels: cudf.Series = lake_labels.sort_index()
@@ -233,6 +255,7 @@ for basin_index in tqdm.tqdm(iterable=basins):
             x=outer_points.dhdt_slope.to_pandas()
         )
 
+        mean_dhdt: float = lake_points.dhdt_slope.mean()
         inner_dhdt: float = lake_points.dhdt_slope.median()
         X_local = X_local.drop(labels="in_donut_ring", axis="columns")
 
@@ -255,13 +278,14 @@ for basin_index in tqdm.tqdm(iterable=basins):
 
         # Save key variables to dictionary that will later go into geodataframe
         activelakes["basin_name"].append(basin.NAME)
+        activelakes["refgtracks"].append(refgtracks)
         activelakes["num_points"].append(len(lake_points))
+        activelakes["maxabsdhdt"].append(maxabsdhdt)
+        activelakes["inner_dhdt"].append(inner_dhdt)
+        activelakes["mean_dhdt"].append(mean_dhdt)
         activelakes["outer_dhdt"].append(outer_dhdt)
         activelakes["outer_std"].append(outer_std)
         activelakes["outer_mad"].append(outer_mad)
-        activelakes["inner_dhdt"].append(inner_dhdt)
-        activelakes["maxabsdhdt"].append(maxabsdhdt)
-        activelakes["refgtracks"].append(refgtracks)
         activelakes["geometry"].append(convexhull)
 
     # Calculate total number of lakes found for one drainage basin
@@ -296,7 +320,7 @@ X_ = X.to_pandas()
 fig = pygmt.Figure()
 n_clusters_ = len(X_.cluster_id.unique()) - 1  # No. of clusters minus noise (NaN)
 sizes = (X_.cluster_id.isna()).map(arg={True: 0.01, False: 0.1})
-pygmt.makecpt(cmap="polar", series=(-1, 3, 2), color_model="+cDrain,Fill", reverse=True)
+pygmt.makecpt(cmap="polar", series=(-1, 1, 2), color_model="+cDrain,Fill", reverse=True)
 fig.plot(
     x=X_.x,
     y=X_.y,
@@ -312,7 +336,7 @@ fig.plot(
 )
 basinx, basiny = basin.geometry.exterior.coords.xy
 fig.plot(x=basinx, y=basiny, pen="thinnest,-")
-fig.colorbar(position='JMR+w2c/0.5c+e+m+n"Unclassified"', L="i0.5c")
+fig.colorbar(position='JMR+w2c/0.5c+m+n"Unclassified"', L="i0.5c")
 fig.savefig(fname=f"figures/subglacial_lake_clusters_at_{basin.NAME}.png")
 fig.show()
 
@@ -377,7 +401,9 @@ except AttributeError:
 outline_points: str = f"figures/{placename}/{placename}.gmt"
 if not os.path.exists(path=outline_points):
     os.makedirs(name=f"figures/{placename}", exist_ok=True)
-    lakes.loc[list(lake_ids)].to_file(filename=outline_points, driver="OGR_GMT")
+    lake_catalog.read().loc[list(lake_ids)].to_file(
+        filename=outline_points, driver="OGR_GMT"
+    )
 
 
 # %% [markdown]
@@ -450,6 +476,7 @@ for cycle in tqdm.tqdm(iterable=cycles):
     )
     fig.savefig(f"figures/{placename}/dsm_{placename}_cycle_{cycle}.png")
 fig.show()
+
 
 # %%
 # Make an animated GIF of changing ice surface from the PNG files

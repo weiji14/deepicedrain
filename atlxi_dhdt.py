@@ -377,12 +377,11 @@ fig.show(width=600)
 # Save or load dhdt data from Parquet file
 for placename in tqdm.tqdm(
     iterable=[
-        "amundsen_sea_embayment",
-        "siple_coast",
-        "slessor_downstream",
         "whillans_downstream",
         "whillans_upstream",
-        "Recovery",
+        "siple_coast",
+        "slessor_downstream",
+        "amundsen_sea_embayment",
     ]
 ):
     # TODO make the region detection code below better
@@ -401,7 +400,7 @@ for placename in tqdm.tqdm(
             gdf=regions.loc[placename]
         )
 
-    if not os.path.exists(f"ATLXI/df_dhdt_{placename}.parquet"):
+    if not os.path.exists(f"ATLXI/df_dhdt_{placename.lower()}.parquet"):
         # Subset dataset to geographic region of interest
         ds_subset: xr.Dataset = region.subset(data=ds_dhdt)
         # Rename delta_time (timedelta64) to utc_time (datetime64), because that's what it is
@@ -422,6 +421,7 @@ for placename in tqdm.tqdm(
                 "utc_time",
             ],
             dropnacols=["dhdt_slope"],
+            startcol=3,
             use_deprecated_int96_timestamps=True,
         )
 # df_dhdt = pd.read_parquet(f"ATLXI/df_dhdt_{placename}.parquet")

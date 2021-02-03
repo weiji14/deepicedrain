@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.5.2
+#       jupytext_version: 1.9.1
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -57,7 +57,7 @@ client
 # Adapted from the intake.open_netcdf._add_path_to_ds function.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.001z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
+        format_string="ATL11.002z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
@@ -65,7 +65,7 @@ add_path_to_ds = lambda ds: ds.assign_coords(
 # Load dataset from all Zarr stores
 # Aligning chunks spatially along cycle_number (i.e. time)
 ds: xr.Dataset = xr.open_mfdataset(
-    paths="ATL11.001z123/ATL11_*_003_01.zarr",
+    paths="ATL11.002z123/ATL11_*_002_01.zarr",
     chunks="auto",
     engine="zarr",
     combine="nested",
@@ -76,7 +76,7 @@ ds: xr.Dataset = xr.open_mfdataset(
 )
 # ds = ds.unify_chunks().compute()
 # TODO use intake, wait for https://github.com/intake/intake-xarray/issues/70
-# source = intake.open_ndzarr(url="ATL11.001z123/ATL11_0*.zarr")
+# source = intake.open_ndzarr(url="ATL11.002z123/ATL11_0*.zarr")
 # %% [markdown]
 # ## Convert geographic lon/lat to x/y
 #
@@ -110,8 +110,8 @@ ds: xr.Dataset = ds.reset_coords(names=["longitude", "latitude"])
 # in the future.
 
 # %%
-# ds["utc_time"] = ds.delta_time.rename(new_name_or_name_dict="utc_time")
-ds["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=ds.delta_time)
+ds["utc_time"] = ds.delta_time.rename(new_name_or_name_dict="utc_time")
+# ds["utc_time"] = deepicedrain.deltatime_to_utctime(dataarray=ds.delta_time)
 
 
 # %% [markdown]
