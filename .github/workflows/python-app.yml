@@ -3,7 +3,7 @@ name: Test DeepIceDrain
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
       - "**"
@@ -45,7 +45,7 @@ jobs:
             /usr/share/miniconda3/envs/deepicedrain
           key: cache-venv-${{ github.ref }}-${{ hashFiles('**/environment.yml') }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/deepicedrain/*.py') }}
           restore-keys: |
-            cache-venv-refs/heads/master-${{ hashFiles('**/environment.yml') }}-
+            cache-venv-refs/heads/main-${{ hashFiles('**/environment.yml') }}-
 
       - name: Install conda dependencies
         run: conda env update -n deepicedrain -f environment.yml
