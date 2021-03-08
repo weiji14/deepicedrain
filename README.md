@@ -28,13 +28,13 @@ in Antarctica using remote sensing and machine learning.
 
 Launch in [Pangeo Binder](https://pangeo-binder.readthedocs.io) (Interactive jupyter lab environment in the cloud).
 
-[![Binder](https://binder.pangeo.io/badge_logo.svg)](https://binder.pangeo.io/v2/gh/weiji14/deepicedrain/master)
+[![Binder](https://binder.pangeo.io/badge_logo.svg)](https://binder.pangeo.io/v2/gh/weiji14/deepicedrain/main)
 
 ## Usage
 
 Once you've properly installed the [`deepicedrain` package](deepicedrain)
 (see installation instructions further below), you'll have access to a
-[wide range of tools](https://github.com/weiji14/deepicedrain/tree/master/deepicedrain)
+[wide range of tools](https://github.com/weiji14/deepicedrain/tree/main/deepicedrain)
 for downloading and performing quick calculations on ICESat-2 datasets.
 The example below shows how to calculate ice surface elevation change
 on a sample ATL11 dataset between ICESat's Cycle 3 and Cycle 4.
