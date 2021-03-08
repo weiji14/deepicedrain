@@ -2,10 +2,10 @@ name: deepicedrain
 channels:
   - conda-forge
   - nvidia
-  - rapidsai-nightly
+  - rapidsai
 dependencies:
-  - rapidsai-nightly::cuml=0.18.0a210201[md5=4af8a37aab532b376051cf1e89fce57a]
-  - rapidsai-nightly::cuspatial=0.18.0a210201[md5=bc584ba3d33e95d7492d5d0e19c873fb]
+  - rapidsai::cuml=0.18.0[md5=ce60c64650e90d52383eb83f78376194]
+  - rapidsai::cuspatial=0.18.0[md5=1bc42639d06a8de95792fb279e206821]
   - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
   - conda-forge/label/dev::gmt=6.2.0.dev6+98bb060[md5=87a76d183125b5576414fc401a3fa448]
   - conda-forge::graphviz=2.42.3[md5=fc2252c1502dd31f0b894dc3c69fdffd]
