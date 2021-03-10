@@ -101,11 +101,11 @@ drainage_basins: gpd.GeoDataFrame = ice_boundaries.query(expr="TYPE == 'GR'")
 cudf_raw: cudf.DataFrame = dask_cudf.read_parquet(
     path="ATLXI/df_dhdt_antarctica.parquet",
     columns=["x", "y", "dhdt_slope", "referencegroundtrack"],
-    # filters=[[('dhdt_slope', '<', -0.2)], [('dhdt_slope', '>', 0.2)]],
+    # filters=[[('dhdt_slope', '<', -0.105)], [('dhdt_slope', '>', 0.105)]],
 )
 # Filter to points with dhdt that is less than -0.105 m/yr or more than +0.105 m/yr
 # Based on ICESat-2 ATL06's accuracy and precision of 3.3 ± 7.2cm from Brunt et al 2020
-# See  https://doi.org/10.1029/2020GL090572
+# See https://doi.org/10.1029/2020GL090572
 cudf_many = cudf_raw.loc[abs(cudf_raw.dhdt_slope) > 0.105].compute()
 print(f"Trimmed {len(cudf_raw)} -> {len(cudf_many)}")
 if "cudf_raw" in globals():
@@ -211,10 +211,16 @@ for basin_index in tqdm.tqdm(iterable=basins):
     # Noise points have NaN labels (i.e. NaN)
     cluster_vars = ["x", "y", "dhdt_slope"]
     draining_lake_labels = -deepicedrain.find_clusters(
-        X=X.loc[X.dhdt_slope < 0][cluster_vars], eps=eps, min_samples=min_samples
+        X=X.loc[X.dhdt_slope < 0][cluster_vars],
+        eps=eps,
+        min_samples=min_samples,
+        verbose=cuml.common.logger.level_error,
     )
     filling_lake_labels = deepicedrain.find_clusters(
-        X=X.loc[X.dhdt_slope > 0][cluster_vars], eps=eps, min_samples=min_samples
+        X=X.loc[X.dhdt_slope > 0][cluster_vars],
+        eps=eps,
+        min_samples=min_samples,
+        verbose=cuml.common.logger.level_error,
     )
     lake_labels = cudf.concat(objs=[draining_lake_labels, filling_lake_labels])
     lake_labels: cudf.Series = lake_labels.sort_index()
@@ -354,7 +360,7 @@ df_dhdt: cudf.DataFrame = cudf.read_parquet(
 
 # %%
 # Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
-lake_name: str = "Lake 12"
+lake_name: str = "Whillans IX"
 lake_catalog = deepicedrain.catalog.subglacial_lakes()
 lake_ids, transect_id = (
     pd.json_normalize(lake_catalog.metadata["lakedict"])

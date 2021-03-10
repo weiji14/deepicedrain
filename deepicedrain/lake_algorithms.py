@@ -15,6 +15,7 @@ def find_clusters(
     eps: float = 3000,
     min_samples: int = 250,
     output_colname: str = "cluster_id",
+    **kwargs,
 ) -> xpd.Series:
     """
     Classify a point cloud into several groups, with each group being assigned
@@ -43,6 +44,9 @@ def find_clusters(
         Default is 250 (sample points).
     output_colname : str
         The name of the column for the output Series. Default is 'cluster_id'.
+    kwargs : dict
+        Extra parameters to pass into the `cuml.cluster.DBSCAN` or
+        `sklearn.cluster.DBSCAN` function.
 
     Returns
     -------
@@ -56,7 +60,7 @@ def find_clusters(
         from sklearn.cluster import DBSCAN
 
     # Run DBSCAN using {eps} m distance, and minimum of {min_samples} points
-    dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+    dbscan = DBSCAN(eps=eps, min_samples=min_samples, **kwargs)
     dbscan.fit(X=X)
 
     cluster_labels = dbscan.labels_ + 1  # noise points -1 becomes 0
