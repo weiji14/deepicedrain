@@ -261,7 +261,7 @@ def plot_alongtrack(
         # Plot line connecting points
         # fig.plot(data=data, pen=f"faint,{color},-", label=f'"+g-1l+s0.15c"')
 
-    fig.legend(S=3, position="jTR+jTR+o0.2c", box="+gwhite+p1p", transparency=20)
+    fig.legend(S=3, position="jBL+jBL+o0.2c", box="+gwhite+p1p")
     return fig
 
 
@@ -390,7 +390,7 @@ def plot_crossovers(
             ]
         )
         # pygmt.info(table=df[[time_var, elev_var]], spacing=f"1W/{spacing}", f="0T")
-        _y_label = "Elevation anomaly" if elev_var == "h_norm" else "Elevation"
+        _y_label = "Elevation anomaly" if elev_var == "h_anom" else "Elevation"
         fig.basemap(
             projection="X12c/12c",
             region=plotregion,
@@ -590,7 +590,7 @@ def plot_icesurface(
     )
 
     ## Top plot
-    fig.shift_origin(yshift="10c")
+    fig.shift_origin(yshift="9c")
     # Ice surface elevation grid
     pygmt.makecpt(cmap="lapaz", series=grid_region[-2:])
     fig.grdview(

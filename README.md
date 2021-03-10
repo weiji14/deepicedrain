@@ -1,24 +1,25 @@
-# DeepIceDrain
+# DeepIceDrain [[poster]](https://github.com/weiji14/nzasc2021)
 
 Mapping and monitoring deep subglacial water activity
 in Antarctica using remote sensing and machine learning.
 
+[![Zenodo Digital Object Identifier](https://zenodo.org/badge/DOI/10.5281/zenodo.4071235.svg)](https://doi.org/10.5281/zenodo.4071235)
 ![GitHub top language](https://img.shields.io/github/languages/top/weiji14/deepicedrain.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-![Test DeepIceDrain package](https://github.com/weiji14/deepicedrain/workflows/Test%20DeepIceDrain%20package/badge.svg)
+[![Test DeepIceDrain package](https://github.com/weiji14/deepicedrain/actions/workflows/python-app.yml/badge.svg)](https://github.com/weiji14/deepicedrain/actions/workflows/python-app.yml)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=weiji14/deepicedrain)](https://dependabot.com)
 ![License](https://img.shields.io/github/license/weiji14/deepicedrain)
 
 | Ice Surface Elevation trends over Antactica | Active Subglacial Lake filling event |
 |---|---|
-| ![ICESat-2 ATL11 rate of height change over time in Antarctica 2018-10-14 to 2020-09-30](https://user-images.githubusercontent.com/23487320/100858542-fe69ab00-34f2-11eb-9a0f-87805d00b2ed.png) | ![dsm_whillans_ix_cycles_3-8.gif](https://user-images.githubusercontent.com/23487320/97156701-f1fb7f80-17db-11eb-880c-87df2961e1c3.gif) |
+| ![ICESat-2 ATL11 rate of height change over time in Antarctica 2018-10-14 to 2020-11-11](https://user-images.githubusercontent.com/23487320/105754590-220b1800-5faf-11eb-8f4c-b99fb7b7449e.png) | ![dsm_whillans_ix_cycles_3-9.gif](https://user-images.githubusercontent.com/23487320/110536564-7b599000-8186-11eb-9ae2-aca8d76f7313.gif) |
 
 ![DeepIceDrain Pipeline Part 1 Exploratory Data Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Land-Ice-Height-time-series|atl11_play.ipynb])
 ![DeepIceDrain Pipeline Part 2 Subglacial Lake Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb],[Height-Change-over-Time-(dhdt)]->[Subglacial-Lake-Finder|atlxi_lake.ipynb],[Subglacial-Lake-Finder]->[Crossover-Analysis|atlxi_xover.ipynb])
 
 | Along track view of an ATL11 Ground Track | Elevation time-series at Crossover Points |
 |---|---|
-| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/102156291-2210f600-3ee2-11eb-8175-e854b70444df.png) | ![crossover_anomaly_whillans_ix_2018-10-14_2020-09-30](https://user-images.githubusercontent.com/23487320/102610765-9bcf0b00-4192-11eb-803b-247ed960f9bb.png) |
+| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/110536370-41888980-8186-11eb-96e6-1ce92aa9966b.png) | ![crossover_anomaly_whillans_ix_2018-10-14_2020-11-11](https://user-images.githubusercontent.com/23487320/110536098-efdfff00-8185-11eb-97d9-065dd59b5727.png) |
 
 
 
@@ -131,3 +132,23 @@ Go check them out if you have time.
 - [ATL11](https://github.com/suzanne64/ATL11)
 - [ICESAT-2 HackWeek](https://github.com/ICESAT-2HackWeek)
 - [icepyx](https://github.com/icesat2py/icepyx)
+
+
+## Citing
+
+The work in this repository has not been peer-reviewed, but if you do want to
+cite it for some reason, use the following BibLaTeX code from this conference
+proceedings ([poster presentation](https://github.com/weiji14/nzasc2021)):
+
+    @inproceedings{LeongSpatiotemporalvariabilityactive2021,
+      title = {{Spatiotemporal Variability of Active Subglacial Lakes in Antarctica from 2018-2020 Using ICESat-2 Laser Altimetry}},
+      author = {Leong, W. J. and Horgan, H. J.},
+      date = {2021-02-10},
+      publisher = {{Unpublished}},
+      location = {{Christchurch, New Zealand}},
+      doi = {10.13140/RG.2.2.27952.07680},
+      eventtitle = {{New Zealand Antarctic Science Conference}}},
+      langid = {english}
+    }
+
+Python code for the DeepIceDrain package here on Github is also mirrored on Zenodo at https://doi.org/10.5281/zenodo.4071235.
