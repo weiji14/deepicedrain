@@ -26,7 +26,7 @@ from deepicedrain.vizplots import (
     plot_icesurface,
 )
 
-__version__: str = "0.4.0"
+__version__: str = "0.4.1"
 
 # Loads the ICESat-2 ATLAS intake data catalog
 _catalog_path = importlib.resources.path(
