@@ -32,7 +32,7 @@ numcodecs = "^0.7.2"
 Pint = "^0.16.1"
 Pint-Pandas = "^0.1"
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "4d702582c790269acef010a518398a892cc58db9"}
-pyarrow = "1.0.1"
+pyarrow = "3.0.0"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
 pygmt = "^0.2.1"
