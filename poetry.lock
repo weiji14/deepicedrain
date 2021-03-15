@@ -582,7 +582,7 @@ python-versions = ">=3"
 
 [[package]]
 name = "distributed"
-version = "2021.1.0"
+version = "2021.1.1"
 description = "Distributed scheduler for Dask"
 category = "main"
 optional = false
@@ -2991,7 +2991,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "ababf44b790bacfdad114cbf97df678ce3f04e10ece366083c2183f9d56f316a"
+content-hash = "ccabb5bc508b46d3fad534e0fa6f93af30f2949ece4ba5a6420ddcfe2c930983"
 
 [metadata.files]
 aiohttp = [
@@ -3326,8 +3326,8 @@ diskcache = [
     {file = "diskcache-5.2.1.tar.gz", hash = "sha256:1805acd5868ac10ad547208951a1190a0ab7bbff4e70f9a07cde4dbdfaa69f64"},
 ]
 distributed = [
-    {file = "distributed-2021.1.0-py3-none-any.whl", hash = "sha256:1b2ece4550377b6892e927d4eb7761e982097de3f77de02b4db48e750a220bb6"},
-    {file = "distributed-2021.1.0.tar.gz", hash = "sha256:a9be18981a40031c6cb8aa7a01c7ef23aa20708e28e1c7aaf6c1e958d79586ec"},
+    {file = "distributed-2021.1.1-py3-none-any.whl", hash = "sha256:bb7163727e3ade4d7e8edb48c5113718b207c183e157ad18697d1316b158d6e4"},
+    {file = "distributed-2021.1.1.tar.gz", hash = "sha256:423dda6fd8d263d6e988700721e7269d588c1bc368026a0a6ae8f2fde108be39"},
 ]
 distro = [
     {file = "distro-1.5.0-py2.py3-none-any.whl", hash = "sha256:df74eed763e18d10d0da624258524ae80486432cd17392d9c3d96f5e83cd2799"},
