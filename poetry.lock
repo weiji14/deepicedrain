@@ -126,7 +126,7 @@ develop = false
 [package.source]
 type = "git"
 url = "https://github.com/suzanne64/ATL11.git"
-reference = "master"
+reference = "cf667454a292da35c0e756f48afc7530240a5f3a"
 resolved_reference = "cf667454a292da35c0e756f48afc7530240a5f3a"
 
 [[package]]
@@ -1151,7 +1151,7 @@ pyarrow = "*"
 
 [[package]]
 name = "intake-xarray"
-version = "0.4.0"
+version = "0.4.1"
 description = "xarray plugins for Intake"
 category = "main"
 optional = false
@@ -3006,7 +3006,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "ada120454f2f3f98640af9cce35c202ba6b9245755cc3af46e9323b7ed1f3a18"
+content-hash = "e19a5aeab04a3e0b7128fb05099d0073e061364ca12d317a38d006e46cc4ba34"
 
 [metadata.files]
 aiohttp = [
@@ -3539,8 +3539,8 @@ intake-parquet = [
     {file = "intake-parquet-0.2.3.tar.gz", hash = "sha256:353078f8b3358abdf0b1fa959fb8bd7f40466c8d04c474f51015b13822b9b8e3"},
 ]
 intake-xarray = [
-    {file = "intake-xarray-0.4.0.tar.gz", hash = "sha256:319d62a8854ad8de6e3d5db245f9d1441f9a8b08549351d367ff7d98a7e8535a"},
-    {file = "intake_xarray-0.4.0-py3-none-any.whl", hash = "sha256:32025dd3f69204c6f5e976159b20a61d2902843af77c4b3e36f676715184c850"},
+    {file = "intake-xarray-0.4.1.tar.gz", hash = "sha256:f3779fc1e1aea83eb48e845f922b3aa7daa7f838890357e9e6c26aa5155f9d95"},
+    {file = "intake_xarray-0.4.1-py3-none-any.whl", hash = "sha256:f5ef3e5996e939c7967f5809e66098f2c2abf735a29bc02b5da7fd26d701a3b4"},
 ]
 ipykernel = [
     {file = "ipykernel-5.4.3-py3-none-any.whl", hash = "sha256:4ed205700001a83b5832d4821c46a5733f1bf4b1c55744314ae3c756be6b6095"},
