@@ -35,25 +35,25 @@ jobs:
           channels: conda-forge
           show-channel-urls: true
           auto-activate-base: false
-          use-only-tar-bz2: true
-
-      - name: Cache virtual environment
-        uses: actions/cache@v2.0.0
-        id: cache
-        with:
-          path: |
-            /usr/share/miniconda3/envs/deepicedrain
-          key: cache-venv-${{ github.ref }}-${{ hashFiles('**/environment.yml') }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/deepicedrain/*.py') }}
-          restore-keys: |
-            cache-venv-refs/heads/main-${{ hashFiles('**/environment.yml') }}-
+      #     use-only-tar-bz2: true
+      #
+      # - name: Cache virtual environment
+      #   uses: actions/cache@v2.0.0
+      #   id: cache
+      #   with:
+      #     path: |
+      #       /usr/share/miniconda3/envs/deepicedrain
+      #     key: cache-venv-${{ github.ref }}-${{ hashFiles('**/environment.yml') }}-${{ hashFiles('**/poetry.lock') }}-${{ hashFiles('**/deepicedrain/*.py') }}
+      #     restore-keys: |
+      #       cache-venv-refs/heads/main-${{ hashFiles('**/environment.yml') }}-
 
       - name: Install conda dependencies
         run: conda env update -n deepicedrain -f environment.yml
-        if: steps.cache.outputs.cache-hit != 'true'
+        # if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Install Poetry python dependencies
         run: poetry install --no-root
-        if: steps.cache.outputs.cache-hit != 'true'
+        # if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Install deepicedrain package
         run: poetry install
