@@ -487,7 +487,7 @@ distributed = ["distributed (>=2.0)"]
 
 [[package]]
 name = "dask-cuda"
-version = "0.17.0"
+version = "0.18.0"
 description = "Utilities for Dask and CUDA interactions"
 category = "main"
 optional = true
@@ -717,7 +717,7 @@ hdfs = ["pyarrow (>=2.0.0)"]
 oss = ["oss2 (==2.6.1)", "pycryptodome (<3.9.9)"]
 s3 = ["boto3 (>=1.9.201)"]
 ssh = ["paramiko[invoke] (>=2.7.0)"]
-ssh_gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
+ssh_gssapi = ["paramiko[invoke,gssapi] (>=2.7.0)"]
 tests = ["wheel (>=0.31.1)", "pytest (>=6.0.1,<6.2.2)", "pytest-cov", "pytest-docker (>=0.7.2)", "pytest-timeout (>=1.3.3)", "pytest-cov (>=2.6.1)", "pytest-xdist (>=1.26.1)", "pytest-mock (==1.11.2)", "pytest-lazy-fixture", "pytest-tap", "flaky (>=3.5.3)", "mock (>=3.0.0)", "xmltodict (>=0.11.0)", "google-compute-engine (==2.8.13)", "pygments", "collective.checkdocs", "psutil", "pydocstyle (<4.0)", "jaraco.windows (==3.9.2)", "mock-ssh-server (>=0.8.2)", "moto (==1.3.16.dev122)", "aws-sam-translator (<1.29.0)", "urllib3 (<1.26.0)", "rangehttpserver (==1.2.0)", "beautifulsoup4 (==4.4.0)", "pylint (==2.5.3)", "astroid (<2.5)", "pylint-pytest (>=0.3.0)", "pylint-plugin-utils", "wget", "filelock", "mypy", "wsgidav", "crc32c", "google-cloud-storage (==1.19.0)"]
 webdav = ["webdavclient3 (>=3.14.5)"]
 webhdfs = ["hdfs (==2.5.8)"]
@@ -3004,7 +3004,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "d6a45fbbe73709b1f6907b4dc18e15d3206f98a41015ddae4d348fe905899d90"
+content-hash = "a2796284d16e9c4aabcff969989da93bca711e1f6be0e85ca0abf96d3857e2b6"
 
 [metadata.files]
 aiohttp = [
@@ -3309,8 +3309,8 @@ dask = [
     {file = "dask-2021.1.0.tar.gz", hash = "sha256:b9426ad6bbf04a8d61579b7e0177daeb87a9cb6e79dfdbdadded2d61f3f5f7b6"},
 ]
 dask-cuda = [
-    {file = "dask-cuda-0.17.0.tar.gz", hash = "sha256:c8e8b5bec315bc4b1c8629db7363e147a8b792e7d93a8c05c8c4ad6d06f9cc53"},
-    {file = "dask_cuda-0.17.0-py3-none-any.whl", hash = "sha256:93a494f53633c8a3c79083ca5f3faf9b8d98bdc3835f16f16230b1cdcf14ac22"},
+    {file = "dask-cuda-0.18.0.tar.gz", hash = "sha256:f5127667bbb6730e23e22016fb1a64f308d8e8455fa61993990e5d237df75396"},
+    {file = "dask_cuda-0.18.0-py3-none-any.whl", hash = "sha256:4e49cedba661eaed7416c3a08ec59b39703f94613b0cb9240955a0d241b217f2"},
 ]
 dask-labextension = [
     {file = "dask_labextension-5.0.0-py3-none-any.whl", hash = "sha256:b186b518721bfc57a800f418641245b5333e19645ee8ce4dad3557f354d04ea4"},
