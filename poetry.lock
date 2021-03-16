@@ -467,14 +467,14 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 bokeh = {version = ">=1.0.0,<2.0.0 || >2.0.0", optional = true, markers = "extra == \"complete\""}
-cloudpickle = {version = ">=0.2.2", optional = true, markers = "extra == \"bag\""}
+cloudpickle = {version = ">=0.2.2", optional = true, markers = "extra == \"complete\""}
 distributed = {version = ">=2.0", optional = true, markers = "extra == \"complete\""}
-fsspec = {version = ">=0.6.0", optional = true, markers = "extra == \"bag\""}
+fsspec = {version = ">=0.6.0", optional = true, markers = "extra == \"complete\""}
 numpy = {version = ">=1.15.1", optional = true, markers = "extra == \"complete\""}
 pandas = {version = ">=0.25.0", optional = true, markers = "extra == \"complete\""}
-partd = {version = ">=0.3.10", optional = true, markers = "extra == \"bag\""}
+partd = {version = ">=0.3.10", optional = true, markers = "extra == \"complete\""}
 pyyaml = "*"
-toolz = {version = ">=0.8.2", optional = true, markers = "extra == \"bag\""}
+toolz = {version = ">=0.8.2", optional = true, markers = "extra == \"complete\""}
 
 [package.extras]
 array = ["numpy (>=1.15.1)", "toolz (>=0.8.2)"]
@@ -1086,7 +1086,7 @@ python-versions = "*"
 
 [[package]]
 name = "intake"
-version = "0.6.0"
+version = "0.6.1"
 description = "Data load and catalog system"
 category = "main"
 optional = false
@@ -1094,20 +1094,13 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 appdirs = "*"
-dask = [
-    {version = ">=1.0", extras = ["bag"]},
-    {version = "*", extras = ["dataframe"], optional = true, markers = "extra == \"dataframe\""},
-]
+dask = "*"
 entrypoints = "*"
-fsspec = ">=0.3.6"
-jinja2 = "*"
-msgpack = "*"
+fsspec = ">=0.7.4"
 msgpack-numpy = {version = "*", optional = true, markers = "extra == \"dataframe\""}
-numpy = "*"
 pyarrow = {version = "*", optional = true, markers = "extra == \"dataframe\""}
 python-snappy = {version = "*", optional = true, markers = "extra == \"server\""}
 pyyaml = "*"
-requests = "*"
 tornado = {version = "*", optional = true, markers = "extra == \"server\""}
 
 [package.extras]
@@ -3004,7 +2997,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "80870118483e9f83eaeff76042b6b505579d8237ee2bc71f520f2542d99b18fb"
+content-hash = "60e79f2004dfa916c0d5e6536e63b06e923f3c11f33ee220a030028cefd18d70"
 
 [metadata.files]
 aiohttp = [
@@ -3522,8 +3515,8 @@ iniconfig = [
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 intake = [
-    {file = "intake-0.6.0-py3-none-any.whl", hash = "sha256:32a6d77965f3b89a12894c29e8c7516391a0be4c42902af52f12747186920bcc"},
-    {file = "intake-0.6.0.tar.gz", hash = "sha256:0c284abeb74927a7366dcab6cefc010c4d050365b8af61c37326a2473a490a4e"},
+    {file = "intake-0.6.1-py3-none-any.whl", hash = "sha256:cd98f806a4b8c2f74f28533f95a81f02c2e547a6dd092af421266088449a37cc"},
+    {file = "intake-0.6.1.tar.gz", hash = "sha256:f09800203fcaf1512f9234e54dbd07ec2b5217aafd21716385725ec052f5a52e"},
 ]
 intake-geopandas = [
     {file = "intake_geopandas-0.2.4-py3-none-any.whl", hash = "sha256:1ed7572d2dfbad2b31c945483d171c613910afb4b8efb2c1e729f9aadbd73094"},
