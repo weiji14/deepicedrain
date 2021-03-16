@@ -35,7 +35,7 @@ pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = 
 pyarrow = "1.0.1"
 pydap = "^3.2.2"
 pyepsg = "^0.4.0"
-pygmt = "^0.2.1"
+pygmt = "^0.3.1"
 python = "~3.8"
 python-snappy = "^0.6.0"
 pyproj = "^3.0.1"
