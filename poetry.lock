@@ -419,24 +419,23 @@ six = "*"
 
 [[package]]
 name = "cupy-cuda102"
-version = "9.0.0b1"
+version = "9.0.0b3"
 description = "CuPy: A NumPy-compatible array library accelerated by CUDA"
 category = "main"
 optional = true
 python-versions = ">=3.6.0"
 
 [package.dependencies]
-fastrlock = ">=0.3"
-numpy = ">=1.15"
+fastrlock = ">=0.5"
+numpy = ">=1.17"
 
 [package.extras]
-appveyor = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
-docs = ["sphinx (==3.0.4)", "sphinx-rtd-theme"]
-doctest = ["matplotlib", "optuna"]
-jenkins = ["pytest (<4.2.0)", "attrs (<19.2.0)", "pytest-timeout", "pytest-cov (<2.10)", "coveralls", "codecov", "coverage (<5)"]
-setup = ["fastrlock (>=0.3)"]
+all = ["scipy (>=1.4)", "optuna (>=2.0)"]
+appveyor = ["pytest (>=6.2)"]
+jenkins = ["pytest (>=6.2)", "pytest-timeout", "pytest-cov", "coveralls", "codecov", "coverage (<5)"]
+setup = ["Cython (>=0.29.22)", "fastrlock (>=0.5)"]
 stylecheck = ["autopep8 (==1.4.4)", "flake8 (==3.7.9)", "pbr (==4.0.4)", "pycodestyle (==2.5.0)"]
-test = ["pytest (<4.2.0)", "attrs (<19.2.0)"]
+test = ["pytest (>=6.2)"]
 
 [[package]]
 name = "cycler"
@@ -717,7 +716,7 @@ hdfs = ["pyarrow (>=2.0.0)"]
 oss = ["oss2 (==2.6.1)", "pycryptodome (<3.9.9)"]
 s3 = ["boto3 (>=1.9.201)"]
 ssh = ["paramiko[invoke] (>=2.7.0)"]
-ssh_gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
+ssh_gssapi = ["paramiko[invoke,gssapi] (>=2.7.0)"]
 tests = ["wheel (>=0.31.1)", "pytest (>=6.0.1,<6.2.2)", "pytest-docker (>=0.7.2)", "pytest-timeout (>=1.3.3)", "pytest-cov (>=2.6.1)", "pytest-xdist (>=1.26.1)", "pytest-mock (==1.11.2)", "pytest-lazy-fixture", "pytest-tap", "flaky (>=3.5.3)", "mock (>=3.0.0)", "xmltodict (>=0.11.0)", "google-compute-engine (==2.8.13)", "pygments", "collective.checkdocs", "psutil", "pydocstyle (<4.0)", "jaraco.windows (==3.9.2)", "mock-ssh-server (>=0.8.2)", "moto (==1.3.16.dev122)", "aws-sam-translator (<1.29.0)", "urllib3 (<1.26.0)", "rangehttpserver (==1.2.0)", "beautifulsoup4 (==4.4.0)", "pylint (==2.7.2)", "pylint-pytest (==0.3.0)", "pylint-plugin-utils (==0.6)", "wget", "filelock", "mypy", "wsgidav", "crc32c", "google-cloud-storage (==1.19.0)"]
 webdav = ["webdavclient3 (>=3.14.5)"]
 webhdfs = ["hdfs (==2.5.8)"]
@@ -2997,7 +2996,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "3643fb823e946b42244d2e78109ed6d18e5928deabfd9be25b03d7d3b2453ced"
+content-hash = "b47eb0fd547964e090efda8283ba6254ae4c5427594b46268b81080551b1b50d"
 
 [metadata.files]
 aiohttp = [
@@ -3249,12 +3248,14 @@ configobj = [
     {file = "configobj-5.0.6.tar.gz", hash = "sha256:a2f5650770e1c87fb335af19a9b7eb73fc05ccf22144eb68db7d00cd2bcb0902"},
 ]
 cupy-cuda102 = [
-    {file = "cupy_cuda102-9.0.0b1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:892a82f9fe875184f40697fc5fe980edd29f84853376784a5dba509e4ba7fb0f"},
-    {file = "cupy_cuda102-9.0.0b1-cp36-cp36m-win_amd64.whl", hash = "sha256:7e7e2b8df8fabf0e38adaf545ee144ab89654e2c33b8aa62f7083e694494d923"},
-    {file = "cupy_cuda102-9.0.0b1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:4ed8822b395e99d9dcf7b05b9d8245adb0719082e7afccc9b5648a9c63830bcb"},
-    {file = "cupy_cuda102-9.0.0b1-cp37-cp37m-win_amd64.whl", hash = "sha256:36a26d76a13c7622b2daa05cb25be95840502401b9819c2c4c000697ec284c0d"},
-    {file = "cupy_cuda102-9.0.0b1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:3ea648107ab02d0e6660af72a0b7dc77a1fed33ba448924c9cf1411575a21f8f"},
-    {file = "cupy_cuda102-9.0.0b1-cp38-cp38-win_amd64.whl", hash = "sha256:277c3e8d763396ed325647c5ee8ce9783a0b475545248826a216e765f86037df"},
+    {file = "cupy_cuda102-9.0.0b3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:87d79f78645b024355491f910c4e0ef7c8eec50117db7b6907b35d4db3b20701"},
+    {file = "cupy_cuda102-9.0.0b3-cp36-cp36m-win_amd64.whl", hash = "sha256:2c77f7b96a0ad5c3b5191cf9caff231886e61863c97264d2bca17f901bfd562a"},
+    {file = "cupy_cuda102-9.0.0b3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:749167b74bc31a01a1ae177572ca5fc50a5dabc7bd47e7feb957aad6f2a5554d"},
+    {file = "cupy_cuda102-9.0.0b3-cp37-cp37m-win_amd64.whl", hash = "sha256:b50e89573a1888a4ae9b22ded9934a56a48d78fd342e5fedba5149af96b5e4da"},
+    {file = "cupy_cuda102-9.0.0b3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:be9ed8e72315684c49f24078185dd2942341a89977679dfd7ffc3fb6cbab711c"},
+    {file = "cupy_cuda102-9.0.0b3-cp38-cp38-win_amd64.whl", hash = "sha256:00fad283d10add4db6eba2194353cde2074f367cfe439dc79414ed3afdc64a89"},
+    {file = "cupy_cuda102-9.0.0b3-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:dd19277cbda00055792ca80ec437db1cb3e1c8018adf64710b6239cba8f1ed64"},
+    {file = "cupy_cuda102-9.0.0b3-cp39-cp39-win_amd64.whl", hash = "sha256:7854f9cdf43c0e71466ccf1d4ef2aaf77542d5c5d6b1c67271f25d537722a28d"},
 ]
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
