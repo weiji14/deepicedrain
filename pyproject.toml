@@ -20,7 +20,7 @@ dvc = "^2.0.6"
 geopandas = "^0.9.0"
 geoviews = "^1.9.1"
 graphviz = "^0.16"
-h5netcdf = "^0.8.1"
+h5netcdf = "^0.10.0"
 intake = {extras = ["dataframe", "server"], version = "^0.6.1"}
 intake-geopandas = "^0.2.4"
 intake-parquet = "^0.2.3"
