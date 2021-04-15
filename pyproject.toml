@@ -8,7 +8,6 @@ license = "LGPL-3.0-or-later"
 [tool.poetry.dependencies]
 alphashape = "^1.1.0"
 atl11 = {git = "https://github.com/suzanne64/ATL11.git", rev = "cf667454a292da35c0e756f48afc7530240a5f3a"}
-cartopy = "^0.18.0"
 cupy-cuda102 = {version = "^9.0.0b3", optional = true}
 cython = "^0.29.22"
 dask = "^2021.1.0"
@@ -18,10 +17,10 @@ datashader = "^0.12.1"
 distributed = "^2021.1.0"
 dvc = "^2.0.6"
 geopandas = "^0.9.0"
-geoviews = "^1.9.1"
 graphviz = "^0.16"
 h5netcdf = "^0.10.0"
 hvplot = "^0.7.1"
+icepyx = {extras = ["viz"], git = "https://github.com/icesat2py/icepyx.git", rev = "a582a272d7509622f4882843c3316b4c1cc00f49"}
 intake = {extras = ["dataframe", "server"], version = "^0.6.1"}
 intake-geopandas = "^0.2.4"
 intake-parquet = "^0.2.3"
