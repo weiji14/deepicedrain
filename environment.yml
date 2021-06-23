@@ -4,15 +4,14 @@ channels:
   - nvidia
   - rapidsai
 dependencies:
-  - rapidsai::cuml=0.18.0[md5=ce60c64650e90d52383eb83f78376194]
-  - rapidsai::cuspatial=0.18.0[md5=1bc42639d06a8de95792fb279e206821]
-  - conda-forge::geos=3.8.1[md5=7282fbe0c036bacad959c03c05a7eb9a]
-  - conda-forge/label/dev::gmt=6.2.0.dev6+98bb060[md5=87a76d183125b5576414fc401a3fa448]
-  - conda-forge::graphviz=2.42.3[md5=fc2252c1502dd31f0b894dc3c69fdffd]
-  - conda-forge::gxx_linux-64=7.5.0[md5=36f3b65563c9264b6d1e04369f0456ba]
-  - conda-forge::parallel=20200522[md5=8fa06db0afc1e7b1f136277557a4b65e]
+  - rapidsai::cuml=21.06.02[md5=d5a33e319a1dd9921877bfcff0ad6534]
+  - rapidsai::cuspatial=21.06.00[md5=e8da4be94d7677a549f9699160767d82]
+  - conda-forge::geos=3.9.1[md5=b9a6d9422aed3ad84ec6ccee9bfcaa0f]
+  - conda-forge/label/dev::gmt=6.2.0.dev12+922af84[md5=127e0cc92cf507d09a6975263cdcd359]
+  - conda-forge::graphviz=2.47.3[md5=099cc43ac1c5bcce50318a9fc14a1d49]
+  - conda-forge::gxx_linux-64=9.3.0[md5=30052cab230f3f5dffe0f35efeefacbe]
+  - conda-forge::parallel=20210422[md5=57e72b00f15d1bcf63058538d36587db]
   - conda-forge::pip=21.1.2[md5=dbd830edaffe5fc9ae6c1d425db2b5f2]
   - conda-forge::poetry=1.1.6[md5=2fb2f6f6f11c154b1a12294807f93b07]
-  - conda-forge::proj=7.1.1[md5=560bd5e04a47521884aefa6d33ea2799]
+  - conda-forge::proj=8.0.0[md5=bcbbfbd43a58c479b7348a82ca036c7d]
   - conda-forge::python=3.8.10[md5=69f7d6ef1f00c3a109b1b06279e6d6a9]
-  - conda-forge::snappy=1.1.8[md5=83f1dc295c711bdbaf97e1f3bedf2f52]
