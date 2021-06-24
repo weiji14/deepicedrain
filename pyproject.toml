@@ -29,7 +29,7 @@ jupyterlab = "^3.0.11"
 matplotlib = "^3.3.3"
 numcodecs = "^0.7.3"
 Pint = "^0.17"
-Pint-Pandas = "^0.2"
+Pint-Pandas = {git = "https://github.com/hgrecco/pint-pandas.git", rev = "4d6b9cfc82abe8a932615119da71406a025f2487"}
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "4d702582c790269acef010a518398a892cc58db9"}
 pyarrow = "1.0.1"
 pyepsg = "^0.4.0"

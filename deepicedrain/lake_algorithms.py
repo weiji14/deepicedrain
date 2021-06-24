@@ -171,29 +171,27 @@ def ice_volume_over_time(
     # Get just the elevation anomaly and time columns
     df_: pd.DataFrame = df_elev[[elev_col, time_col]].copy()
 
-    # Temporarily changing dtype from pint[metre] to float to avoid
-    # "DataError: No numeric types to aggregate" in rolling mean calculation
+    # Detect if pint units are being used
     elev_dtype = df_elev[elev_col].dtype
     has_pint: bool = "pint" in str(elev_dtype)
     if has_pint:
-        df_[elev_col]: pd.Series = df_[elev_col].pint.magnitude  # dequantify unit
         ureg: pint.UnitRegistry = surface_area._REGISTRY
 
     # Calculate rolling mean of elevation
     df_roll = df_.rolling(window=rolling_window, on=time_col, min_periods=1)
-    elev_mean: np.ndarray = df_roll[elev_col].mean().to_numpy()
+    elev_mean: pd.Series = df_roll[elev_col].mean()
 
     # Calculate elevation anomaly as elevation at time=n minus elevation at time=1
-    elev_anom: np.ndarray = elev_mean - elev_mean[0]
+    elev_anom: pd.Series = elev_mean - elev_mean[0]
 
-    # Add standard deviation uncertainties to mean if pint units are used
-    # Need to do it in numpy world instead of pandas to workaround issue
-    # in https://github.com/hgrecco/pint-pandas/issues/45, and wait also for
-    # pint.Measurements overhaul in https://github.com/hgrecco/pint/issues/350
+    # If pint units are used, add standard deviation uncertainties to mean.
+    # TO-DO refactor after pint.Measurements overhaul in
+    # https://github.com/hgrecco/pint/issues/350 is completed so that elev_anom
+    # can be kept as a pandas.Series instead of having to convert to np.ndarray
     if has_pint:
         import uncertainties.unumpy
 
-        elev_std: np.ndarray = df_roll[elev_col].std().to_numpy()
+        elev_std: pd.Series = df_roll[elev_col].std()
         elev_anom: np.ndarray = uncertainties.unumpy.uarray(
             nominal_values=elev_anom, std_devs=elev_std
         ) * ureg.Unit(elev_dtype.units)

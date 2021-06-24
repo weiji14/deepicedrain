@@ -2039,19 +2039,26 @@ test = ["pytest", "pytest-mpl", "pytest-cov", "pytest-subtests"]
 uncertainties = ["uncertainties (>=3.0)"]
 
 [[package]]
-name = "pint-pandas"
-version = "0.2"
+name = "Pint-Pandas"
+version = "0.2.dev65+g4d6b9cf"
 description = "Physical quantities module"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+develop = false
 
 [package.dependencies]
-pandas = ">=1.2"
-pint = ">=0.17"
+pandas = ">=1.0.4"
+pint = ">=0.13"
 
 [package.extras]
 test = ["pytest", "pytest-mpl", "pytest-cov", "pytest-subtests", "codecov", "coveralls", "nbval"]
+
+[package.source]
+type = "git"
+url = "https://github.com/hgrecco/pint-pandas.git"
+reference = "4d6b9cfc82abe8a932615119da71406a025f2487"
+resolved_reference = "4d6b9cfc82abe8a932615119da71406a025f2487"
 
 [[package]]
 name = "pluggy"
@@ -2962,7 +2969,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "c3947f647b16e9eb4a6f610ec33e4622a56ecd5aa458bf6981854784833c232b"
+content-hash = "a47291b60fa520d00856d40d7b34d8ad5dd5de28afd9e563fd31cc259fe1573c"
 
 [metadata.files]
 aiohttp = [
@@ -4093,10 +4100,7 @@ pint = [
     {file = "Pint-0.17-py2.py3-none-any.whl", hash = "sha256:6593c5dfaf2f701c54f17453191dff05e90ec9ebc3d1901468a59cfcb3289a4c"},
     {file = "Pint-0.17.tar.gz", hash = "sha256:f4d0caa713239e6847a7c6eefe2427358566451fe56497d533f21fb590a3f313"},
 ]
-pint-pandas = [
-    {file = "Pint-Pandas-0.2.tar.gz", hash = "sha256:6f60d2e80ac102e0f94addb9206e0f6cca5ee42f0b7f8930d8c798002e41fa87"},
-    {file = "Pint_Pandas-0.2-py2.py3-none-any.whl", hash = "sha256:214e4d9b79f540e7caef3a1cfd3d9ee31cba6b1559303a49f4de04a5756cc507"},
-]
+Pint-Pandas = []
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
