@@ -8,7 +8,7 @@ license = "LGPL-3.0-or-later"
 [tool.poetry.dependencies]
 alphashape = "^1.1.0"
 atl11 = {git = "https://github.com/suzanne64/ATL11.git", rev = "cf667454a292da35c0e756f48afc7530240a5f3a"}
-cupy-cuda102 = {version = "^9.0.0b3", optional = true}
+cupy-cuda102 = {version = "^10.0.0a2", optional = true}
 cython = "^0.29.23"
 dask = "^2021.5.1"
 dask-cuda = {version = "^21.6.0", optional = true}
