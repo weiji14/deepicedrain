@@ -21,7 +21,7 @@ graphviz = "^0.16"
 h5netcdf = "^0.10.0"
 hvplot = "^0.7.1"
 icepyx = {extras = ["viz"], version = "^0.4.0"}
-intake = {extras = ["dataframe", "server"], version = "^0.6.1"}
+intake = {extras = ["dataframe", "server"], version = "^0.6.2"}
 intake-geopandas = "^0.2.4"
 intake-parquet = "^0.2.3"
 intake-xarray = "^0.4.1"
