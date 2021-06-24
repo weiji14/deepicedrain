@@ -20,7 +20,7 @@ geopandas = "^0.9.0"
 graphviz = "^0.16"
 h5netcdf = "^0.10.0"
 hvplot = "^0.7.1"
-icepyx = {extras = ["viz"], git = "https://github.com/icesat2py/icepyx.git", rev = "a582a272d7509622f4882843c3316b4c1cc00f49"}
+icepyx = {extras = ["viz"], version = "^0.4.0"}
 intake = {extras = ["dataframe", "server"], version = "^0.6.1"}
 intake-geopandas = "^0.2.4"
 intake-parquet = "^0.2.3"
@@ -28,8 +28,8 @@ intake-xarray = "^0.4.1"
 jupyterlab = "^3.0.11"
 matplotlib = "^3.3.3"
 numcodecs = "^0.7.3"
-Pint = "^0.16.1"
-Pint-Pandas = "^0.1"
+Pint = "^0.17"
+Pint-Pandas = {git = "https://github.com/hgrecco/pint-pandas.git", rev = "4d6b9cfc82abe8a932615119da71406a025f2487"}
 pointcollection = {git = "https://github.com/SmithB/pointCollection.git", rev = "4d702582c790269acef010a518398a892cc58db9"}
 pyarrow = "1.0.1"
 pyepsg = "^0.4.0"
