@@ -468,7 +468,7 @@ pynvml = ">=8.0.3"
 
 [[package]]
 name = "dask-labextension"
-version = "5.0.0"
+version = "5.0.2"
 description = "A JupyterLab extension for Dask."
 category = "main"
 optional = false
@@ -2918,7 +2918,7 @@ cuda = ["cupy-cuda102", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "e84b6442f0bf03817b50b18369a4619e535fcdc02c98f0ca2116826ce376b183"
+content-hash = "b84797f7e8112180feb2a998960987c768b444a487ff743e657ce4b65cd30032"
 
 [metadata.files]
 aiohttp = [
@@ -3279,8 +3279,8 @@ dask-cuda = [
     {file = "dask_cuda-0.18.0-py3-none-any.whl", hash = "sha256:4e49cedba661eaed7416c3a08ec59b39703f94613b0cb9240955a0d241b217f2"},
 ]
 dask-labextension = [
-    {file = "dask_labextension-5.0.0-py3-none-any.whl", hash = "sha256:b186b518721bfc57a800f418641245b5333e19645ee8ce4dad3557f354d04ea4"},
-    {file = "dask_labextension-5.0.0.tar.gz", hash = "sha256:f6045d6f4ee41bf0f50cbb013b9043c82e527f8726e6c61681265e553d4726c8"},
+    {file = "dask_labextension-5.0.2-py3-none-any.whl", hash = "sha256:7321ab097a7dd5321bd25e89d6de1b055aec8f30650296c41a34c992bf3c7d92"},
+    {file = "dask_labextension-5.0.2.tar.gz", hash = "sha256:3c6b9948e2cdc167b63e74aa695667c00e0591a7779af025cb3cbabbe49e5afa"},
 ]
 datashader = [
     {file = "datashader-0.12.1-py2.py3-none-any.whl", hash = "sha256:a19e89ddf44a817c8136db8fd4727d08ca38022248b9b3648038438ab58a7b1b"},
