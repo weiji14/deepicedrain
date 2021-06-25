@@ -2195,15 +2195,15 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "pygmt"
-version = "0.3.1"
+version = "0.4.0"
 description = "A Python interface for the Generic Mapping Tools"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 
 [package.dependencies]
 netCDF4 = "*"
-numpy = "*"
+numpy = ">=1.17"
 packaging = "*"
 pandas = "*"
 xarray = "*"
@@ -2917,7 +2917,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "55e25eccaee87411787e46c7c9e064827065000c2229b8ff9921c391567b1ebc"
+content-hash = "5af6deb683263165d5b223603dfbd59c927e2ec83a5379e72400f1cf6db408bc"
 
 [metadata.files]
 aiohttp = [
@@ -4200,8 +4200,8 @@ pygments = [
     {file = "Pygments-2.9.0.tar.gz", hash = "sha256:a18f47b506a429f6f4b9df81bb02beab9ca21d0a5fee38ed15aef65f0545519f"},
 ]
 pygmt = [
-    {file = "pygmt-0.3.1-py3-none-any.whl", hash = "sha256:0f8750f821856e255039afface5cf4612c16e98fe11f1a487f9966abcdeb8d1b"},
-    {file = "pygmt-0.3.1.tar.gz", hash = "sha256:b8b7450a9f3f5b53002eb6d5057769d4281bf605f084bc4dc7290e873945fb9e"},
+    {file = "pygmt-0.4.0-py3-none-any.whl", hash = "sha256:90def94dd8a57ad876ce4d4c3471d1e94613d9b6b8d659e53746b6ac7e843a89"},
+    {file = "pygmt-0.4.0.tar.gz", hash = "sha256:b3a862c00054b0aa9fa1449c7d2e791970d8408ad528e5b031010a146e916649"},
 ]
 pygtrie = [
     {file = "pygtrie-2.3.2.tar.gz", hash = "sha256:6299cdedd2cbdfda0895c2dbc43efe8828e698c62b574f3ef7e14b3253f80e23"},
