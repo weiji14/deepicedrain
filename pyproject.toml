@@ -38,7 +38,7 @@ python = "~3.8"
 python-snappy = "^0.6.0"
 pyproj = "^3.0.1"
 scikit-learn = "^0.24.1"
-tqdm = "^4.54.0"
+tqdm = "^4.61.1"
 uncertainties = "^3.1.5"
 xarray = "^0.17.0"
 
