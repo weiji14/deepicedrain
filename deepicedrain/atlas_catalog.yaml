@@ -26,9 +26,9 @@ sources:
       date:
         description: Year, month, and day of data acquisition
         type: datetime
-        default: 2020.11.11
+        default: 2021.04.21
         min: 2018.10.14
-        max: 2020.11.11  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
+        max: 2021.04.21  # note missing 2018.12.09, and gap from 2019.06.27 to 2019.07.25 (inclusive)
       orbitalsegment:
         description: Orbital Segment
         type: list
@@ -36,8 +36,8 @@ sources:
       version:
         description: Version number
         type: int
-        default: 3
-        allowed: [1, 2, 3]
+        default: 4
+        allowed: [1, 2, 3, 4]
       revision:
         description: Revision number
         type: int
@@ -131,7 +131,7 @@ sources:
           type: datetime
           default: 2020.03.11
           min: 2019.03.29
-          max: 2020.03.11
+          max: 2021.04.21
         referencegroundtrack:
           description: ICESat-2 Reference Ground Track number
           type: str
@@ -144,8 +144,8 @@ sources:
         version:
           description: Version number
           type: int
-          default: 2
-          allowed: [1, 2]
+          default: 3
+          allowed: [1, 2, 3]
     driver: intake_xarray.netcdf.NetCDFSource
     metadata:
       plots:

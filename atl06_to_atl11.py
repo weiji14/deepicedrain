@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.9.1
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -40,17 +40,20 @@ import tqdm
 import xarray as xr
 import zarr
 
+import deepicedrain
+
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
-client = dask.distributed.Client(n_workers=10, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=2, threads_per_worker=1)
 client
 
 # %% [markdown]
-# ## Download ATL11 from [NSIDC](https://doi.org/10.5067/ATLAS/ATL11.002) up to cycle 8
+# ## Download ATL11 from [NSIDC](https://doi.org/10.5067/ATLAS/ATL11.003) up to cycle 9
 
 # %%
-# Submit download jobs to Client
+# Note, need to downgrade using `pip install fsspec==0.7.4 intake-xarray==0.3.2`
+# Get list of official ATL11 files to download
 catalog = intake.open_catalog("deepicedrain/atlas_catalog.yaml")
 with open(file="ATL11_to_download.txt", mode="r") as f:
     urlpaths = f.readlines()
@@ -165,7 +168,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 #         - Attributes (longitude, latitude, h_corr, delta_time, etc)
 
 # %%
-max_cycles: int = max(int(f[-11:-10]) for f in glob.glob("ATL11.002/*.h5"))
+max_cycles: int = max(int(f[-11:-10]) for f in glob.glob("ATL11.003/*.h5"))
 print(f"{max_cycles} ICESat-2 cycles available")
 
 # %%
@@ -199,11 +202,28 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
 
 
 # %%
+@dask.delayed
+def set_xy_and_mask(ds):
+    # Calculate the EPSG:3031 x/y projection coordinates
+    ds["x"], ds["y"] = deepicedrain.lonlat_to_xy(
+        longitude=ds.longitude, latitude=ds.latitude
+    )
+    # Set x, y, x_atc and y_atc as coords of the xarray.Dataset instead of lon/lat
+    ds: xr.Dataset = ds.set_coords(names=["x", "y", "x_atc", "y_atc"])
+    ds: xr.Dataset = ds.reset_coords(names=["longitude", "latitude"])
+
+    # Mask out low quality height data
+    ds["h_corr"]: xr.DataArray = ds.h_corr.where(cond=ds.fit_quality == 0)
+
+    return ds
+
+
+# %%
 # Consolidate together Antarctic orbital segments 10, 11, 12 into one file
 # Also consolidate all three laser pairs pt1, pt2, pt3 into one file
 atl11_dict = {}
 for rgt in tqdm.trange(1387):
-    atl11files: list = glob.glob(f"ATL11.002/ATL11_{rgt+1:04d}1?_????_00?_0?.h5")
+    atl11files: list = glob.glob(f"ATL11.003/ATL11_{rgt+1:04d}1?_????_00?_0?.h5")
 
     try:
         assert len(atl11files) == 3  # Should be 3 files for Orbital Segments 10,11,12
@@ -216,10 +236,10 @@ for rgt in tqdm.trange(1387):
 
     if atl11files:
         pattern: dict = intake.source.utils.reverse_format(
-            format_string="ATL11.002/ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5",
+            format_string="ATL11.003/ATL11_{referencegroundtrack:4}{orbitalsegment:2}_{cycles:4}_{version:3}_{revision:2}.h5",
             resolved_string=sorted(atl11files)[1],  # get the '11' one, not '10' or '12'
         )
-        zarrfilepath: str = "ATL11.002z123/ATL11_{referencegroundtrack}1x_{cycles}_{version}_{revision}.zarr".format(
+        zarrfilepath: str = "ATL11.003z123/ATL11_{referencegroundtrack}1x_{cycles}_{version}_{revision}.zarr".format(
             **pattern
         )
         atl11_dict[zarrfilepath] = atl11files
@@ -234,7 +254,9 @@ ds: xr.Dataset = xr.combine_by_coords(datasets=[root_ds, reference_surface_ds])
 
 # Convert variables to correct datatype
 encoding: dict = {}
-df: pd.DataFrame = pd.read_csv("ATL11/ATL11_output_attrs.csv")[["field", "datatype"]]
+df: pd.DataFrame = pd.read_csv(
+    "https://raw.githubusercontent.com/suzanne64/ATL11/master/ATL11/package_data/ATL11_output_attrs.csv"
+)[["field", "datatype"]]
 df = df.set_index("field")
 for var in ds.variables:
     desired_dtype = str(df.datatype[var]).lower()
@@ -261,6 +283,16 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
             ds = dask.delayed(obj=xr.combine_by_coords)(
                 datasets=[root_ds, reference_surface_ds]
             )
+            # Light pre-processing
+            ds = set_xy_and_mask(ds=ds)
+            _rgt_array = dask.delayed(obj=np.full)(
+                shape=ds.ref_pt.shape,
+                fill_value=atl11file.split("_")[1][:4],
+                dtype=np.int8,
+            )
+            ds = dask.delayed(obj=ds.assign_coords)(
+                referencegroundtrack=("ref_pt", _rgt_array)
+            )
             datasets.append(ds)
 
     dataset = dask.delayed(obj=xr.concat)(objs=datasets, dim="ref_pt")
@@ -286,11 +318,11 @@ ds.h_corr.__array__().shape
 # %% [raw]
 # # Note, this raw conversion below takes about 11 hours
 # # because HDF5 files work on a single thread...
-# for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.002/*.h5"))):
+# for atl11file in tqdm.tqdm(iterable=sorted(glob.glob("ATL11.003/*.h5"))):
 #     name = os.path.basename(p=os.path.splitext(p=atl11file)[0])
 #     zarr.convenience.copy_all(
 #         source=h5py.File(name=atl11file, mode="r"),
-#         dest=zarr.open_group(store=f"ATL11.002z/{name}.zarr", mode="w"),
+#         dest=zarr.open_group(store=f"ATL11.003z/{name}.zarr", mode="w"),
 #         if_exists="skip",
 #         without_attrs=True,
 #     )
