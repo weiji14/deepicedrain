@@ -110,7 +110,7 @@ def get_credentials(url):
         username, account, password = info.authenticators(urlparse(URS_URL).hostname)
         errprefix = "netrc error: "
     except Exception as e:
-        if not ("No such file" in str(e)):
+        if "No such file" not in str(e):
             print("netrc error: {0}".format(str(e)))
         username = None
         password = None
