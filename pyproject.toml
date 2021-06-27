@@ -43,7 +43,7 @@ uncertainties = "^3.1.5"
 xarray = "^0.18.2"
 
 [tool.poetry.dev-dependencies]
-black = "^20.8b1"
+black = "^21.6b0"
 jupytext = "^1.11.3"
 pytest = "^6.2.4"
 pytest-bdd = "^4.0.2"
