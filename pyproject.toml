@@ -19,7 +19,6 @@ dvc = "^2.4.2"
 geopandas = "^0.9.0"
 graphviz = "^0.16"
 h5netcdf = "^0.11.0"
-hdbscan = "^0.8.27"
 hvplot = "^0.7.2"
 icepyx = "^0.4.0"
 intake = {extras = ["dataframe", "server"], version = "^0.6.1"}

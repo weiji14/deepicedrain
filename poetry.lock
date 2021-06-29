@@ -940,22 +940,6 @@ python-versions = ">=3.7"
 numpy = {version = ">=1.17.5", markers = "python_version == \"3.8\""}
 
 [[package]]
-name = "hdbscan"
-version = "0.8.27"
-description = "Clustering based on density with variable density clusters"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-cython = ">=0.27"
-joblib = ">=1.0"
-numpy = ">=1.16"
-scikit-learn = ">=0.20"
-scipy = ">=1.0"
-six = "*"
-
-[[package]]
 name = "heapdict"
 version = "1.0.1"
 description = "a heap with decrease-key and increase-key operations"
@@ -2904,7 +2888,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "73ba65b2f28e8560da5eba9a55f1ae11b7c886bc530772cb8f03d7dd9210fabf"
+content-hash = "a91fb928f739169833253e8dd268a93d039cdf4214d2b1ba889374312d3a96db"
 
 [metadata.files]
 aiohttp = [
@@ -3446,9 +3430,6 @@ h5py = [
     {file = "h5py-3.3.0-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:09e78cefdef0b7566ab66366c5c7d9984c7b23142245bd51b82b744ad1eebf65"},
     {file = "h5py-3.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:5e2f22e66a3fb1815405cfe5711670450c973b8552507c535a546a23a468af3d"},
     {file = "h5py-3.3.0.tar.gz", hash = "sha256:e0dac887d779929778b3cfd13309a939359cc9e74756fc09af7c527a82797186"},
-]
-hdbscan = [
-    {file = "hdbscan-0.8.27.tar.gz", hash = "sha256:e3a418d0d36874f7b6a1bf0b7461f3857fc13a525fd48ba34caed2fe8973aa26"},
 ]
 heapdict = [
     {file = "HeapDict-1.0.1-py3-none-any.whl", hash = "sha256:6065f90933ab1bb7e50db403b90cab653c853690c5992e69294c2de2b253fc92"},
