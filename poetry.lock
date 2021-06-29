@@ -940,6 +940,22 @@ python-versions = ">=3.7"
 numpy = {version = ">=1.17.5", markers = "python_version == \"3.8\""}
 
 [[package]]
+name = "hdbscan"
+version = "0.8.27"
+description = "Clustering based on density with variable density clusters"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+cython = ">=0.27"
+joblib = ">=1.0"
+numpy = ">=1.16"
+scikit-learn = ">=0.20"
+scipy = ">=1.0"
+six = "*"
+
+[[package]]
 name = "heapdict"
 version = "1.0.1"
 description = "a heap with decrease-key and increase-key operations"
@@ -1006,7 +1022,6 @@ description = "Python tools for obtaining and working with ICESat-2 data"
 category = "main"
 optional = false
 python-versions = ">=3"
-develop = false
 
 [package.dependencies]
 backoff = "*"
@@ -1026,12 +1041,6 @@ xarray = "*"
 [package.extras]
 complete = ["cartopy (>=0.18.0)", "geoviews (>=1.9.0)", "scipy"]
 viz = ["geoviews (>=1.9.0)", "cartopy (>=0.18.0)", "scipy"]
-
-[package.source]
-type = "git"
-url = "https://github.com/icesat2py/icepyx.git"
-reference = "v0.4.0"
-resolved_reference = "fe57c41a2775b663c19a2ab59a6ebb644caf4a3b"
 
 [[package]]
 name = "idna"
@@ -2895,7 +2904,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "13ae82db80740085b6a7528dafca591bb0ab2b61c16bf39865a180819eaa4b8a"
+content-hash = "73ba65b2f28e8560da5eba9a55f1ae11b7c886bc530772cb8f03d7dd9210fabf"
 
 [metadata.files]
 aiohttp = [
@@ -3438,6 +3447,9 @@ h5py = [
     {file = "h5py-3.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:5e2f22e66a3fb1815405cfe5711670450c973b8552507c535a546a23a468af3d"},
     {file = "h5py-3.3.0.tar.gz", hash = "sha256:e0dac887d779929778b3cfd13309a939359cc9e74756fc09af7c527a82797186"},
 ]
+hdbscan = [
+    {file = "hdbscan-0.8.27.tar.gz", hash = "sha256:e3a418d0d36874f7b6a1bf0b7461f3857fc13a525fd48ba34caed2fe8973aa26"},
+]
 heapdict = [
     {file = "HeapDict-1.0.1-py3-none-any.whl", hash = "sha256:6065f90933ab1bb7e50db403b90cab653c853690c5992e69294c2de2b253fc92"},
     {file = "HeapDict-1.0.1.tar.gz", hash = "sha256:8495f57b3e03d8e46d5f1b2cc62ca881aca392fd5cc048dc0aa2e1a6d23ecdb6"},
@@ -3450,7 +3462,10 @@ hvplot = [
     {file = "hvplot-0.7.2-py2.py3-none-any.whl", hash = "sha256:400054577b0b46a2988b5b4e9e4944c12c1a11f44c3fc453d89d656d63e0fda8"},
     {file = "hvplot-0.7.2.tar.gz", hash = "sha256:f0dcfcb5e46ae3c29a646c341435986e332ef38af1057bf7b76abadff0bbaca4"},
 ]
-icepyx = []
+icepyx = [
+    {file = "icepyx-0.4.0-py3-none-any.whl", hash = "sha256:18fee48023035c7896343c9eda9e74427794cd0cd809d907017bd2cbb33b6e0e"},
+    {file = "icepyx-0.4.0.tar.gz", hash = "sha256:4c6757172f2115ee3fe2a1952d9f6b487f8d6f00a7685236637074c021b373b7"},
+]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
     {file = "idna-2.10.tar.gz", hash = "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6"},
