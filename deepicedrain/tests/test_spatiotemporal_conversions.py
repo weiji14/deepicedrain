@@ -98,7 +98,7 @@ def test_lonlat_to_xy_dask_series():
     x, y = lonlat_to_xy(
         longitude=atl11_dataframe.longitude, latitude=atl11_dataframe.latitude
     )
-    npt.assert_equal(actual=x.mean(), desired=-56900105.00307033)
+    npt.assert_equal(actual=x.mean(), desired=-56900105.00307034)
     npt.assert_equal(actual=y.mean(), desired=48141607.48486084)
 
 
