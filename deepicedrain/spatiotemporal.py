@@ -420,7 +420,7 @@ def spatiotemporal_cube(
         J=f'"{projection}"',  # projection
         M="3c",  # mask values 3 pixel cells outside/away from valid data
         T=0.35,  # tension factor
-        V="e",  # error messages only
+        verbose="e",  # error messages only
     )
     for cycle in tqdm.tqdm(iterable=cycles):
         df_trimmed = pygmt.blockmedian(

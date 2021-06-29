@@ -229,7 +229,7 @@ def plot_alongtrack(
         text=f"Reference Ground Track {rgtpair}",
         position="TC",
         offset="jTC0c/0.2c",
-        V="q",
+        verbose="q",
     )
     # Colors from https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=9
     cycle_colors: dict = {
@@ -556,7 +556,7 @@ def plot_icesurface(
     try:
         series = diff_grid_region[-2:]
     except TypeError:
-        series = pygmt.grdinfo(grid=diff_grid, T="1+s")[2:-3]
+        series = pygmt.grdinfo(grid=diff_grid, nearest_multiple="1+s")[2:-3]
     finally:
         pygmt.makecpt(cmap="roma", series=series)
     fig.grdview(
@@ -613,7 +613,7 @@ def plot_icesurface(
     )
     fig.colorbar(
         cmap=True,
-        I=True,  # shading
+        shading=True,
         position="JMR+o1c/0c+w7c/0.5c+n",
         frame=['x+l"Elevation"', "y+lm"],
         perspective=True,
@@ -634,7 +634,7 @@ def plot_icesurface(
             pygmt.grdtrack(
                 points=outline_points,
                 grid=grid,
-                R="/".join(map(str, grid_region[:-2])),
+                region="/".join(map(str, grid_region[:-2])),
                 outfile=tmpfile.name,
                 verbose="e",
             )
@@ -642,7 +642,7 @@ def plot_icesurface(
             pygmt.grdtrack(
                 points=outline_points,
                 grid=grid,
-                R="/".join(map(str, grid_region[:-2])),
+                region="/".join(map(str, grid_region[:-2])),
                 outfile=tmpfile.name,
                 d=f"o{_df.z.median()}",  # fill NaN points with median height
                 verbose="e",
