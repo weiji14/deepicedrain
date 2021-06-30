@@ -12,7 +12,7 @@ in Antarctica using remote sensing and machine learning.
 
 | Ice Surface Elevation trends over Antactica | Active Subglacial Lake filling event |
 |---|---|
-| ![ICESat-2 ATL11 rate of height change over time in Antarctica 2018-10-14 to 2020-11-11](https://user-images.githubusercontent.com/23487320/105754590-220b1800-5faf-11eb-8f4c-b99fb7b7449e.png) | ![dsm_whillans_ix_cycles_3-9.gif](https://user-images.githubusercontent.com/23487320/110536564-7b599000-8186-11eb-9ae2-aca8d76f7313.gif) |
+| ![ICESat-2 ATL11 rate of height change over time in Antarctica 2019-03-29 to 2020-12-24](https://user-images.githubusercontent.com/23487320/123902132-65cfd680-d9c0-11eb-88d6-4e0e8c5abc47.png) | ![dsm_whillans_ix_cycles_3-9.gif](https://user-images.githubusercontent.com/23487320/110536564-7b599000-8186-11eb-9ae2-aca8d76f7313.gif) |
 
 ![DeepIceDrain Pipeline Part 1 Exploratory Data Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Land-Ice-Height-time-series|atl11_play.ipynb])
 ![DeepIceDrain Pipeline Part 2 Subglacial Lake Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb],[Height-Change-over-Time-(dhdt)]->[Subglacial-Lake-Finder|atlxi_lake.ipynb],[Subglacial-Lake-Finder]->[Crossover-Analysis|atlxi_xover.ipynb])

@@ -159,7 +159,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 # We'll collect the data for each Reference Ground Track,
 # and store it inside a Zarr format,
 # specifically one that can be used by xarray.
-# See also http://xarray.pydata.org/en/v0.15.1/io.html#zarr.
+# See also https://xarray.pydata.org/en/v0.18.2/user-guide/io.html#zarr.
 #
 # Grouping hierarchy:
 #   - Reference Ground Track (1-1387)
@@ -200,6 +200,12 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
 
     return ds
 
+
+# %% [markdown]
+# ### Light pre-processing
+#
+# - Reproject longitude/latitude to EPSG:3031 x/y
+# - Mask out low quality height data
 
 # %%
 @dask.delayed
