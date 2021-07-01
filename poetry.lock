@@ -677,7 +677,7 @@ hdfs = ["pyarrow (>=2.0.0)"]
 oss = ["oss2 (==2.6.1)", "pycryptodome (>=3.10)"]
 s3 = ["s3fs (==2021.6.1)", "aiobotocore[boto3] (==1.3.0)"]
 ssh = ["paramiko[invoke] (>=2.7.0)"]
-ssh_gssapi = ["paramiko[invoke,gssapi] (>=2.7.0)"]
+ssh_gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
 tests = ["wheel (==0.36.2)", "pytest (==6.2.4)", "pytest-cov (==2.12.1)", "pytest-xdist (==2.3.0)", "pytest-mock (==3.6.1)", "pytest-lazy-fixture (==0.6.3)", "pytest-timeout (==1.4.2)", "pytest-docker (==0.10.3)", "flaky (==3.7.0)", "mock (==4.0.3)", "rangehttpserver (==1.2.0)", "mock-ssh-server (==0.9.0)", "beautifulsoup4 (==4.9.3)", "wget (==3.2)", "filelock (==3.0.12)", "wsgidav (==3.1.0)", "crc32c (==2.2.post0)", "xmltodict (==0.12.0)", "google-compute-engine (==2.8.13)", "google-cloud-storage (==1.39.0)", "urllib3 (==1.26.6)", "Pygments (==2.9.0)", "collective.checkdocs (==0.2)", "pydocstyle (==6.1.1)", "jaraco.windows (==5.5.0)", "pylint (==2.8.3)", "pylint-pytest (==1.0.3)", "pylint-plugin-utils (==0.6)", "mypy (==0.910)", "types-requests", "types-paramiko", "types-tabulate", "types-toml"]
 webdav = ["webdav4 (>=0.8.1)"]
 webhdfs = ["hdfs (==2.5.8)"]
@@ -2284,11 +2284,11 @@ pytest = ">=3.10"
 
 [[package]]
 name = "pytest-xdist"
-version = "2.2.1"
+version = "2.3.0"
 description = "pytest xdist plugin for distributed testing and loop-on-failing modes"
 category = "dev"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
 execnet = ">=1.1"
@@ -2916,7 +2916,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "5eda2f69cfbef27e7f5d1a2d1d55484e9d6f1491196681e9f237829aac3cdc9e"
+content-hash = "926d76bbd74b07f48fe85fab3229a2b34b732e42c501f899b4a658ea8dafcda0"
 
 [metadata.files]
 aiohttp = [
@@ -4244,8 +4244,8 @@ pytest-forked = [
     {file = "pytest_forked-1.3.0-py2.py3-none-any.whl", hash = "sha256:dc4147784048e70ef5d437951728825a131b81714b398d5d52f17c7c144d8815"},
 ]
 pytest-xdist = [
-    {file = "pytest-xdist-2.2.1.tar.gz", hash = "sha256:718887296892f92683f6a51f25a3ae584993b06f7076ce1e1fd482e59a8220a2"},
-    {file = "pytest_xdist-2.2.1-py3-none-any.whl", hash = "sha256:2447a1592ab41745955fb870ac7023026f20a5f0bfccf1b52a879bd193d46450"},
+    {file = "pytest-xdist-2.3.0.tar.gz", hash = "sha256:e8ecde2f85d88fbcadb7d28cb33da0fa29bca5cf7d5967fa89fc0e97e5299ea5"},
+    {file = "pytest_xdist-2.3.0-py3-none-any.whl", hash = "sha256:ed3d7da961070fce2a01818b51f6888327fb88df4379edeb6b9d990e789d9c8d"},
 ]
 python-benedict = [
     {file = "python-benedict-0.24.0.tar.gz", hash = "sha256:1aa65ea78bd0bfd269e9289edb05d6f4e82ce62669ad0604a27d80db00a1a575"},
