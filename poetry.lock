@@ -618,7 +618,7 @@ watch = ["pyinotify"]
 
 [[package]]
 name = "dvc"
-version = "2.4.2"
+version = "2.4.3"
 description = "Git for data scientists - manage your code and data together"
 category = "main"
 optional = false
@@ -635,7 +635,7 @@ dpath = ">=2.0.1,<3"
 dulwich = ">=0.20.23"
 flatten-dict = ">=0.3.0,<1"
 "flufl.lock" = ">=3.2,<4"
-fsspec = "2021.6.1"
+fsspec = ">=2021.6.1"
 funcy = ">=1.14"
 gitpython = ">3"
 grandalf = "0.6"
@@ -649,7 +649,7 @@ psutil = ">=5.8.0"
 pyasn1 = ">=0.4.1"
 pydot = ">=1.2.4"
 pygit2 = ">=1.5.0"
-pygtrie = "2.3.2"
+pygtrie = ">=2.3.2"
 pyparsing = "2.4.7"
 python-benedict = ">=0.21.1"
 pywin32 = {version = ">=225", markers = "sys_platform == \"win32\""}
@@ -2914,7 +2914,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "ab37d6182ca9a310a39ab713102d5dbd9f93f0de749e1cdb41642978aa8e73ff"
+content-hash = "aab2ec2b943af35c78ad9478de1b0def592f12f63e17641fbea5b174082487ef"
 
 [metadata.files]
 aiohttp = [
@@ -3333,8 +3333,8 @@ dulwich = [
     {file = "dulwich-0.20.23.tar.gz", hash = "sha256:402e56b5c07f040479d1188e5c2f406e2c006aa3943080155d4c6d05e5fca865"},
 ]
 dvc = [
-    {file = "dvc-2.4.2-py2.py3-none-any.whl", hash = "sha256:ff586cbcdcf0b0fb9c5ffdf0341d024a67790f76f448255c54a3c4e962ca240a"},
-    {file = "dvc-2.4.2.tar.gz", hash = "sha256:253f46713381318e9ec512795bf15bee8eae5a54b0009784ee424c4a4c5d850d"},
+    {file = "dvc-2.4.3-py2.py3-none-any.whl", hash = "sha256:f02cf67cf3a5fee7428d65a2cab3abd7b4c5f705b27c4796710cce74a48f4702"},
+    {file = "dvc-2.4.3.tar.gz", hash = "sha256:52e1f9c3fca16aae22b397a3f1c350c7e463b92942e847c756318d15548641e7"},
 ]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
