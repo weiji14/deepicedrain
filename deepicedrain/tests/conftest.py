@@ -49,12 +49,11 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
     file and subset it to a specific lake region.
     """
     context.lake_name: str = lake_name
-    # TODO use intake_parquet after https://github.com/intake/intake-parquet/issues/18
-    with fsspec.open(
-        f"simplecache::https://github.com/weiji14/deepicedrain/releases/download/v0.4.0/df_dhdt_{location}.parquet",
-        simplecache=dict(cache_storage="ATLXI", same_names=True),
-    ) as openfile:
-        dataframe: pd.DataFrame = pd.read_parquet(openfile)
+    # Data files are version controlled using DVC and stored on
+    # https://dagshub.com/weiji14/deepicedrain/src/main/ATLXI
+    # They will also be uploaded as assets every release at e.g.
+    # https://github.com/weiji14/deepicedrain/releases
+    dataframe: pd.DataFrame = pd.read_parquet(path=f"ATLXI/df_dhdt_{location}.parquet")
 
     # Get lake outline from intake catalog
     lake_catalog = deepicedrain.catalog.subglacial_lakes()
@@ -63,6 +62,7 @@ def lake_altimetry_data(lake_name: str, location: str, context) -> pd.DataFrame:
         .query("lakename == @lake_name")[["ids", "transect"]]
         .iloc[0]
     )
+    context.transect_id: str = transect_id
     context.lake: pd.Series = (
         lake_catalog.read()
         .loc[lake_ids]

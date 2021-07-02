@@ -58,6 +58,14 @@ jobs:
       - name: Install deepicedrain package
         run: poetry install
 
+      # Pull test data from dvc remote (DAGsHub)
+      - name: Pull test data from dvc remote
+        run: |
+          dvc pull ATLXI/df_dhdt_slessor_downstream.parquet \
+                   ATLXI/df_dhdt_whillans_upstream.parquet \
+                   ATLXI/df_dhdt_whillans_downstream.parquet
+          ls -lhR ATLXI/
+
       - name: Display virtualenv and installed package information
         run: |
           conda info
