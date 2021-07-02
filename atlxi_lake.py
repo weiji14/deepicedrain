@@ -351,7 +351,7 @@ fig.show()
 # # Select a subglacial lake to examine
 
 # %%
-# Save or load dhdt data from Parquet file
+# Load dhdt data from Parquet file
 placename: str = "siple_coast"  # "slessor_downstream"  #  "Recovery"  # "Whillans"
 df_dhdt: cudf.DataFrame = cudf.read_parquet(
     f"ATLXI/df_dhdt_{placename.lower()}.parquet"

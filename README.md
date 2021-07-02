@@ -10,16 +10,16 @@ in Antarctica using remote sensing and machine learning.
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=weiji14/deepicedrain)](https://dependabot.com)
 ![License](https://img.shields.io/github/license/weiji14/deepicedrain)
 
-| Ice Surface Elevation trends over Antactica | Active Subglacial Lake filling event |
+| Ice Surface Elevation trends over Antactica | Active Subglacial Lake fill-drain event |
 |---|---|
-| ![ICESat-2 ATL11 rate of height change over time in Antarctica 2019-03-29 to 2020-12-24](https://user-images.githubusercontent.com/23487320/123902132-65cfd680-d9c0-11eb-88d6-4e0e8c5abc47.png) | ![dsm_whillans_ix_cycles_3-9.gif](https://user-images.githubusercontent.com/23487320/110536564-7b599000-8186-11eb-9ae2-aca8d76f7313.gif) |
+| ![ICESat-2 ATL11 rate of height change over time in Antarctica 2019-03-29 to 2020-12-24](https://user-images.githubusercontent.com/23487320/123902132-65cfd680-d9c0-11eb-88d6-4e0e8c5abc47.png) | ![dsm_whillans_ix_cycles_3-9.gif](https://user-images.githubusercontent.com/23487320/124219379-5ed7ce00-db50-11eb-95d0-f1f660d4d688.gif) |
 
 ![DeepIceDrain Pipeline Part 1 Exploratory Data Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Land-Ice-Elevation|atl06_play.ipynb]->[Convert|atl06_to_atl11.ipynb],[Convert]->[Land-Ice-Height-time-series|atl11_play.ipynb])
 ![DeepIceDrain Pipeline Part 2 Subglacial Lake Analysis](https://yuml.me/diagram/scruffy;dir:LR/class/[Height-Change-over-Time-(dhdt)|atlxi_dhdt.ipynb],[Height-Change-over-Time-(dhdt)]->[Subglacial-Lake-Finder|atlxi_lake.ipynb],[Subglacial-Lake-Finder]->[Crossover-Analysis|atlxi_xover.ipynb])
 
 | Along track view of an ATL11 Ground Track | Elevation time-series at Crossover Points |
 |---|---|
-| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/110536370-41888980-8186-11eb-96e6-1ce92aa9966b.png) | ![crossover_anomaly_whillans_ix_2018-10-14_2020-11-11](https://user-images.githubusercontent.com/23487320/110536098-efdfff00-8185-11eb-97d9-065dd59b5727.png) |
+| ![alongtrack_whillans_ix_1080_pt3](https://user-images.githubusercontent.com/23487320/124219416-744cf800-db50-11eb-83a1-45e1e1159ba6.png) | ![crossover_anomaly_whillans_ix_2019-03-29_2020-12-24](https://user-images.githubusercontent.com/23487320/124219432-7a42d900-db50-11eb-92b4-c83728b8dc1c.png) |
 
 
 

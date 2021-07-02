@@ -33,7 +33,6 @@ Feature: Mapping Antarctic subglacial lakes
     # | Kamb 8       | whillans_upstream   | 3-9    | 157.5   | 45        |
     # | Kamb 1       | whillans_upstream   | 3-9    | 157.5   | 45        |
     | Kamb 34      | whillans_upstream   | 4-9    | 157.5   | 45        |
-    # | Kamb 12      | siple_coast         | 3-8    | 157.5   | 45        |
     # | MacAyeal 1   | siple_coast         | 3-8    | 157.5   | 60        |
     # | Slessor 45   | slessor_downstream  | 3-9    | 202.5   | 60        |
     # | Slessor 23   | slessor_downstream  | 3-9    | 202.5   | 60        |
