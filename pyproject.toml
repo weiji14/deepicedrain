@@ -46,7 +46,7 @@ xarray = "^0.18.2"
 black = "^21.6b0"
 jupytext = "^1.11.3"
 pytest = "^6.2.4"
-pytest-bdd = "^4.0.2"
+pytest-bdd = "^4.1.0"
 pytest-xdist = "^2.3.0"
 
 [tool.poetry.extras]
