@@ -57,7 +57,7 @@ client
 catalog = intake.open_catalog("deepicedrain/atlas_catalog.yaml")
 with open(file="ATL11_to_download.txt", mode="r") as f:
     urlpaths = f.readlines()
-dates: set = set(url.split("/")[-2] for url in urlpaths)
+dates: set = {url.split("/")[-2] for url in urlpaths}
 len(dates)
 
 # %%
@@ -75,13 +75,12 @@ for date in dates:
 
 # %%
 # Check download progress here, https://stackoverflow.com/a/37901797/6611055
-responses = []
-for f in tqdm.tqdm(
-    iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
-):
-    responses.append(f.result())
-
-
+responses = [
+    f.result()
+    for f in tqdm.tqdm(
+        iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
+    )
+]
 # %%
 
 # %% [markdown]
@@ -159,7 +158,7 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 # We'll collect the data for each Reference Ground Track,
 # and store it inside a Zarr format,
 # specifically one that can be used by xarray.
-# See also http://xarray.pydata.org/en/v0.15.1/io.html#zarr.
+# See also https://xarray.pydata.org/en/v0.18.2/user-guide/io.html#zarr.
 #
 # Grouping hierarchy:
 #   - Reference Ground Track (1-1387)
@@ -200,6 +199,12 @@ def open_ATL11(atl11file: str, group: str) -> xr.Dataset:
 
     return ds
 
+
+# %% [markdown]
+# ### Light pre-processing
+#
+# - Reproject longitude/latitude to EPSG:3031 x/y
+# - Mask out low quality height data
 
 # %%
 @dask.delayed

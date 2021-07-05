@@ -11,7 +11,8 @@ Feature: Mapping Antarctic subglacial lakes
 
     Examples:
     |  location            | this_many |
-    |  slessor_downstream  | 15        |
+    |  whillans_downstream | 16        |
+    |  slessor_downstream  | 31        |
 
 
   Scenario Outline: Subglacial Lake Animation
@@ -22,21 +23,20 @@ Feature: Mapping Antarctic subglacial lakes
 
     Examples:
     | lake_name    | location            | cycles | azimuth | elevation |
-    # | Mercer XV    | whillans_downstream | 3-8    | 157.5   | 45        |
-    # | Whillans 7   | whillans_upstream   | 3-8    | 157.5   | 45        |
-    | Whillans 6   | whillans_upstream   | 3-8    | 157.5   | 45        |
-    # | Whillans X   | whillans_upstream   | 3-8    | 157.5   | 45        |
-    # | Whillans XI  | whillans_upstream   | 3-8    | 157.5   | 45        |
-    # | Whillans IX  | whillans_upstream   | 3-8    | 157.5   | 45        |
-    # | Lake 12      | whillans_downstream | 3-8    | 157.5   | 45        |
-    # | Kamb 8       | whillans_upstream   | 3-8    | 157.5   | 45        |
-    # | Kamb 1       | whillans_upstream   | 3-8    | 157.5   | 45        |
-    | Kamb 34      | whillans_upstream   | 4-7    | 157.5   | 45        |
-    # | Kamb 12      | siple_coast         | 3-8    | 157.5   | 45        |
+    # | Whillans 7   | whillans_upstream   | 3-9    | 157.5   | 45        |
+    | Whillans 6   | whillans_upstream   | 3-9    | 157.5   | 45        |
+    # | Whillans IX  | whillans_upstream   | 3-9    | 157.5   | 45        |
+    # | Whillans X   | whillans_upstream   | 3-9    | 157.5   | 45        |
+    # | Whillans XI  | whillans_downstream | 3-9    | 157.5   | 45        |
+    # | Subglacial Lake Engelhardt | whillans_downstream | 3-9    | 157.5   | 45        |
+    # | Lake 12      | whillans_downstream | 3-9    | 157.5   | 45        |
+    # | Kamb 8       | whillans_upstream   | 3-9    | 157.5   | 45        |
+    # | Kamb 1       | whillans_upstream   | 3-9    | 157.5   | 45        |
+    | Kamb 34      | whillans_upstream   | 4-9    | 157.5   | 45        |
     # | MacAyeal 1   | siple_coast         | 3-8    | 157.5   | 60        |
-    # | Slessor 45   | slessor_downstream  | 3-8    | 202.5   | 60        |
-    # | Slessor 23   | slessor_downstream  | 3-8    | 202.5   | 60        |
-    | Recovery IV  | slessor_downstream  | 3-8    | 247.5   | 45        |
+    # | Slessor 45   | slessor_downstream  | 3-9    | 202.5   | 60        |
+    # | Slessor 23   | slessor_downstream  | 3-9    | 202.5   | 60        |
+    | Recovery IV  | slessor_downstream  | 3-9    | 247.5   | 45        |
 
 
   Scenario Outline: Subglacial Lake Mega-Cluster Animation
@@ -47,11 +47,11 @@ Feature: Mapping Antarctic subglacial lakes
 
     Examples:
     | lake_name                | location            | cycles | azimuth | elevation |
-    # | Lake 78                  | whillans_downstream | 3-8    | 157.5   | 45        |
-    # | Subglacial Lake Conway   | whillans_downstream | 3-8    | 157.5   | 45        |
-    | Subglacial Lake Mercer   | whillans_downstream | 3-8    | 157.5   | 45        |
-    # | Subglacial Lake Whillans | whillans_downstream | 3-8    | 157.5   | 45        |
-    # | Recovery 2               | slessor_downstream  | 3-8    | 202.5   | 45        |
+    # | Lake 78                  | whillans_downstream | 3-9    | 157.5   | 45        |
+    # | Subglacial Lake Conway   | whillans_downstream | 3-9    | 157.5   | 45        |
+    | Subglacial Lake Mercer   | whillans_downstream | 3-9    | 157.5   | 45        |
+    # | Subglacial Lake Whillans | whillans_downstream | 3-9    | 157.5   | 45        |
+    # | Recovery 2               | slessor_downstream  | 3-9    | 202.5   | 45        |
 
   Scenario Outline: Subglacial Lake Crossover Anomalies
     Given some altimetry data over <lake_name> at <location>

@@ -29,10 +29,11 @@ MANIFEST
 
 # Data files and folders
 **/*.h5
-ATL06.003
+ATL06.00?
 ATL11.00?
 ATL11.00?z123
-ATLXI
+ATLXI/df_*.parquet
+ATLXI/ds_*.zarr
 Quantarctica3
 
 # Subglacial Lake grid files and figures

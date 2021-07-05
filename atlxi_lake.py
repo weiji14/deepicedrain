@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.9.1
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -351,7 +351,7 @@ fig.show()
 # # Select a subglacial lake to examine
 
 # %%
-# Save or load dhdt data from Parquet file
+# Load dhdt data from Parquet file
 placename: str = "siple_coast"  # "slessor_downstream"  #  "Recovery"  # "Whillans"
 df_dhdt: cudf.DataFrame = cudf.read_parquet(
     f"ATLXI/df_dhdt_{placename.lower()}.parquet"

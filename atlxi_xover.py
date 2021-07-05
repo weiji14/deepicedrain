@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -53,13 +53,13 @@ pint_pandas.PintType.ureg = ureg
 tag: str = "X2SYS"
 os.environ["X2SYS_HOME"] = os.path.abspath(tag)
 client = dask.distributed.Client(
-    n_workers=8, threads_per_worker=1, env={"X2SYS_HOME": os.environ["X2SYS_HOME"]}
+    n_workers=4, threads_per_worker=1, env={"X2SYS_HOME": os.environ["X2SYS_HOME"]}
 )
 client
 
 
 # %%
-min_date, max_date = ("2018-10-14", "2020-09-30")
+min_date, max_date = ("2019-03-29", "2020-12-24")
 
 # %%
 # Initialize X2SYS database in the X2SYS/ICESAT2 folder
@@ -78,18 +78,18 @@ pygmt.x2sys_init(
 
 # %%
 # Save or load dhdt data from Parquet file
-placename: str = "siple_coast"  # "slessor_downstream"  #  "Recovery"  # "Whillans"
+placename: str = "whillans_upstream"  # "slessor_downstream"
 df_dhdt: pd.DataFrame = pd.read_parquet(f"ATLXI/df_dhdt_{placename.lower()}.parquet")
 
 
 # %%
 # Choose one Antarctic active subglacial lake polygon with EPSG:3031 coordinates
-lake_name: str = "Lake 12"
+lake_name: str = "Whillans IX"
 lake_catalog = deepicedrain.catalog.subglacial_lakes()
-lake_ids: list = (
+lake_ids, transect_id = (
     pd.json_normalize(lake_catalog.metadata["lakedict"])
-    .query("lakename == @lake_name")
-    .ids.iloc[0]
+    .query("lakename == @lake_name")[["ids", "transect"]]
+    .iloc[0]
 )
 lake = (
     lake_catalog.read()
@@ -107,7 +107,7 @@ lake.geometry
 # %%
 # Subset data to lake of interest
 placename: str = region.name.lower().replace(" ", "_")
-df_lake: cudf.DataFrame = region.subset(data=df_dhdt)  # bbox subset
+df_lake: pd.DataFrame = region.subset(data=df_dhdt)  # bbox subset
 gdf_lake = gpd.GeoDataFrame(
     df_lake, geometry=gpd.points_from_xy(x=df_lake.x, y=df_lake.y, crs=3031)
 )
@@ -270,7 +270,7 @@ fig.text(
     text=f"Track {track1} and {track2} crossover",
     position="TC",
     offset="jTC0c/0.2c",
-    V="q",
+    verbose="q",
 )
 # Plot data points
 fig.plot(x=df_max.t, y=df_max.h, style="c0.15c", color="darkblue", pen="thin")

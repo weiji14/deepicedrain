@@ -26,20 +26,20 @@ def basin_altimetry_data(location):
     Load up some pre-processed ICESat-2 ATL11 altimetry data with x, y,
     dhdt_slope and referencegroundtrack columns from a Parquet file.
     """
-    # TODO use intake_parquet after https://github.com/intake/intake-parquet/issues/18
-    with fsspec.open(
-        f"simplecache::https://github.com/weiji14/deepicedrain/releases/download/v0.4.0/df_dhdt_{location}.parquet",
-        simplecache=dict(cache_storage="ATLXI", same_names=True),
-    ) as openfile:
-        _dataframe: xpd.DataFrame = xpd.read_parquet(
-            openfile, columns=["x", "y", "dhdt_slope", "referencegroundtrack"]
-        )
-        # Take only 1/4 of the data for speed
-        _dataframe: xpd.DataFrame = _dataframe.loc[: len(_dataframe) / 4]
+    # Data files are version controlled using DVC and stored on
+    # https://dagshub.com/weiji14/deepicedrain/src/main/ATLXI
+    # They will also be uploaded as assets every release at e.g.
+    # https://github.com/weiji14/deepicedrain/releases
+    _dataframe: xpd.DataFrame = xpd.read_parquet(
+        f"ATLXI/df_dhdt_{location}.parquet",
+        columns=["x", "y", "dhdt_slope", "referencegroundtrack"],
+    )
+    # Take only 1/4 of the data for speed
+    _dataframe: xpd.DataFrame = _dataframe.loc[: len(_dataframe) / 4]
 
-    # Filter to points > 2 * Median(dhdt)
+    # Filter to points > 3 * Median(dhdt)
     abs_dhdt: xpd.Series = _dataframe.dhdt_slope.abs()
-    dataframe: xpd.DataFrame = _dataframe.loc[abs_dhdt > 2 * abs_dhdt.median()]
+    dataframe: xpd.DataFrame = _dataframe.loc[abs_dhdt > 3 * abs_dhdt.median()]
 
     return dataframe
 

@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.9.1
+#       jupytext_version: 1.11.3
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -64,14 +64,14 @@ client
 # Xarray open_dataset preprocessor to add fields based on input filename.
 add_path_to_ds = lambda ds: ds.assign_coords(
     coords=intake.source.utils.reverse_format(
-        format_string="ATL11.002z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
+        format_string="ATL11.003z123/ATL11_{referencegroundtrack:04d}1x_{}_{}_{}.zarr",
         resolved_string=ds.encoding["source"],
     )
 )
 
 # Load ATL11 data from Zarr
 ds: xr.Dataset = xr.open_mfdataset(
-    paths="ATL11.002z123/ATL11_*_002_01.zarr",
+    paths="ATL11.003z123/ATL11_*_003_01.zarr",
     chunks="auto",
     engine="zarr",
     combine="nested",
@@ -80,26 +80,6 @@ ds: xr.Dataset = xr.open_mfdataset(
     preprocess=add_path_to_ds,
     backend_kwargs={"consolidated": True},
 )
-
-# %% [markdown]
-# ## Light pre-processing
-#
-# - Reproject longitude/latitude to EPSG:3031 x/y
-# - Mask out low quality height data
-
-# %%
-# Calculate the EPSG:3031 x/y projection coordinates
-ds["x"], ds["y"] = deepicedrain.lonlat_to_xy(
-    longitude=ds.longitude, latitude=ds.latitude
-)
-# Set x, y, x_atc and y_atc as coords of the xarray.Dataset instead of lon/lat
-ds: xr.Dataset = ds.set_coords(names=["x", "y", "x_atc", "y_atc"])
-ds: xr.Dataset = ds.reset_coords(names=["longitude", "latitude"])
-
-
-# %%
-# Mask out low quality height data
-ds["h_corr"]: xr.DataArray = ds.h_corr.where(cond=ds.fit_quality == 0)
 
 # %% [markdown]
 # ## Trim out unnecessary values (optional)
@@ -143,8 +123,8 @@ print(f"Trimmed to {len(ds.ref_pt)} points")
 
 # %%
 # Persist the height and time data in distributed memory
-ds["h_corr"] = ds.h_corr.persist()
-ds["delta_time"] = ds.delta_time.persist()
+# ds["h_corr"] = ds.h_corr.persist()
+# ds["delta_time"] = ds.delta_time.persist()
 
 # %% [markdown]
 # ### Retrieve some basic information for plots later
@@ -158,7 +138,7 @@ num_cycles: int = len(ds.cycle_number)
 
 # %%
 # Get first and last dates to put into our plots
-min_date, max_date = ("2018-10-14", "2020-11-11")
+min_date, max_date = ("2019-03-29", "2020-12-24")
 if min_date is None:
     min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
     min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
