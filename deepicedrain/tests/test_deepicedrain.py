@@ -4,7 +4,7 @@ from deepicedrain import __version__, catalog
 
 
 def test_version():
-    assert __version__ == "0.4.1"
+    assert __version__ == "0.4.2"
 
 
 def test_deepicedrain_catalog():

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deepicedrain"
-version = "0.4.1"
+version = "0.4.2"
 description = "Mapping and monitoring deep subglacial water activity in Antarctica using remote sensing and machine learning."
 authors = ["Wei Ji Leong <weiji.leong@vuw.ac.nz>"]
 license = "LGPL-3.0-or-later"
