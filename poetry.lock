@@ -618,7 +618,7 @@ watch = ["pyinotify"]
 
 [[package]]
 name = "dvc"
-version = "2.5.0"
+version = "2.5.4"
 description = "Git for data scientists - manage your code and data together"
 category = "main"
 optional = false
@@ -2913,7 +2913,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "a6b2807adf04a5ecd130d1bfdd47de5df57b5c01323a5845873be5294cd9ebce"
+content-hash = "27108aa2b3517a4c7b5565d4a86ade089a48d26b51b0007a67f07f8ff29c03a9"
 
 [metadata.files]
 aiohttp = [
@@ -3332,8 +3332,8 @@ dulwich = [
     {file = "dulwich-0.20.23.tar.gz", hash = "sha256:402e56b5c07f040479d1188e5c2f406e2c006aa3943080155d4c6d05e5fca865"},
 ]
 dvc = [
-    {file = "dvc-2.5.0-py2.py3-none-any.whl", hash = "sha256:a56bd050c17ddb89d3b0faf340f749406d7295e8cd8d07bd9a8c95ef2301224b"},
-    {file = "dvc-2.5.0.tar.gz", hash = "sha256:eefe92f989813b0494fdc74e06325c2a8ded6c64fb821aa081e90e0185b4d31b"},
+    {file = "dvc-2.5.4-py3-none-any.whl", hash = "sha256:92f68185eb1b024991a211354b83af32749b361e2cbd5b754023ff414b90eaac"},
+    {file = "dvc-2.5.4.tar.gz", hash = "sha256:0b3b5ff97161b37ecf64e1189c9c34d79215b3a0f516026ae5b3d5e10dc29f92"},
 ]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
