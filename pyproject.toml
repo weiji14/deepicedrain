@@ -44,7 +44,7 @@ xarray = "^0.18.2"
 
 [tool.poetry.dev-dependencies]
 black = "^21.6b0"
-jupytext = "^1.11.3"
+jupytext = "^1.11.4"
 pytest = "^6.2.4"
 pytest-bdd = "^4.1.0"
 pytest-xdist = "^2.3.0"
