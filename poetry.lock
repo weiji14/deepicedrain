@@ -980,7 +980,7 @@ unit_tests = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=3)", "bokeh (>=1.1
 
 [[package]]
 name = "hvplot"
-version = "0.7.2"
+version = "0.7.3"
 description = "A high-level plotting API for the PyData ecosystem built on HoloViews."
 category = "main"
 optional = false
@@ -994,12 +994,11 @@ numpy = ">=1.15"
 pandas = "*"
 
 [package.extras]
-all = ["coveralls", "dask", "datashader (>=0.6.5)", "flake8", "geopandas", "geoviews (>=1.6.0)", "intake", "intake-parquet", "intake-xarray", "keyring", "nbsite (>=0.5.1)", "nbsmoke (>=0.2.0)", "networkx", "nose", "notebook (>=5.4)", "numba (>=0.51.0)", "numpy (>=1.7,<1.20)", "param (>=1.6.1)", "parameterized", "pillow", "pyct (>=0.4.4)", "pyepsg", "pygraphviz", "pytest", "python-snappy", "rasterio", "rfc3986", "s3fs", "scikit-image", "scipy", "selenium", "setuptools", "spatialpandas", "streamz (>=0.3.0)", "twine", "xarray (<0.17.0)"]
+all = ["coveralls", "dask", "datashader (>=0.6.5)", "flake8", "geopandas", "geoviews (>=1.6.0)", "intake", "intake-parquet", "intake-xarray", "keyring", "nbsite (>=0.5.1)", "nbsmoke (>=0.2.0)", "networkx", "nose", "notebook (>=5.4)", "numba (>=0.51.0)", "numpy (>=1.7)", "param (>=1.6.1)", "parameterized", "pillow", "pyct (>=0.4.4)", "pyepsg", "pytest", "python-snappy", "rasterio", "rfc3986", "s3fs", "scikit-image", "scipy", "selenium", "setuptools", "spatialpandas", "streamz (>=0.3.0)", "twine", "xarray"]
 build = ["param (>=1.6.1)", "pyct (>=0.4.4)", "setuptools"]
-doc = ["geoviews (>=1.6.0)", "numba (>=0.51.0)", "geopandas", "xarray (<0.17.0)", "networkx", "streamz (>=0.3.0)", "intake", "intake-parquet", "intake-xarray", "dask", "datashader (>=0.6.5)", "notebook (>=5.4)", "rasterio", "s3fs", "scipy", "pillow", "selenium", "spatialpandas", "scikit-image", "python-snappy", "pyepsg", "pygraphviz", "nbsite (>=0.5.1)"]
-examples = ["geoviews (>=1.6.0)", "numba (>=0.51.0)", "geopandas", "xarray (<0.17.0)", "networkx", "streamz (>=0.3.0)", "intake", "intake-parquet", "intake-xarray", "dask", "datashader (>=0.6.5)", "notebook (>=5.4)", "rasterio", "s3fs", "scipy", "pillow", "selenium", "spatialpandas", "scikit-image", "python-snappy", "pyepsg"]
-examples_extra = ["geoviews (>=1.6.0)", "numba (>=0.51.0)", "geopandas", "xarray (<0.17.0)", "networkx", "streamz (>=0.3.0)", "intake", "intake-parquet", "intake-xarray", "dask", "datashader (>=0.6.5)", "notebook (>=5.4)", "rasterio", "s3fs", "scipy", "pillow", "selenium", "spatialpandas", "scikit-image", "python-snappy", "pyepsg", "pygraphviz"]
-tests = ["coveralls", "nose", "flake8", "parameterized", "pytest", "nbsmoke (>=0.2.0)", "twine", "rfc3986", "keyring", "numpy (>=1.7,<1.20)"]
+doc = ["geoviews (>=1.6.0)", "numba (>=0.51.0)", "geopandas", "xarray", "networkx", "streamz (>=0.3.0)", "intake", "intake-parquet", "intake-xarray", "dask", "datashader (>=0.6.5)", "notebook (>=5.4)", "rasterio", "s3fs", "scipy", "pillow", "selenium", "spatialpandas", "scikit-image", "python-snappy", "pyepsg", "nbsite (>=0.5.1)"]
+examples = ["geoviews (>=1.6.0)", "numba (>=0.51.0)", "geopandas", "xarray", "networkx", "streamz (>=0.3.0)", "intake", "intake-parquet", "intake-xarray", "dask", "datashader (>=0.6.5)", "notebook (>=5.4)", "rasterio", "s3fs", "scipy", "pillow", "selenium", "spatialpandas", "scikit-image", "python-snappy", "pyepsg"]
+tests = ["coveralls", "nose", "flake8", "parameterized", "pytest", "nbsmoke (>=0.2.0)", "twine", "rfc3986", "keyring", "numpy (>=1.7)"]
 
 [[package]]
 name = "icepyx"
@@ -2921,7 +2920,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "cb1274d3d5d96f71eae468fa7f3c75f099dc6333ab695b61c12863d658faf552"
+content-hash = "01ae4cd07737d298f770c2f37e2dd6e9755e6af00c1d7c80ae4bc767b008bc29"
 
 [metadata.files]
 aiohttp = [
@@ -3477,8 +3476,8 @@ holoviews = [
     {file = "holoviews-1.14.4.tar.gz", hash = "sha256:08e8be82c2e514e1700a75f02307f414179dc0ecfa2202702dd304a381909eaa"},
 ]
 hvplot = [
-    {file = "hvplot-0.7.2-py2.py3-none-any.whl", hash = "sha256:400054577b0b46a2988b5b4e9e4944c12c1a11f44c3fc453d89d656d63e0fda8"},
-    {file = "hvplot-0.7.2.tar.gz", hash = "sha256:f0dcfcb5e46ae3c29a646c341435986e332ef38af1057bf7b76abadff0bbaca4"},
+    {file = "hvplot-0.7.3-py2.py3-none-any.whl", hash = "sha256:09410f8f569b00fcf59dc7b6d976e0bddf722d21d8d86029b7408016ab7ca477"},
+    {file = "hvplot-0.7.3.tar.gz", hash = "sha256:74b269c6e118dd6f7d2a4039e91f16a193638f4119b4358dc6dbd58a2e71e432"},
 ]
 icepyx = [
     {file = "icepyx-0.4.0-py3-none-any.whl", hash = "sha256:18fee48023035c7896343c9eda9e74427794cd0cd809d907017bd2cbb33b6e0e"},
