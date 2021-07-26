@@ -40,7 +40,7 @@ pyproj = "^3.1.0"
 scikit-learn = "^0.24.2"
 tqdm = "^4.61.1"
 uncertainties = "^3.1.6"
-xarray = "^0.18.2"
+xarray = "^0.19.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.7b0"

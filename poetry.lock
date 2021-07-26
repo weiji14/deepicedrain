@@ -2837,7 +2837,7 @@ python-versions = "*"
 
 [[package]]
 name = "xarray"
-version = "0.18.2"
+version = "0.19.0"
 description = "N-D labeled arrays and datasets in Python"
 category = "main"
 optional = false
@@ -2920,7 +2920,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "9f44a4aa3805612b02b3cc9b9e23c6f2eac2be1e7396eae5183c3c2a00b94d46"
+content-hash = "9080088b49aed7d91ee3154ab5a5a6ff957292de5d8e70ee204d7adf6638f147"
 
 [metadata.files]
 aiohttp = [
@@ -4792,8 +4792,8 @@ win-unicode-console = [
     {file = "win_unicode_console-0.5.zip", hash = "sha256:d4142d4d56d46f449d6f00536a73625a871cba040f0bc1a2e305a04578f07d1e"},
 ]
 xarray = [
-    {file = "xarray-0.18.2-py3-none-any.whl", hash = "sha256:a0b14b888b90a3ad8ecec5db9862f3fd02f8c0cc15066a3429d37da62fc37219"},
-    {file = "xarray-0.18.2.tar.gz", hash = "sha256:5d2e72a228286fcf60f66e16876bd27629a1a70bf64822c565f16515c4d10284"},
+    {file = "xarray-0.19.0-py3-none-any.whl", hash = "sha256:da0f0d7719b5ee95143a34804e3afb82cb8abbe5c10f9750a9dbed156ad30f00"},
+    {file = "xarray-0.19.0.tar.gz", hash = "sha256:3a365ce09127fc841ba88baa63f37ca61376ffe389a6c5e66d52f2c88c23a62b"},
 ]
 xmltodict = [
     {file = "xmltodict-0.12.0-py2.py3-none-any.whl", hash = "sha256:8bbcb45cc982f48b2ca8fe7e7827c5d792f217ecf1792626f808bf41c3b86051"},
