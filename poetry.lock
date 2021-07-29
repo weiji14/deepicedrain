@@ -1326,7 +1326,7 @@ simpervisor = ">=0.4"
 
 [[package]]
 name = "jupyterlab"
-version = "3.1.0"
+version = "3.1.1"
 description = "JupyterLab computational environment"
 category = "main"
 optional = false
@@ -1344,7 +1344,7 @@ tornado = ">=6.1.0"
 
 [package.extras]
 test = ["coverage", "pytest (>=6.0)", "pytest-cov", "pytest-console-scripts", "pytest-check-links (>=0.5)", "jupyterlab-server[test] (>=2.2,<3.0)", "requests", "requests-cache", "virtualenv", "check-manifest"]
-ui-tests = ["ipykernel (>=6.0)"]
+ui-tests = ["build"]
 
 [[package]]
 name = "jupyterlab-pygments"
@@ -2921,7 +2921,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "c90ac52f6c6877d771b44f7935a11c6445dd21f7cfb3064367fb129b4d43dff1"
+content-hash = "a169247cc31b4cbded6ec111a2a88f2f8075429bda935916175ec415b84e0f60"
 
 [metadata.files]
 aiohttp = [
@@ -3560,8 +3560,8 @@ jupyter-server-proxy = [
     {file = "jupyter_server_proxy-3.0.2-py3-none-any.whl", hash = "sha256:330592188a0a7c2e0e5e90ba7a7560d01607b47a162d9ad1e39194859cc8808a"},
 ]
 jupyterlab = [
-    {file = "jupyterlab-3.1.0-py3-none-any.whl", hash = "sha256:dfccab4bcdc5ef725cc1ce99ed729cc754c9f885af86cd6b611d685d53845f8b"},
-    {file = "jupyterlab-3.1.0.tar.gz", hash = "sha256:5a020e5940ef32a9e6e1a43f7c794f542869576a30c5083799c7d97df34e9cf3"},
+    {file = "jupyterlab-3.1.1-py3-none-any.whl", hash = "sha256:a181184b1000a550c38da35471dcf91ce11e96750de56430be3fc93ca01dde1e"},
+    {file = "jupyterlab-3.1.1.tar.gz", hash = "sha256:f6b04b5cfbe1fab79dbcecd58c941cbc73b0da5e1ccc5d4333a36860d37789b0"},
 ]
 jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.1.2-py2.py3-none-any.whl", hash = "sha256:abfb880fd1561987efaefcb2d2ac75145d2a5d0139b1876d5be806e32f630008"},
