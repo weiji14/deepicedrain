@@ -470,7 +470,7 @@ pynvml = ">=8.0.3"
 
 [[package]]
 name = "dask-labextension"
-version = "5.0.2"
+version = "5.1.0"
 description = "A JupyterLab extension for Dask."
 category = "main"
 optional = false
@@ -675,7 +675,7 @@ hdfs = ["pyarrow (>=2.0.0)"]
 oss = ["oss2 (==2.6.1)", "pycryptodome (>=3.10)"]
 s3 = ["s3fs (==2021.6.1)", "aiobotocore[boto3] (==1.3.0)"]
 ssh = ["paramiko[invoke] (>=2.7.0)"]
-ssh_gssapi = ["paramiko[invoke,gssapi] (>=2.7.0)"]
+ssh_gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
 tests = ["wheel (==0.36.2)", "pytest (==6.2.4)", "pytest-cov (==2.12.1)", "pytest-xdist (==2.3.0)", "pytest-mock (==3.6.1)", "pytest-lazy-fixture (==0.6.3)", "pytest-timeout (==1.4.2)", "pytest-docker (==0.10.3)", "flaky (==3.7.0)", "mock (==4.0.3)", "rangehttpserver (==1.2.0)", "mock-ssh-server (==0.9.0)", "beautifulsoup4 (==4.9.3)", "wget (==3.2)", "filelock (==3.0.12)", "wsgidav (==3.1.0)", "crc32c (==2.2.post0)", "xmltodict (==0.12.0)", "google-compute-engine (==2.8.13)", "google-cloud-storage (==1.40.0)", "urllib3 (==1.26.6)", "Pygments (==2.9.0)", "collective.checkdocs (==0.2)", "pydocstyle (==6.1.1)", "jaraco.windows (==5.5.0)", "pylint (==2.8.3)", "pylint-pytest (==1.0.3)", "pylint-plugin-utils (==0.6)", "mypy (==0.910)", "types-requests", "types-paramiko", "types-tabulate", "types-toml"]
 webdav = ["webdav4 (>=0.8.1)"]
 webhdfs = ["hdfs (==2.5.8)"]
@@ -2921,7 +2921,7 @@ cuda = ["cupy-cuda112", "dask-cuda"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "c90ac52f6c6877d771b44f7935a11c6445dd21f7cfb3064367fb129b4d43dff1"
+content-hash = "d07a248740ef6d527186c156aaebeb99ab38729b4528da11a0904a1c753337a9"
 
 [metadata.files]
 aiohttp = [
@@ -3287,8 +3287,8 @@ dask-cuda = [
     {file = "dask_cuda-21.6.0-py3-none-any.whl", hash = "sha256:4f5a181ee7c881809fb9d08736b34e21ca895ab2eb0deef83ec32a1fe89e9ca1"},
 ]
 dask-labextension = [
-    {file = "dask_labextension-5.0.2-py3-none-any.whl", hash = "sha256:7321ab097a7dd5321bd25e89d6de1b055aec8f30650296c41a34c992bf3c7d92"},
-    {file = "dask_labextension-5.0.2.tar.gz", hash = "sha256:3c6b9948e2cdc167b63e74aa695667c00e0591a7779af025cb3cbabbe49e5afa"},
+    {file = "dask_labextension-5.1.0-py3-none-any.whl", hash = "sha256:8ee819aabd0e664e4e1f5d68684f920479e612ff0f30075d661951ee826c94f2"},
+    {file = "dask_labextension-5.1.0.tar.gz", hash = "sha256:bc476e8040428f9b141e44126d2ae17173ff8b10968ca25375441eff6f2c2279"},
 ]
 datashader = [
     {file = "datashader-0.13.0-py2.py3-none-any.whl", hash = "sha256:7888740956213f4bc27816dfbb5bfc5d3f8fd92d583632d688ccbad167e657dc"},
