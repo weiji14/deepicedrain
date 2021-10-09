@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.9.1
+#       jupytext_version: 1.11.4
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -40,9 +40,11 @@ import os
 import cartopy
 import dask
 import dask.distributed
+import dvc.repo
 import hvplot.dask
 import hvplot.pandas
 import hvplot.xarray
+import icepyx as ipx
 import intake
 import matplotlib.pyplot as plt
 import numpy as np
@@ -55,10 +57,8 @@ import xarray as xr
 import deepicedrain
 
 # %%
-# Limit compute to 10 cores for download part using intake
-# Can possibly go up to 10 because there are 10 DPs?
-# See https://n5eil02u.ecs.nsidc.org/opendap/hyrax/catalog.xml
-client = dask.distributed.Client(n_workers=10, threads_per_worker=1)
+# Limit compute to 8 cores for download part
+client = dask.distributed.Client(n_workers=8, threads_per_worker=1)
 client
 
 # %% [markdown]
@@ -108,29 +108,96 @@ print(dataset)
 catalog.icesat2atl06.hvplot.quickview()
 
 # %% [markdown]
-# ## Data intake
+# ## Download ATL06 data using intake
 #
 # Pulling in all of the raw ATL06 data (HDF5 format) from the NSIDC servers via an intake catalog file.
 # Note that this will involve 100s if not 1000s of GBs of data, so make sure there's enough storage!!
 
 # %%
 # Download all ICESAT2 ATLAS hdf files from start to end date
-dates1 = pd.date_range(start="2018.10.14", end="2018.12.08")  # 1st batch
-dates2 = pd.date_range(start="2018.12.10", end="2019.06.26")  # 2nd batch
-dates3 = pd.date_range(start="2019.07.26", end="2020.11.11")  # 3rd batch
-dates = dates1.append(other=dates2).append(other=dates3)
-# dates = pd.date_range(start="2020.09.30", end="2020.11.11")  # custom batch
+# dates0 = pd.date_range(start="2018.10.14", end="2018.12.08")  # 0th batch
+# dates1 = pd.date_range(start="2018.12.10", end="2019.06.26")  # 1st batch
+
+# Skip ICESat-2 cycles 1 to 2 from 2018.10.14 to 2019.03.28 above
+dates1 = pd.date_range(start="2019.03.29", end="2019.06.26")  # 1st batch
+dates2 = pd.date_range(start="2019.07.26", end="2021.07.15")  # 3rd batch
+dates = dates1.append(other=dates2)
+# dates = pd.date_range(start="2020.11.11", end="2021.07.15")  # custom batch
 
 # %%
 # Submit download jobs to Client
 futures = []
 for date in dates:
-    revision = 2 if date in pd.date_range(start="2020.04.22", end="2020.05.04") else 1
-    source = catalog.icesat2atlasdownloader(date=date, revision=revision)
+    # revision = 2 if date in pd.date_range(start="2020.04.22", end="2020.05.04") else 1
+    source = catalog.icesat2atlasdownloader(date=date, revision=1)
     future = client.submit(
         func=source.discover, key=f"download-{date}"
     )  # triggers download of the file(s), or loads from cache
     futures.append(future)
+
+
+# %% [markdown]
+# ## Download ATL06 data using icepyx and dvc's get-url function
+#
+# Alternative way to obtain raw ATL06 data (HDF5 format) from NSIDC servers
+
+# %%
+@dask.delayed
+def get_ATL06_links(referencegroundtrack: str = "0001") -> pd.Series:
+    """Use icepyx to get ATL06 download URL links."""
+    antarctic_region = ipx.Query(
+        dataset="ATL06",
+        date_range=["2019-03-29", "2021-07-15"],
+        spatial_extent=[180, -89, -180, -60],
+        version="4",
+        tracks=[referencegroundtrack],
+    )
+    antarctic_region.avail_granules()
+    df: pd.DataFrame = pd.json_normalize(
+        antarctic_region.granules.avail, record_path="links"
+    )
+    links: pd.Series = df.query("type == 'application/x-hdfeos'").href
+    os.makedirs(name=f"ATL06.00X/{referencegroundtrack}", exist_ok=True)
+    links.to_csv(
+        f"ATL06.00X/{referencegroundtrack}/ATL06_file_list.txt",
+        index=False,
+        header=None,
+    )
+
+    return links
+
+
+# %%
+# Submit download jobs to Client
+links: list = []
+for rgt in range(1, 1388):
+    referencegroundtrack: str = str(rgt).zfill(4)
+    _links = get_ATL06_links(referencegroundtrack=referencegroundtrack)
+    links.append(_links)
+
+# %%
+_ = client.compute(links)
+
+
+# %%
+futures = []
+repo = dvc.repo.Repo(root_dir=".")
+for rgt in range(1, 1388):
+    referencegroundtrack: str = str(rgt).zfill(4)
+    with open(f"ATL06.00X/{referencegroundtrack}/ATL06_file_list.txt") as f:
+        links = f.readlines()
+        for url in links:
+            filename = os.path.basename(url.strip())
+            if not os.path.exists(f"ATL06.00X/{referencegroundtrack}/{filename}"):
+                future = client.submit(
+                    func=repo.get_url,
+                    url=url.strip(),
+                    out=f"ATL06.00X/{referencegroundtrack}",
+                    jobs=1,
+                    key=f"download-{referencegroundtrack}-{filename}",
+                )
+                futures.append(future)
+
 
 # %%
 # Check download progress here, https://stackoverflow.com/a/37901797/6611055
