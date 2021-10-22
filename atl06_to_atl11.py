@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.11.4
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -45,7 +45,7 @@ import deepicedrain
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # %%
-client = dask.distributed.Client(n_workers=2, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=8, threads_per_worker=1)
 client
 
 # %% [markdown]
@@ -89,42 +89,33 @@ responses = [
 # %%
 # Create ATL06_to_ATL11 processing script, if not already present
 if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
-    # find last cycle for each reference ground track and each orbital segment
-    last_cycle_func = lambda rgt, ost: int(
-        max(glob.glob(f"ATL06.003/**/ATL06*_*_{rgt:04d}??{ost:02d}_*.h5"))[-14:-12]
-    )
-    futures = []
-    for referencegroundtrack, orbitalsegment in itertools.product(
-        range(1387, 0, -1), [10, 11, 12]
-    ):
-        cyclenum = client.submit(
-            last_cycle_func,
-            referencegroundtrack,
-            orbitalsegment,
-            key=f"{referencegroundtrack:04d}-{orbitalsegment}",
-        )
-        futures.append(cyclenum)
-
     # Prepare string to write into ATL06_to_ATL11_Antarctica.sh bash script
     writelines = []
-    for f in tqdm.tqdm(
-        iterable=dask.distributed.as_completed(futures=futures), total=len(futures)
+
+    # find last cycle for each reference ground track and each orbital segment
+    iterable = itertools.product(range(1387, 0, -1), [10, 11, 12])
+    for referencegroundtrack, orbitalsegment in tqdm.tqdm(
+        iterable=iterable, total=1387 * 3
     ):
-        referencegroundtrack, orbitalsegment = f.key.split("-")
-        last_cycle = f.result()
+        rgt, ost = referencegroundtrack, orbitalsegment
+        last_cycle_file: str = max(
+            glob.glob(f"ATL06.00X/{rgt:04d}/ATL06*_*_{rgt:04d}??{ost:02d}_*.h5")
+        )
+        last_cycle: int = int(last_cycle_file[-14:-12])
+
         if last_cycle > 8:  # Only process those with Cycle 9 and newer locally
             writelines.append(
-                f"python3 ATL11/ATL06_to_ATL11.py"
-                f" {referencegroundtrack} {orbitalsegment}"
+                f"ATL06_to_ATL11.py"
+                f" {referencegroundtrack:04d} {orbitalsegment}"
                 f" --cycles 03 {last_cycle:02d}"
-                f" --Release 2"
-                f" --directory 'ATL06.003/**/'"
-                f" --out_dir ATL11.002\n"
+                f" --Release 3"
+                f" --directory 'ATL06.00X/{referencegroundtrack:04d}/'"
+                f" --out_dir ATL11.003\n"
             )
-            fname = f"ATL11_{referencegroundtrack}{orbitalsegment}_0308_002_01.h5"
-            if not os.path.exists(f"ATL11.002/official/{fname}"):
+            fname = f"ATL11_{referencegroundtrack:04d}{orbitalsegment}_0308_003_01.h5"
+            if not os.path.exists(f"ATL11.003/official/{fname}"):
                 try:
-                    shutil.move(src=f"ATL11.002/{fname}", dst="ATL11.002/official")
+                    shutil.move(src=f"ATL11.003/{fname}", dst="ATL11.003/official")
                 except FileNotFoundError:
                     pass
         # else:  # Just use official NSIDC version for Cycle 8 or older
@@ -145,7 +136,11 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 # - O. Tange (2018): GNU Parallel 2018, Mar 2018, ISBN 9781387509881, DOI https://doi.org/10.5281/zenodo.1146014
 
 # %%
-# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica.sh --bar --resume-failed --results logdir --joblog log --jobs 80 --load 100% > /dev/null
+# !head -n 2080 ATL06_to_ATL11_Antarctica.sh > ATL06_to_ATL11_Antarctica_1.sh
+# !tail -n +2081 ATL06_to_ATL11_Antarctica.sh > ATL06_to_ATL11_Antarctica_2.sh
+
+# %%
+# !PYTHONPATH=`pwd` PYTHONWARNINGS="ignore" parallel -a ATL06_to_ATL11_Antarctica_1.sh --bar --resume-failed --results logdir --joblog log1 --jobs 60 --load 90% > /dev/null
 
 # %%
 # df_log = pd.read_csv(filepath_or_buffer="log", sep="\t")
@@ -167,8 +162,9 @@ if not os.path.exists("ATL06_to_ATL11_Antarctica.sh"):
 #         - Attributes (longitude, latitude, h_corr, delta_time, etc)
 
 # %%
-max_cycles: int = max(int(f[-11:-10]) for f in glob.glob("ATL11.003/*.h5"))
+max_cycles: int = max(int(f[-12:-10]) for f in glob.glob("ATL11.003/*.h5"))
 print(f"{max_cycles} ICESat-2 cycles available")
+
 
 # %%
 @dask.delayed
@@ -255,7 +251,7 @@ for rgt in tqdm.trange(1387):
 atl11file: str = atl11files[0]
 root_ds = open_ATL11(atl11file=atl11file, group="pt2").compute()
 reference_surface_ds = open_ATL11(atl11file=atl11file, group="pt2/ref_surf").compute()
-ds: xr.Dataset = xr.combine_by_coords(datasets=[root_ds, reference_surface_ds])
+ds: xr.Dataset = xr.combine_by_coords(data_objects=[root_ds, reference_surface_ds])
 
 # Convert variables to correct datatype
 encoding: dict = {}
@@ -286,7 +282,7 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
                 atl11file=atl11file, group=f"{pair}/ref_surf"
             )
             ds = dask.delayed(obj=xr.combine_by_coords)(
-                datasets=[root_ds, reference_surface_ds]
+                data_objects=[root_ds, reference_surface_ds]
             )
             # Light pre-processing
             ds = set_xy_and_mask(ds=ds)
@@ -307,7 +303,7 @@ for zarrfilepath, atl11files in tqdm.tqdm(iterable=atl11_dict.items()):
     stores.append(store_task)
 
 # %%
-# Do all the HDF5 to Zarr conversion! Should take about half an hour to run
+# Do all the HDF5 to Zarr conversion! Should take about 1 hour to run
 # Check conversion progress here, https://stackoverflow.com/a/37901797/6611055
 futures = [client.compute(store_task) for store_task in stores]
 for _ in tqdm.tqdm(
