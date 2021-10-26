@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.11.4
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -54,8 +54,8 @@ import xarray as xr
 import deepicedrain
 
 # %%
-client = dask.distributed.Client(n_workers=16, threads_per_worker=1)
-client
+client = dask.distributed.Client(n_workers=4, threads_per_worker=1)
+print(client)
 
 # %% [markdown]
 # # Select essential points
@@ -138,7 +138,7 @@ num_cycles: int = len(ds.cycle_number)
 
 # %%
 # Get first and last dates to put into our plots
-min_date, max_date = ("2019-03-29", "2020-12-24")
+min_date, max_date = ("2019-03-29", "2021-07-15")
 if min_date is None:
     min_delta_time = np.nanmin(ds.delta_time.isel(cycle_number=0).data).compute()
     min_utc_time = deepicedrain.deltatime_to_utctime(min_delta_time)
@@ -185,10 +185,10 @@ ds_ht: xr.Dataset = ds[["h_range", "h_corr", "delta_time"]].compute()
 
 # %%
 # Save or Load height range data
-# ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w", consolidated=True)
+# ds_ht.to_zarr(store=f"ATLXI/ds_hrange_time_{placename}.zarr", mode="w")
 ds_ht: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_hrange_time_{placename}.zarr",
-    chunks={"cycle_number": 7},
+    chunks={"cycle_number": 10},
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
@@ -262,8 +262,7 @@ dhdt_params: xr.DataArray = xr.apply_ufunc(
     dask="parallelized",
     vectorize=True,
     output_dtypes=[np.float32],
-    output_sizes={"dhdt_parameters": 5},
-    # output_sizes={"slope_ns":1, "intercept":1, "r_value":1, "p_value":1, "std_err":1}
+    dask_gufunc_kwargs={"output_sizes": dict(dhdt_parameters=5)},
 )
 
 # %%
@@ -293,7 +292,7 @@ ds_dhdt: xr.Dataset = ds_dhdt.compute()
 
 # %%
 # Load or Save rate of height change over time (dhdt) data
-# ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w", consolidated=True)
+# ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_{placename}.zarr", mode="w")
 ds_dhdt: xr.Dataset = xr.open_dataset(
     filename_or_obj=f"ATLXI/ds_dhdt_{placename}.zarr",
     chunks="auto",
