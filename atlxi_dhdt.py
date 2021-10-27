@@ -54,7 +54,7 @@ import xarray as xr
 import deepicedrain
 
 # %%
-client = dask.distributed.Client(n_workers=4, threads_per_worker=1)
+client = dask.distributed.Client(n_workers=8, threads_per_worker=1)
 print(client)
 
 # %% [markdown]
@@ -241,7 +241,7 @@ fig.show(width=600)
 #
 # Performing linear regression in parallel.
 # Uses the [`scipy.stats.linregress`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html) function,
-# parallelized with xarray's [`apply_ufunc`](http://xarray.pydata.org/en/v0.15.1/examples/apply_ufunc_vectorize_1d.html) method
+# parallelized with xarray's [`apply_ufunc`](https://xarray.pydata.org/en/v0.19.0/examples/apply_ufunc_vectorize_1d.html) method
 # on a Dask cluster.
 
 # %%
@@ -285,8 +285,8 @@ ds_dhdt: xr.Dataset = ds_dhdt.compute()
 
 # %%
 # Do linear regression on single datapoint
-# slope_ns, intercept, r_value, p_value, std_err = nan_linregress(
-#     x=ds.delta_time[:1].data.astype(np.uint64), y=ds.h_corr[:1].data
+# slope_ns, intercept, r_value, p_value, std_err = deepicedrain.nan_linregress(
+#     x=ds.delta_time[:1].astype(np.uint64).data, y=ds.h_corr[:1].data
 # )
 # print(slope_ns, intercept, r_value, p_value, std_err)
 
@@ -299,6 +299,7 @@ ds_dhdt: xr.Dataset = xr.open_dataset(
     engine="zarr",
     backend_kwargs={"consolidated": True},
 )
+# ds: xr.Dataset = ds_dhdt  # shortcut for dhdt_maxslp calculation later
 
 # %%
 df_slope: pd.DataFrame = ds_dhdt.dhdt_slope.to_dataframe()
@@ -341,6 +342,69 @@ fig.savefig(f"figures/plot_atl11_dhdt_{placename.lower()}_{min_date}_{max_date}.
 fig.show(width=600)
 
 # %%
+
+# %% [markdown]
+# # Calculate rate of height change over time max slope (dhdt_maxslp)
+#
+# For each ATL11 data point, find the maximum slope (i.e. steepest gradient)
+# for any consecutive paired value within the elevation time-series. Uses a
+# custom `dhdt_maxslp` function, parallelized with xarray's
+# [`apply_ufunc`](https://xarray.pydata.org/en/v0.19.0/examples/apply_ufunc_vectorize_1d.html) method
+# on a Dask cluster.
+#
+# For example, in the plot below, the rate of elevation change over time is
+# greatest from point B to C, so the algorithm will return the dhdt_maxslp
+# value as (elev_C - elev_B) / (time_C - time_B).
+#
+#              ^
+#              |        C
+#              |           D
+#     elev (m) |
+#              |     B        E
+#              |  A              F
+#              -------------------->
+#                      time
+#
+# Note that NaN values are ignored in the calculation. So if point E had a
+# NaN value, the algorithm will calculate dhdt between point F and D.
+
+# %%
+print(f"Running on {len(ds.ref_pt)} ATL11 points")
+
+# %%
+# Do dhdt_maxslp calculation on many datapoints, parallelized using dask
+ds["dhdt_maxslp"]: xr.DataArray = xr.apply_ufunc(
+    deepicedrain.dhdt_maxslp,
+    ds.delta_time.astype(np.uint64),  # x is time in nanoseconds
+    ds.h_corr,  # y is height in metres
+    input_core_dims=[["cycle_number"], ["cycle_number"]],
+    dask="parallelized",
+    vectorize=True,
+    output_dtypes=[np.float32],
+)
+
+# %%
+# Convert dhdt_maxslp units from metres per nanosecond to metres per year
+# 1 year = 365.25 days x 24 hours x 60 min x 60 seconds x 1_000_000_000 nanoseconds
+ds["dhdt_maxslp"] = ds["dhdt_maxslp"] * (365.25 * 24 * 60 * 60 * 1_000_000_000)
+
+# %% time
+# %%time
+# Compute rate of height change over time max slope (dhdt_maxslp).
+# Also include all height and time info
+ds_dhdt: xr.Dataset = ds[["dhdt_slope", "h_corr", "dhdt_maxslp"]].compute()
+
+# %%
+# Load or Save rate of height change over time max slope (dhdt_maxslp) data
+ds_dhdt.to_zarr(store=f"ATLXI/ds_dhdt_maxslp_{placename}.zarr", mode="w")
+
+
+# %%
+# Do dhdt_maxslp calculation on single datapoint
+# dhdt_maxslp = deepicedrain.dhdt_maxslp(
+#     x=ds.delta_time[:1].astype(np.uint64).to_numpy(), y=ds.h_corr[:1].to_numpy()
+# )
+# print(dhdt_maxslp)
 
 # %% [markdown]
 # # Along track plots of subglacial lake drainage/filling events
