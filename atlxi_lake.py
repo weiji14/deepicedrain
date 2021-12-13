@@ -191,7 +191,7 @@ basins = drainage_basins[drainage_basins.NAME == basin_name].index  # one specif
 basins: pd.core.indexes.numeric.Int64Index = drainage_basins.index  # run on all basins
 
 eps: int = 3000  # ICESat-2 tracks are separated by ~3 km across track, with each laser pair ~90 m apart
-min_samples: int = 300
+min_samples: int = 320
 for basin_index in tqdm.tqdm(iterable=basins):
     # Initial data cleaning, filter to rows that are in the drainage basin
     basin = drainage_basins.loc[basin_index]
@@ -416,7 +416,7 @@ if not os.path.exists(path=outline_points):
 
 # %%
 # Generate gridded time-series of ice elevation over lake
-cycles: tuple = (3, 4, 5, 6, 7, 8, 9)
+cycles: tuple = (3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 os.makedirs(name=f"figures/{placename}", exist_ok=True)
 ds_lake: xr.Dataset = deepicedrain.spatiotemporal_cube(
     table=df_lake.to_pandas(),

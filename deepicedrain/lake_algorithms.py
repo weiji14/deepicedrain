@@ -60,7 +60,9 @@ def find_clusters(
         from sklearn.cluster import DBSCAN
 
     # Run DBSCAN using {eps} m distance, and minimum of {min_samples} points
-    dbscan = DBSCAN(eps=eps, min_samples=min_samples, **kwargs)
+    dbscan = DBSCAN(
+        eps=eps, min_samples=min_samples, calc_core_sample_indices=False, **kwargs
+    )
     dbscan.fit(X=X)
 
     cluster_labels = dbscan.labels_ + 1  # noise points -1 becomes 0
