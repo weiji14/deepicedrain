@@ -36,7 +36,12 @@ ATLXI/df_*.parquet
 ATLXI/ds_*.zarr
 Quantarctica3
 
+# Dask
+**/dask-worker-space/
+
 # Subglacial Lake grid files and figures
 figures/**/*.gif
+figures/**/*.gmt
 figures/**/*.nc
 figures/**/*.png
+figures/**/*.txt

@@ -23,8 +23,8 @@ Feature: Mapping Antarctic subglacial lakes
 
     Examples:
     | lake_name    | location            | cycles | azimuth | elevation |
-    # | Whillans 7   | whillans_upstream   | 3-9    | 157.5   | 45        |
-    | Whillans 6   | whillans_upstream   | 3-9    | 157.5   | 45        |
+    | Whillans 7   | whillans_upstream   | 3-9    | 157.5   | 45        |
+    # | Whillans 6   | whillans_upstream   | 3-9    | 157.5   | 45        |
     # | Whillans IX  | whillans_upstream   | 3-9    | 157.5   | 45        |
     # | Whillans X   | whillans_upstream   | 3-9    | 157.5   | 45        |
     # | Whillans XI  | whillans_downstream | 3-9    | 157.5   | 45        |
