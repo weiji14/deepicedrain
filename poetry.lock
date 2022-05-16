@@ -687,7 +687,7 @@ hdfs = ["pyarrow (>=2.0.0)"]
 oss = ["oss2 (==2.6.1)", "pycryptodome (>=3.10)"]
 s3 = ["s3fs (==2021.6.1)", "aiobotocore[boto3] (==1.3.0)"]
 ssh = ["paramiko[invoke] (>=2.7.0)"]
-ssh_gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
+ssh_gssapi = ["paramiko[invoke,gssapi] (>=2.7.0)"]
 tests = ["wheel (==0.36.2)", "pytest (==6.2.4)", "pytest-cov (==2.12.1)", "pytest-xdist (==2.3.0)", "pytest-mock (==3.6.1)", "pytest-lazy-fixture (==0.6.3)", "pytest-timeout (==1.4.2)", "pytest-docker (==0.10.3)", "flaky (==3.7.0)", "mock (==4.0.3)", "rangehttpserver (==1.2.0)", "mock-ssh-server (==0.9.0)", "beautifulsoup4 (==4.9.3)", "wget (==3.2)", "filelock (==3.0.12)", "wsgidav (==3.1.0)", "crc32c (==2.2.post0)", "xmltodict (==0.12.0)", "google-compute-engine (==2.8.13)", "google-cloud-storage (==1.40.0)", "urllib3 (==1.26.6)", "Pygments (==2.9.0)", "collective.checkdocs (==0.2)", "pydocstyle (==6.1.1)", "jaraco.windows (==5.5.0)", "pylint (==2.8.3)", "pylint-pytest (==1.0.3)", "pylint-plugin-utils (==0.6)", "mypy (==0.910)", "types-requests", "types-paramiko", "types-tabulate", "types-toml"]
 webdav = ["webdav4 (>=0.8.1)"]
 webhdfs = ["hdfs (==2.5.8)"]
@@ -721,6 +721,17 @@ python-versions = "*"
 
 [package.dependencies]
 six = "*"
+
+[[package]]
+name = "fastjsonschema"
+version = "2.15.3"
+description = "Fastest Python implementation of JSON schema"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+devel = ["colorama", "jsonschema", "json-spec", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
 
 [[package]]
 name = "fastparquet"
@@ -1295,32 +1306,32 @@ traitlets = "*"
 
 [[package]]
 name = "jupyter-server"
-version = "1.11.1"
+version = "1.15.4"
 description = "The backend—i.e. core services, APIs, and REST endpoints—to Jupyter web applications."
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
-anyio = ">=3.1.0,<4"
+anyio = ">=3.1.0"
 argon2-cffi = "*"
-ipython-genutils = "*"
 jinja2 = "*"
 jupyter-client = ">=6.1.1"
 jupyter-core = ">=4.6.0"
 nbconvert = "*"
-nbformat = "*"
+nbformat = ">=5.2.0"
+packaging = "*"
 prometheus-client = "*"
+pywinpty = {version = "*", markers = "os_name == \"nt\""}
 pyzmq = ">=17"
-requests-unixsocket = "*"
 Send2Trash = "*"
 terminado = ">=0.8.3"
 tornado = ">=6.1.0"
-traitlets = ">=4.2.1"
+traitlets = ">=5"
 websocket-client = "*"
 
 [package.extras]
-test = ["coverage", "pytest (>=6.0)", "pytest-cov", "pytest-mock", "requests", "pytest-tornasync", "pytest-console-scripts", "ipykernel"]
+test = ["coverage", "pytest (>=6.0)", "pytest-cov", "pytest-mock", "pytest-timeout", "requests", "pytest-tornasync", "pytest-console-scripts", "ipykernel"]
 
 [[package]]
 name = "jupyter-server-proxy"
@@ -1684,21 +1695,20 @@ webpdf = ["pyppeteer (==0.2.6)"]
 
 [[package]]
 name = "nbformat"
-version = "5.1.3"
+version = "5.4.0"
 description = "The Jupyter Notebook format"
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 
 [package.dependencies]
-ipython-genutils = "*"
-jsonschema = ">=2.4,<2.5.0 || >2.5.0"
+fastjsonschema = "*"
+jsonschema = ">=2.6"
 jupyter-core = "*"
-traitlets = ">=4.1"
+traitlets = ">=5.1"
 
 [package.extras]
-fast = ["fastjsonschema"]
-test = ["check-manifest", "fastjsonschema", "testpath", "pytest", "pytest-cov"]
+test = ["check-manifest", "testpath", "pytest", "pre-commit"]
 
 [[package]]
 name = "nest-asyncio"
@@ -2454,18 +2464,6 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
-
-[[package]]
-name = "requests-unixsocket"
-version = "0.2.0"
-description = "Use requests to talk HTTP via a UNIX domain socket"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-requests = ">=1.1"
-urllib3 = ">=1.8"
 
 [[package]]
 name = "rich"
@@ -3390,6 +3388,10 @@ fasteners = [
     {file = "fasteners-0.16.3-py2.py3-none-any.whl", hash = "sha256:8408e52656455977053871990bd25824d85803b9417aa348f10ba29ef0c751f7"},
     {file = "fasteners-0.16.3.tar.gz", hash = "sha256:b1ab4e5adfbc28681ce44b3024421c4f567e705cc3963c732bf1cba3348307de"},
 ]
+fastjsonschema = [
+    {file = "fastjsonschema-2.15.3-py3-none-any.whl", hash = "sha256:ddb0b1d8243e6e3abb822bd14e447a89f4ab7439342912d590444831fa00b6a0"},
+    {file = "fastjsonschema-2.15.3.tar.gz", hash = "sha256:0a572f0836962d844c1fc435e200b2e4f4677e4e6611a2e3bdd01ba697c275ec"},
+]
 fastparquet = [
     {file = "fastparquet-0.7.1-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:458d42309a78828def2f2cdacda0dc22241e09841acb6ec280b26c9a6c1d092a"},
     {file = "fastparquet-0.7.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:92b9444924ea24f6165d9861bd7cea63aeef807350b76591b5905882b2acc3ed"},
@@ -3605,8 +3607,8 @@ jupyter-core = [
     {file = "jupyter_core-4.8.1.tar.gz", hash = "sha256:ef210dcb4fca04de07f2ead4adf408776aca94d17151d6f750ad6ded0b91ea16"},
 ]
 jupyter-server = [
-    {file = "jupyter_server-1.11.1-py3-none-any.whl", hash = "sha256:618aba127b1ff35f50e274b6055dfeff006a6008e94d4e9511c251a2d99131e5"},
-    {file = "jupyter_server-1.11.1.tar.gz", hash = "sha256:ab7ab1cc38512f15026cbcbb96300fb46ec8b24aa162263d9edd00e0a749b1e8"},
+    {file = "jupyter_server-1.15.4-py3-none-any.whl", hash = "sha256:94a136b6ed4826ac6a1fab3bfeff8a698a7833578548f78f302ed1ba90b1e534"},
+    {file = "jupyter_server-1.15.4.tar.gz", hash = "sha256:1983a2a71d8709a77da6804ece67ded776c201ba11126de7002d088fb3418c85"},
 ]
 jupyter-server-proxy = [
     {file = "jupyter-server-proxy-3.1.0.tar.gz", hash = "sha256:30d57976090980f4380cb0a80e8e829dfd74d0a19edb64329239def9feefcde4"},
@@ -3957,8 +3959,8 @@ nbconvert = [
     {file = "nbconvert-6.2.0.tar.gz", hash = "sha256:16ceecd0afaa8fd26c245fa32e2c52066c02f13aa73387fffafd84750baea863"},
 ]
 nbformat = [
-    {file = "nbformat-5.1.3-py3-none-any.whl", hash = "sha256:eb8447edd7127d043361bc17f2f5a807626bc8e878c7709a1c647abda28a9171"},
-    {file = "nbformat-5.1.3.tar.gz", hash = "sha256:b516788ad70771c6250977c1374fcca6edebe6126fd2adb5a69aa5c2356fd1c8"},
+    {file = "nbformat-5.4.0-py3-none-any.whl", hash = "sha256:0d6072aaec95dddc39735c144ee8bbc6589c383fb462e4058abc855348152dad"},
+    {file = "nbformat-5.4.0.tar.gz", hash = "sha256:44ba5ca6acb80c5d5a500f1e5b83ede8cbe364d5a495c4c8cf60aaf1ba656501"},
 ]
 nest-asyncio = [
     {file = "nest_asyncio-1.5.1-py3-none-any.whl", hash = "sha256:76d6e972265063fe92a90b9cc4fb82616e07d586b346ed9d2c89a4187acea39c"},
@@ -4462,6 +4464,9 @@ python-snappy = [
     {file = "python_snappy-0.6.0-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:d9684a7ffb6e65313b92c2ec1934033c91d9fe8265c6cdd87412cf057d0066a5"},
     {file = "python_snappy-0.6.0-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:95be50dd65e6a46570642645ea2bbcd62bce5a58e822319b15dbdedfcd9fa717"},
     {file = "python_snappy-0.6.0-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:87f5994aef0a1f1fde01904421106c9006015d97e7b13aa72998f5a942093603"},
+    {file = "python_snappy-0.6.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:630ac074780ede79b7bb3b128bcb57b1dde494d72fcbc6d4b67e551e9d3af56d"},
+    {file = "python_snappy-0.6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c32fc26aca139ebb89ec3a07399d0b117af6900c05b5b43731bb60398b01880b"},
+    {file = "python_snappy-0.6.0-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:4940e4775f0e93d53b165716fa3f4e7c8281e334dd63b94f0363da6e52c3b599"},
     {file = "python_snappy-0.6.0-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:6ba085292a44e3f485d2831cb782204a83c990acace602aaef1fc6c2c69a3a5d"},
     {file = "python_snappy-0.6.0-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:19a96759c8fc695986b691357bb2624bbc5190a2eb1839fb923fbc5aeec46a8f"},
     {file = "python_snappy-0.6.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:71472441b63c0d5afbb9b81a19c0dafbaf073d8ab1bbfc70450ec81d3c4b86dc"},
@@ -4679,10 +4684,6 @@ requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},
     {file = "requests-2.26.0.tar.gz", hash = "sha256:b8aa58f8cf793ffd8782d3d8cb19e66ef36f7aba4353eec859e74678b01b07a7"},
 ]
-requests-unixsocket = [
-    {file = "requests-unixsocket-0.2.0.tar.gz", hash = "sha256:9e5c1a20afc3cf786197ae59c79bcdb0e7565f218f27df5f891307ee8817c1ea"},
-    {file = "requests_unixsocket-0.2.0-py2.py3-none-any.whl", hash = "sha256:014d07bfb66dc805a011a8b4b306cf4ec96d2eddb589f6b2b5765e626f0dc0cc"},
-]
 rich = [
     {file = "rich-10.12.0-py3-none-any.whl", hash = "sha256:c30d6808d1cd3defd56a7bd2d587d13e53b5f55de6cf587f035bcbb56bc3f37b"},
     {file = "rich-10.12.0.tar.gz", hash = "sha256:83fb3eff778beec3c55201455c17cccde1ccdf66d5b4dade8ef28f56b50c4bd4"},
@@ -4721,6 +4722,10 @@ rtree = [
     {file = "ruamel.yaml-0.17.16.tar.gz", hash = "sha256:1a771fc92d3823682b7f0893ad56cb5a5c87c48e62b5399d6f42c8759a583b33"},
 ]
 "ruamel.yaml.clib" = [
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6e7be2c5bcb297f5b82fee9c665eb2eb7001d1050deaba8471842979293a80b0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:221eca6f35076c6ae472a531afa1c223b9c29377e62936f61bc8e6e8bdc5f9e7"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win32.whl", hash = "sha256:1070ba9dd7f9370d0513d649420c3b362ac2d687fe78c6e888f5b12bf8bc7bee"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win_amd64.whl", hash = "sha256:77df077d32921ad46f34816a9a16e6356d8100374579bc35e15bab5d4e9377de"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:cfdb9389d888c5b74af297e51ce357b800dd844898af9d4a547ffc143fa56751"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:7b2927e92feb51d830f531de4ccb11b320255ee95e791022555971c466af4527"},
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-win32.whl", hash = "sha256:ada3f400d9923a190ea8b59c8f60680c4ef8a4b0dfae134d2f2ff68429adfab5"},
