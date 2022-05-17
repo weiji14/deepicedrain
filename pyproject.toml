@@ -23,7 +23,7 @@ intake = {extras = ["dataframe", "server"], version = "^0.6.1"}
 intake-geopandas = "^0.2.4"
 intake-parquet = "^0.2.3"
 intake-xarray = "^0.4.1"
-jupyterlab = "^3.1.0"
+jupyterlab = "^3.1.4"
 matplotlib = "^3.4.2"
 numcodecs = "^0.8.0"
 Pint = "^0.17"
