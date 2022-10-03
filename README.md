@@ -27,9 +27,17 @@ in Antarctica using remote sensing and machine learning.
 
 ## Quickstart
 
-Launch in [Pangeo Binder](https://pangeo-binder.readthedocs.io) (Interactive jupyter lab environment in the cloud).
+Launch in [Binder](https://mybinder.readthedocs.io) (Interactive jupyter lab environment in the cloud).
 
-[![Binder](https://binder.pangeo.io/badge_logo.svg)](https://binder.pangeo.io/v2/gh/weiji14/deepicedrain/main)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/weiji14/deepicedrain/main)
+
+Alternative [Pangeo BinderHub](https://pangeo-binder.readthedocs.io) link.
+Requires a GitHub account and you'll have to install your own computing environment,
+but it runs on AWS uswest2 which allows for
+[cloud access to ICESat-2](https://nsidc.org/data/user-resources/data-announcements/data-set-updates-new-earthdata-cloud-access-option-icesat-2-and-icesat-data-sets)!
+
+[![Pangeo BinderHub](https://aws-uswest2-binder.pangeo.io/badge_logo.svg)](https://hub.aws-uswest2-binder.pangeo.io/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fweiji14%2Fdeepicedrain&urlpath=lab%2Ftree%2Fdeepicedrain%2F&branch=main)
+
 
 ## Usage
 
