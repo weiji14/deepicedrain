@@ -65,7 +65,7 @@ on a sample ATL11 dataset between ICESat's Cycle 3 and Cycle 4.
 To just try out the scripts, download the `environment.yml` file from the repository and run the commands below:
 
     cd deepicedrain
-    conda env create --name deepicedrain --file environment.yml
+    mamba env create --name deepicedrain --file environment.yml
     pip install git+https://github.com/weiji14/deepicedrain.git
 
 ### Intermediate
