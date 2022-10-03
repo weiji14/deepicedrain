@@ -74,15 +74,17 @@ To help out with development, start by cloning this [repo-url](/../../)
 
     git clone <repo-url>
 
-Then I recommend [using conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) to install the non-python binaries.
-The conda virtual environment will also be created with Python and [poetry](https://github.com/python-poetry/poetry) installed.
+Then I recommend [using mamba](https://mamba.readthedocs.io/en/latest/installation.html)
+to install the non-python binaries.
+A virtual environment will also be created with Python and
+[poetry](https://github.com/python-poetry/poetry) installed.
 
     cd deepicedrain
-    conda env create -f environment.yml
+    mamba env create --file environment.yml
 
-Activate the conda environment first.
+Activate the virtual environment first.
 
-    conda activate deepicedrain
+    mamba activate deepicedrain
 
 Then install the python libraries listed in the `pyproject.toml`/`poetry.lock` file.
 
@@ -94,20 +96,20 @@ Finally, double-check that the libraries have been installed.
 
 ### Advanced
 
-This is for those who want full reproducibility of the conda environment,
+This is for those who want full reproducibility of the virtual environment,
 and more computing power by using Graphical Processing Units (GPU).
 
-Making an explicit conda-lock file
-(only needed if creating a new conda environment/refreshing an existing one).
+Making an explicit [conda-lock](https://github.com/conda-incubator/conda-lock) file
+(only needed if creating a new virtual environment/refreshing an existing one).
 
-    conda env create -f environment.yml
-    conda list --explicit > environment-linux-64.lock
+    mamba env create -f environment.yml
+    mamba list --explicit > environment-linux-64.lock
 
 Creating/Installing a virtual environment from a conda lock file.
 See also https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#building-identical-conda-environments.
 
-    conda create --name deepicedrain --file environment-linux-64.lock
-    conda install --name deepicedrain --file environment-linux-64.lock
+    mamba create --name deepicedrain --file environment-linux-64.lock
+    mamba install --name deepicedrain --file environment-linux-64.lock
 
 If you have a [CUDA](https://en.wikipedia.org/wiki/CUDA)-capable GPU,
 you can also install the optional "cuda" packages to accelerate some calculations.
@@ -117,8 +119,8 @@ you can also install the optional "cuda" packages to accelerate some calculation
 
 ## Running jupyter lab
 
-    conda activate deepicedrain
-    python -m ipykernel install --user --name deepicedrain  # to install conda env properly
+    mamba activate deepicedrain
+    python -m ipykernel install --user --name deepicedrain  # to install virtual env properly
     jupyter kernelspec list --json                          # see if kernel is installed
     jupyter lab &
 
