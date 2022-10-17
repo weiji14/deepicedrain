@@ -48,8 +48,8 @@ idna = ">=2.8"
 sniffio = ">=1.1"
 
 [package.extras]
-doc = ["sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
-test = ["coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "pytest (>=6.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (<0.15)", "mock (>=4)", "uvloop (>=0.15)"]
+doc = ["sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
+test = ["coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=4)", "pytest (>=6.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (<0.15)", "uvloop (>=0.15)"]
 trio = ["trio (>=0.16)"]
 
 [[package]]
@@ -80,8 +80,8 @@ python-versions = ">=3.5"
 cffi = ">=1.0.0"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pytest", "sphinx", "furo", "wheel", "pre-commit"]
-docs = ["sphinx", "furo"]
+dev = ["coverage[toml] (>=5.0.2)", "furo", "hypothesis", "pre-commit", "pytest", "sphinx", "wheel"]
+docs = ["furo", "sphinx"]
 tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pytest"]
 
 [[package]]
@@ -140,10 +140,10 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit"]
-docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface"]
-tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins"]
+dev = ["coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six", "sphinx", "sphinx-notfound-page", "zope.interface"]
+docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
+tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "mypy", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six", "zope.interface"]
+tests-no-zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "mypy", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six"]
 
 [[package]]
 name = "babel"
@@ -286,7 +286,7 @@ optional = false
 python-versions = ">=3.5.0"
 
 [package.extras]
-unicode_backport = ["unicodedata2"]
+unicode-backport = ["unicodedata2"]
 
 [[package]]
 name = "click"
@@ -322,7 +322,7 @@ python-versions = "*"
 click = ">=4.0"
 
 [package.extras]
-dev = ["pytest (>=3.6)", "pytest-cov", "wheel", "coveralls"]
+dev = ["coveralls", "pytest (>=3.6)", "pytest-cov", "wheel"]
 
 [[package]]
 name = "cligj"
@@ -369,10 +369,10 @@ pyct = ">=0.4.4"
 [package.extras]
 all = ["bokeh", "flake8", "holoviews", "matplotlib", "nbsite (>=0.6.1)", "nbsmoke (>=0.2.6)", "numpy", "param (>=1.7.0)", "pyct (>=0.4.4)", "pytest (>=2.8.5)", "pytest-mpl", "setuptools (>=30.3.0)", "sphinx-holoviz-theme", "wheel"]
 build = ["param (>=1.7.0)", "pyct (>=0.4.4)", "setuptools (>=30.3.0)", "wheel"]
-doc = ["numpy", "holoviews", "matplotlib", "bokeh", "nbsite (>=0.6.1)", "sphinx-holoviz-theme"]
-examples = ["numpy", "holoviews", "matplotlib", "bokeh"]
+doc = ["bokeh", "holoviews", "matplotlib", "nbsite (>=0.6.1)", "numpy", "sphinx-holoviz-theme"]
+examples = ["bokeh", "holoviews", "matplotlib", "numpy"]
 tests = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)"]
-tests_extra = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)", "pytest-mpl"]
+tests-extra = ["flake8", "nbsmoke (>=0.2.6)", "pytest (>=2.8.5)", "pytest-mpl"]
 
 [[package]]
 name = "commonmark"
@@ -417,8 +417,8 @@ fastrlock = ">=0.5"
 numpy = ">=1.17,<1.24"
 
 [package.extras]
-all = ["scipy (>=1.4,<1.10)", "Cython (>=0.29.22,<3)", "optuna (>=2.0)"]
-jenkins = ["pytest (>=6.2)", "pytest-timeout", "pytest-cov", "coveralls", "codecov", "coverage (<5)"]
+all = ["Cython (>=0.29.22,<3)", "optuna (>=2.0)", "scipy (>=1.4,<1.10)"]
+jenkins = ["codecov", "coverage (<5)", "coveralls", "pytest (>=6.2)", "pytest-cov", "pytest-timeout"]
 setup = ["Cython (>=0.29.22,<3)", "fastrlock (>=0.5)"]
 stylecheck = ["autopep8 (==1.5.5)", "flake8 (==3.8.4)", "pbr (==5.5.1)", "pycodestyle (==2.6.0)"]
 test = ["pytest (>=6.2)"]
@@ -469,7 +469,7 @@ complete = ["bokeh (>=1.0.0,!=2.0.0)", "distributed (==2021.10.0)", "jinja2", "n
 dataframe = ["numpy (>=1.18)", "pandas (>=1.0)"]
 diagnostics = ["bokeh (>=1.0.0,!=2.0.0)", "jinja2"]
 distributed = ["distributed (==2021.10.0)"]
-test = ["pytest", "pytest-rerunfailures", "pytest-xdist", "pre-commit"]
+test = ["pre-commit", "pytest", "pytest-rerunfailures", "pytest-xdist"]
 
 [[package]]
 name = "dask-cuda"
@@ -523,10 +523,10 @@ xarray = ">=0.9.6"
 
 [package.extras]
 all = ["bokeh", "codecov", "fastparquet", "fastparquet (>=0.1.6)", "flake8", "graphviz", "holoviews (>=1.10.0)", "keyring", "matplotlib", "nbconvert (<6)", "nbsite (>=0.5.2)", "nbsmoke[all] (>=0.4.0)", "netcdf4", "networkx (>=2.0)", "numpydoc", "pyarrow", "pytest (>=3.9.3,<6.0)", "pytest-benchmark (>=3.0.0)", "pytest-cov", "python-graphviz", "python-snappy", "rasterio", "rfc3986", "scikit-image", "snappy", "spatialpandas", "sphinx-holoviz-theme", "streamz (>=0.2.0)", "twine"]
-doc = ["holoviews (>=1.10.0)", "scikit-image", "bokeh", "matplotlib", "networkx (>=2.0)", "streamz (>=0.2.0)", "graphviz", "python-graphviz", "fastparquet", "python-snappy", "rasterio", "snappy", "nbsite (>=0.5.2)", "sphinx-holoviz-theme", "numpydoc"]
-examples = ["holoviews (>=1.10.0)", "scikit-image", "bokeh", "matplotlib"]
-examples_extra = ["holoviews (>=1.10.0)", "scikit-image", "bokeh", "matplotlib", "networkx (>=2.0)", "streamz (>=0.2.0)", "graphviz", "python-graphviz", "fastparquet", "python-snappy", "rasterio", "snappy"]
-tests = ["pytest (>=3.9.3,<6.0)", "pytest-benchmark (>=3.0.0)", "pytest-cov", "codecov", "flake8", "nbconvert (<6)", "nbsmoke[all] (>=0.4.0)", "fastparquet (>=0.1.6)", "holoviews (>=1.10.0)", "bokeh", "pyarrow", "netcdf4", "twine", "rfc3986", "keyring", "spatialpandas"]
+doc = ["bokeh", "fastparquet", "graphviz", "holoviews (>=1.10.0)", "matplotlib", "nbsite (>=0.5.2)", "networkx (>=2.0)", "numpydoc", "python-graphviz", "python-snappy", "rasterio", "scikit-image", "snappy", "sphinx-holoviz-theme", "streamz (>=0.2.0)"]
+examples = ["bokeh", "holoviews (>=1.10.0)", "matplotlib", "scikit-image"]
+examples-extra = ["bokeh", "fastparquet", "graphviz", "holoviews (>=1.10.0)", "matplotlib", "networkx (>=2.0)", "python-graphviz", "python-snappy", "rasterio", "scikit-image", "snappy", "streamz (>=0.2.0)"]
+tests = ["bokeh", "codecov", "fastparquet (>=0.1.6)", "flake8", "holoviews (>=1.10.0)", "keyring", "nbconvert (<6)", "nbsmoke[all] (>=0.4.0)", "netcdf4", "pyarrow", "pytest (>=3.9.3,<6.0)", "pytest-benchmark (>=3.0.0)", "pytest-cov", "rfc3986", "spatialpandas", "twine"]
 
 [[package]]
 name = "datashape"
@@ -574,10 +574,10 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-all = ["Sphinx (>=3)", "sphinx-rtd-theme (>=0.2)", "check-manifest (>=0.42)", "mock (>=1.3.0)", "pytest-cov (>=2.10.1)", "pytest-isort (>=1.2.0)", "sphinx (>=3)", "tox (>=3.7.0)", "numpy (>=1.13.0)", "numpy (>=1.15.0)", "numpy (>=1.18.0)", "pytest (==5.4.3)", "pytest-pycodestyle (>=2)", "pytest-pydocstyle (>=2)", "pytest (>=6)", "pytest-pycodestyle (>=2.2.0)", "pytest-pydocstyle (>=2.2.0)", "numpy (>=1.20.0)"]
+all = ["Sphinx (>=3)", "check-manifest (>=0.42)", "mock (>=1.3.0)", "numpy (>=1.13.0)", "numpy (>=1.15.0)", "numpy (>=1.18.0)", "numpy (>=1.20.0)", "pytest (==5.4.3)", "pytest (>=6)", "pytest-cov (>=2.10.1)", "pytest-isort (>=1.2.0)", "pytest-pycodestyle (>=2)", "pytest-pycodestyle (>=2.2.0)", "pytest-pydocstyle (>=2)", "pytest-pydocstyle (>=2.2.0)", "sphinx (>=3)", "sphinx-rtd-theme (>=0.2)", "tox (>=3.7.0)"]
 docs = ["Sphinx (>=3)", "sphinx-rtd-theme (>=0.2)"]
 numpy = ["numpy (>=1.13.0)", "numpy (>=1.15.0)", "numpy (>=1.18.0)", "numpy (>=1.20.0)"]
-tests = ["check-manifest (>=0.42)", "mock (>=1.3.0)", "pytest-cov (>=2.10.1)", "pytest-isort (>=1.2.0)", "sphinx (>=3)", "tox (>=3.7.0)", "pytest (==5.4.3)", "pytest-pycodestyle (>=2)", "pytest-pydocstyle (>=2)", "pytest (>=6)", "pytest-pycodestyle (>=2.2.0)", "pytest-pydocstyle (>=2.2.0)"]
+tests = ["check-manifest (>=0.42)", "mock (>=1.3.0)", "pytest (==5.4.3)", "pytest (>=6)", "pytest-cov (>=2.10.1)", "pytest-isort (>=1.2.0)", "pytest-pycodestyle (>=2)", "pytest-pycodestyle (>=2.2.0)", "pytest-pydocstyle (>=2)", "pytest-pydocstyle (>=2.2.0)", "sphinx (>=3)", "tox (>=3.7.0)"]
 
 [[package]]
 name = "diskcache"
@@ -603,6 +603,7 @@ jinja2 = "*"
 msgpack = ">=0.6.0"
 psutil = ">=5.0"
 pyyaml = "*"
+setuptools = "*"
 sortedcontainers = "<2.0.0 || >2.0.0,<2.0.1 || >2.0.1"
 tblib = ">=1.6.0"
 toolz = ">=0.8.2"
@@ -683,6 +684,7 @@ pywin32 = {version = ">=225", markers = "sys_platform == \"win32\""}
 requests = ">=2.22.0"
 rich = ">=10.0.0"
 "ruamel.yaml" = ">=0.16.1"
+setuptools = ">=34.0.0"
 shortuuid = ">=0.5.0"
 shtab = ">=1.3.4,<2"
 tabulate = ">=0.8.7"
@@ -694,16 +696,16 @@ win-unicode-console = {version = ">=0.5", markers = "sys_platform == \"win32\""}
 "zc.lockfile" = ">=1.2.1"
 
 [package.extras]
-all = ["gcsfs (==2021.6.1)", "s3fs (==2021.6.1)", "aiobotocore[boto3] (==1.3.0)", "adlfs (==0.7.1)", "azure-identity (>=1.4.0)", "knack", "paramiko[invoke] (>=2.7.0)", "oss2 (==2.6.1)", "pycryptodome (>=3.10)", "pydrive2 (>=1.8.1)", "six (>=1.13.0)", "pyarrow (>=2.0.0)", "hdfs (==2.5.8)", "webdav4 (>=0.8.1)"]
+all = ["adlfs (==0.7.1)", "aiobotocore[boto3] (==1.3.0)", "azure-identity (>=1.4.0)", "gcsfs (==2021.6.1)", "hdfs (==2.5.8)", "knack", "oss2 (==2.6.1)", "paramiko[invoke] (>=2.7.0)", "pyarrow (>=2.0.0)", "pycryptodome (>=3.10)", "pydrive2 (>=1.8.1)", "s3fs (==2021.6.1)", "six (>=1.13.0)", "webdav4 (>=0.8.1)"]
 azure = ["adlfs (==0.7.1)", "azure-identity (>=1.4.0)", "knack"]
 gdrive = ["pydrive2 (>=1.8.1)", "six (>=1.13.0)"]
 gs = ["gcsfs (==2021.6.1)"]
 hdfs = ["pyarrow (>=2.0.0)"]
 oss = ["oss2 (==2.6.1)", "pycryptodome (>=3.10)"]
-s3 = ["s3fs (==2021.6.1)", "aiobotocore[boto3] (==1.3.0)"]
+s3 = ["aiobotocore[boto3] (==1.3.0)", "s3fs (==2021.6.1)"]
 ssh = ["paramiko[invoke] (>=2.7.0)"]
-ssh_gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
-tests = ["wheel (==0.36.2)", "pytest (==6.2.4)", "pytest-cov (==2.12.1)", "pytest-xdist (==2.3.0)", "pytest-mock (==3.6.1)", "pytest-lazy-fixture (==0.6.3)", "pytest-timeout (==1.4.2)", "pytest-docker (==0.10.3)", "flaky (==3.7.0)", "mock (==4.0.3)", "rangehttpserver (==1.2.0)", "mock-ssh-server (==0.9.0)", "beautifulsoup4 (==4.9.3)", "wget (==3.2)", "filelock (==3.0.12)", "wsgidav (==3.1.0)", "crc32c (==2.2.post0)", "xmltodict (==0.12.0)", "google-compute-engine (==2.8.13)", "google-cloud-storage (==1.40.0)", "urllib3 (==1.26.6)", "Pygments (==2.9.0)", "collective.checkdocs (==0.2)", "pydocstyle (==6.1.1)", "jaraco.windows (==5.5.0)", "pylint (==2.8.3)", "pylint-pytest (==1.0.3)", "pylint-plugin-utils (==0.6)", "mypy (==0.910)", "types-requests", "types-paramiko", "types-tabulate", "types-toml"]
+ssh-gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
+tests = ["Pygments (==2.9.0)", "beautifulsoup4 (==4.9.3)", "collective.checkdocs (==0.2)", "crc32c (==2.2.post0)", "filelock (==3.0.12)", "flaky (==3.7.0)", "google-cloud-storage (==1.40.0)", "google-compute-engine (==2.8.13)", "jaraco.windows (==5.5.0)", "mock (==4.0.3)", "mock-ssh-server (==0.9.0)", "mypy (==0.910)", "pydocstyle (==6.1.1)", "pylint (==2.8.3)", "pylint-plugin-utils (==0.6)", "pylint-pytest (==1.0.3)", "pytest (==6.2.4)", "pytest-cov (==2.12.1)", "pytest-docker (==0.10.3)", "pytest-lazy-fixture (==0.6.3)", "pytest-mock (==3.6.1)", "pytest-timeout (==1.4.2)", "pytest-xdist (==2.3.0)", "rangehttpserver (==1.2.0)", "types-paramiko", "types-requests", "types-tabulate", "types-toml", "urllib3 (==1.26.6)", "wget (==3.2)", "wheel (==0.36.2)", "wsgidav (==3.1.0)", "xmltodict (==0.12.0)"]
 webdav = ["webdav4 (>=0.8.1)"]
 webhdfs = ["hdfs (==2.5.8)"]
 
@@ -746,7 +748,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-devel = ["colorama", "jsonschema", "json-spec", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
+devel = ["colorama", "json-spec", "jsonschema", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
 
 [[package]]
 name = "fastparquet"
@@ -789,13 +791,14 @@ click = ">=4.0"
 click-plugins = ">=1.0"
 cligj = ">=0.5"
 munch = "*"
+setuptools = "*"
 six = ">=1.7"
 
 [package.extras]
-all = ["pytest (>=3)", "boto3 (>=1.2.4)", "pytest-cov", "shapely", "mock"]
+all = ["boto3 (>=1.2.4)", "mock", "pytest (>=3)", "pytest-cov", "shapely"]
 calc = ["shapely"]
 s3 = ["boto3 (>=1.2.4)"]
-test = ["pytest (>=3)", "pytest-cov", "boto3 (>=1.2.4)", "mock"]
+test = ["boto3 (>=1.2.4)", "mock", "pytest (>=3)", "pytest-cov"]
 
 [[package]]
 name = "flatten-dict"
@@ -832,7 +835,7 @@ abfs = ["adlfs"]
 adl = ["adlfs"]
 arrow = ["pyarrow (>=1)"]
 dask = ["dask", "distributed"]
-dropbox = ["dropboxdrivefs", "requests", "dropbox"]
+dropbox = ["dropbox", "dropboxdrivefs", "requests"]
 entrypoints = ["importlib-metadata"]
 fuse = ["fusepy"]
 gcs = ["gcsfs"]
@@ -841,7 +844,7 @@ github = ["requests"]
 gs = ["gcsfs"]
 gui = ["panel"]
 hdfs = ["pyarrow (>=1)"]
-http = ["requests", "aiohttp"]
+http = ["aiohttp", "requests"]
 libarchive = ["libarchive-c"]
 oci = ["ocifs"]
 s3 = ["s3fs"]
@@ -948,9 +951,9 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-dev = ["tox (>=3)", "flake8", "pep8-naming", "wheel", "twine"]
+dev = ["flake8", "pep8-naming", "tox (>=3)", "twine", "wheel"]
 docs = ["sphinx (>=1.8)", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
-test = ["mock (>=3)", "pytest (>=5.2)", "pytest-mock (>=2)", "pytest-cov"]
+test = ["mock (>=3)", "pytest (>=5.2)", "pytest-cov", "pytest-mock (>=2)"]
 
 [[package]]
 name = "h5netcdf"
@@ -999,17 +1002,17 @@ param = ">=1.9.3,<2.0"
 pyviz-comms = ">=0.7.4"
 
 [package.extras]
-all = ["deepdiff", "ipython (>=5.4.0)", "xarray (>=0.10.4)", "scipy", "awscli", "scikit-image", "matplotlib (>=3)", "pyarrow", "coveralls", "rfc3986", "flake8", "bokeh (>=1.1.0)", "pillow", "networkx", "shapely", "notebook", "datashader (>=0.11.1)", "nbsmoke (>=0.2.0)", "streamz (>=0.5.0)", "nose", "nbconvert (<6)", "ibis-framework (>=1.3)", "path.py", "keyring", "cftime", "twine", "ffmpeg", "netcdf4", "dask", "plotly (>=4.0)", "mock", "dash (>=1.16)"]
-basic_tests = ["nose", "mock", "flake8", "coveralls", "path.py", "matplotlib (>=3)", "nbsmoke (>=0.2.0)", "nbconvert (<6)", "twine", "rfc3986", "keyring", "bokeh (>=1.1.0)", "pandas", "ipython (>=5.4.0)", "notebook"]
-build = ["param (>=1.7.0)", "setuptools (>=30.3.0)", "pyct (>=0.4.4)"]
-doc = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=3)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "dash (>=1.16)", "streamz (>=0.5.0)", "datashader (>=0.11.1)", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "pyarrow", "ibis-framework (>=1.3)", "nbsite (>=0.6.8a36)", "sphinx", "sphinx-holoviz-theme", "mpl-sample-data (>=3.1.3)", "awscli", "pscript", "graphviz", "bokeh (>2.2)"]
-examples = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=3)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "dash (>=1.16)", "streamz (>=0.5.0)", "datashader (>=0.11.1)", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "pyarrow", "ibis-framework (>=1.3)"]
-extras = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=3)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "dash (>=1.16)", "streamz (>=0.5.0)", "datashader (>=0.11.1)", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "pyarrow", "ibis-framework (>=1.3)", "pscript (==0.7.1)"]
-nbtests = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=3)", "bokeh (>=1.1.0)", "nose", "awscli", "deepdiff"]
+all = ["awscli", "bokeh (>=1.1.0)", "cftime", "coveralls", "dash (>=1.16)", "dask", "datashader (>=0.11.1)", "deepdiff", "ffmpeg", "flake8", "ibis-framework (>=1.3)", "ipython (>=5.4.0)", "keyring", "matplotlib (>=3)", "mock", "nbconvert (<6)", "nbsmoke (>=0.2.0)", "netcdf4", "networkx", "nose", "notebook", "path.py", "pillow", "plotly (>=4.0)", "pyarrow", "rfc3986", "scikit-image", "scipy", "shapely", "streamz (>=0.5.0)", "twine", "xarray (>=0.10.4)"]
+basic-tests = ["bokeh (>=1.1.0)", "coveralls", "flake8", "ipython (>=5.4.0)", "keyring", "matplotlib (>=3)", "mock", "nbconvert (<6)", "nbsmoke (>=0.2.0)", "nose", "notebook", "pandas", "path.py", "rfc3986", "twine"]
+build = ["param (>=1.7.0)", "pyct (>=0.4.4)", "setuptools (>=30.3.0)"]
+doc = ["awscli", "bokeh (>2.2)", "bokeh (>=1.1.0)", "cftime", "dash (>=1.16)", "dask", "datashader (>=0.11.1)", "ffmpeg", "graphviz", "ibis-framework (>=1.3)", "ipython (>=5.4.0)", "matplotlib (>=3)", "mpl-sample-data (>=3.1.3)", "nbsite (>=0.6.8a36)", "netcdf4", "networkx", "notebook", "pillow", "plotly (>=4.0)", "pscript", "pyarrow", "scikit-image", "scipy", "shapely", "sphinx", "sphinx-holoviz-theme", "streamz (>=0.5.0)", "xarray (>=0.10.4)"]
+examples = ["bokeh (>=1.1.0)", "cftime", "dash (>=1.16)", "dask", "datashader (>=0.11.1)", "ffmpeg", "ibis-framework (>=1.3)", "ipython (>=5.4.0)", "matplotlib (>=3)", "netcdf4", "networkx", "notebook", "pillow", "plotly (>=4.0)", "pyarrow", "scikit-image", "scipy", "shapely", "streamz (>=0.5.0)", "xarray (>=0.10.4)"]
+extras = ["bokeh (>=1.1.0)", "cftime", "dash (>=1.16)", "dask", "datashader (>=0.11.1)", "ffmpeg", "ibis-framework (>=1.3)", "ipython (>=5.4.0)", "matplotlib (>=3)", "netcdf4", "networkx", "notebook", "pillow", "plotly (>=4.0)", "pscript (==0.7.1)", "pyarrow", "scikit-image", "scipy", "shapely", "streamz (>=0.5.0)", "xarray (>=0.10.4)"]
+nbtests = ["awscli", "bokeh (>=1.1.0)", "deepdiff", "ipython (>=5.4.0)", "matplotlib (>=3)", "nose", "notebook"]
 notebook = ["ipython (>=5.4.0)", "notebook"]
-recommended = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=3)", "bokeh (>=1.1.0)"]
-tests = ["nose", "mock", "flake8", "coveralls", "path.py", "matplotlib (>=3)", "nbsmoke (>=0.2.0)", "nbconvert (<6)", "twine", "rfc3986", "keyring"]
-unit_tests = ["ipython (>=5.4.0)", "notebook", "matplotlib (>=3)", "bokeh (>=1.1.0)", "networkx", "pillow", "xarray (>=0.10.4)", "plotly (>=4.0)", "dash (>=1.16)", "streamz (>=0.5.0)", "datashader (>=0.11.1)", "ffmpeg", "cftime", "netcdf4", "dask", "scipy", "shapely", "scikit-image", "pyarrow", "ibis-framework (>=1.3)", "nose", "mock", "flake8", "coveralls", "path.py", "nbsmoke (>=0.2.0)", "nbconvert (<6)", "twine", "rfc3986", "keyring"]
+recommended = ["bokeh (>=1.1.0)", "ipython (>=5.4.0)", "matplotlib (>=3)", "notebook"]
+tests = ["coveralls", "flake8", "keyring", "matplotlib (>=3)", "mock", "nbconvert (<6)", "nbsmoke (>=0.2.0)", "nose", "path.py", "rfc3986", "twine"]
+unit-tests = ["bokeh (>=1.1.0)", "cftime", "coveralls", "dash (>=1.16)", "dask", "datashader (>=0.11.1)", "ffmpeg", "flake8", "ibis-framework (>=1.3)", "ipython (>=5.4.0)", "keyring", "matplotlib (>=3)", "mock", "nbconvert (<6)", "nbsmoke (>=0.2.0)", "netcdf4", "networkx", "nose", "notebook", "path.py", "pillow", "plotly (>=4.0)", "pyarrow", "rfc3986", "scikit-image", "scipy", "shapely", "streamz (>=0.5.0)", "twine", "xarray (>=0.10.4)"]
 
 [[package]]
 name = "hvplot"
@@ -1029,9 +1032,9 @@ pandas = "*"
 [package.extras]
 all = ["coveralls", "dask", "datashader (>=0.6.5)", "flake8", "geopandas", "geoviews (>=1.6.0)", "intake", "intake-parquet", "intake-xarray", "keyring", "nbsite (>=0.5.1)", "nbsmoke (>=0.2.0)", "networkx", "nose", "notebook (>=5.4)", "numba (>=0.51.0)", "numpy (>=1.7)", "param (>=1.6.1)", "parameterized", "pillow", "pyct (>=0.4.4)", "pyepsg", "pytest", "python-snappy", "rasterio", "rfc3986", "s3fs", "scikit-image", "scipy", "selenium", "setuptools", "spatialpandas", "streamz (>=0.3.0)", "twine", "xarray"]
 build = ["param (>=1.6.1)", "pyct (>=0.4.4)", "setuptools"]
-doc = ["geoviews (>=1.6.0)", "numba (>=0.51.0)", "geopandas", "xarray", "networkx", "streamz (>=0.3.0)", "intake", "intake-parquet", "intake-xarray", "dask", "datashader (>=0.6.5)", "notebook (>=5.4)", "rasterio", "s3fs", "scipy", "pillow", "selenium", "spatialpandas", "scikit-image", "python-snappy", "pyepsg", "nbsite (>=0.5.1)"]
-examples = ["geoviews (>=1.6.0)", "numba (>=0.51.0)", "geopandas", "xarray", "networkx", "streamz (>=0.3.0)", "intake", "intake-parquet", "intake-xarray", "dask", "datashader (>=0.6.5)", "notebook (>=5.4)", "rasterio", "s3fs", "scipy", "pillow", "selenium", "spatialpandas", "scikit-image", "python-snappy", "pyepsg"]
-tests = ["coveralls", "nose", "flake8", "parameterized", "pytest", "nbsmoke (>=0.2.0)", "twine", "rfc3986", "keyring", "numpy (>=1.7)"]
+doc = ["dask", "datashader (>=0.6.5)", "geopandas", "geoviews (>=1.6.0)", "intake", "intake-parquet", "intake-xarray", "nbsite (>=0.5.1)", "networkx", "notebook (>=5.4)", "numba (>=0.51.0)", "pillow", "pyepsg", "python-snappy", "rasterio", "s3fs", "scikit-image", "scipy", "selenium", "spatialpandas", "streamz (>=0.3.0)", "xarray"]
+examples = ["dask", "datashader (>=0.6.5)", "geopandas", "geoviews (>=1.6.0)", "intake", "intake-parquet", "intake-xarray", "networkx", "notebook (>=5.4)", "numba (>=0.51.0)", "pillow", "pyepsg", "python-snappy", "rasterio", "s3fs", "scikit-image", "scipy", "selenium", "spatialpandas", "streamz (>=0.3.0)", "xarray"]
+tests = ["coveralls", "flake8", "keyring", "nbsmoke (>=0.2.0)", "nose", "numpy (>=1.7)", "parameterized", "pytest", "rfc3986", "twine"]
 
 [[package]]
 name = "icepyx"
@@ -1058,7 +1061,7 @@ xarray = "*"
 
 [package.extras]
 complete = ["cartopy (>=0.18.0)", "geoviews (>=1.9.0)", "scipy"]
-viz = ["geoviews (>=1.9.0)", "cartopy (>=0.18.0)", "scipy"]
+viz = ["cartopy (>=0.18.0)", "geoviews (>=1.9.0)", "scipy"]
 
 [[package]]
 name = "idna"
@@ -1086,7 +1089,10 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 appdirs = "*"
-dask = "*"
+dask = [
+    {version = "*"},
+    {version = "*", extras = ["dataframe"], optional = true, markers = "extra == \"dataframe\""},
+]
 entrypoints = "*"
 fsspec = ">=0.7.4"
 msgpack-numpy = {version = "*", optional = true, markers = "extra == \"dataframe\""}
@@ -1096,10 +1102,10 @@ pyyaml = "*"
 tornado = {version = "*", optional = true, markers = "extra == \"server\""}
 
 [package.extras]
-complete = ["bokeh (<2.0)", "dask", "hvplot", "msgpack-numpy", "panel (>=0.7.0)", "pyarrow", "python-snappy", "tornado"]
-dataframe = ["dask", "msgpack-numpy", "pyarrow"]
-plot = ["hvplot", "panel (>=0.7.0)", "bokeh (<2.0)"]
-server = ["tornado", "python-snappy"]
+complete = ["bokeh (<2.0)", "dask[dataframe]", "hvplot", "msgpack-numpy", "panel (>=0.7.0)", "pyarrow", "python-snappy", "tornado"]
+dataframe = ["dask[dataframe]", "msgpack-numpy", "pyarrow"]
+plot = ["bokeh (<2.0)", "hvplot", "panel (>=0.7.0)"]
+server = ["python-snappy", "tornado"]
 
 [[package]]
 name = "intake-geopandas"
@@ -1167,7 +1173,7 @@ tornado = ">=4.2,<7.0"
 traitlets = ">=4.1.0,<6.0"
 
 [package.extras]
-test = ["pytest (!=5.3.4)", "pytest-cov", "flaky", "nose", "ipyparallel"]
+test = ["flaky", "ipyparallel", "nose", "pytest (!=5.3.4)", "pytest-cov"]
 
 [[package]]
 name = "ipython"
@@ -1188,6 +1194,7 @@ pexpect = {version = ">4.3", markers = "sys_platform != \"win32\""}
 pickleshare = "*"
 prompt-toolkit = ">=2.0.0,<3.0.0 || >3.0.0,<3.0.1 || >3.0.1,<3.1.0"
 pygments = "*"
+setuptools = ">=18.5"
 traitlets = ">=4.2"
 
 [package.extras]
@@ -1196,10 +1203,10 @@ doc = ["Sphinx (>=1.3)"]
 kernel = ["ipykernel"]
 nbconvert = ["nbconvert"]
 nbformat = ["nbformat"]
-notebook = ["notebook", "ipywidgets"]
+notebook = ["ipywidgets", "notebook"]
 parallel = ["ipyparallel"]
 qtconsole = ["qtconsole"]
-test = ["nose (>=0.10.1)", "requests", "testpath", "pygments", "nbformat", "ipykernel", "numpy (>=1.17)"]
+test = ["ipykernel", "nbformat", "nose (>=0.10.1)", "numpy (>=1.17)", "pygments", "requests", "testpath"]
 
 [[package]]
 name = "ipython-genutils"
@@ -1240,11 +1247,11 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "joblib"
-version = "1.1.0"
+version = "1.2.0"
 description = "Lightweight pipelining with Python functions"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [[package]]
 name = "json5"
@@ -1284,7 +1291,7 @@ pyrsistent = ">=0.14.0,<0.17.0 || >0.17.0,<0.17.1 || >0.17.1,<0.17.2 || >0.17.2"
 
 [package.extras]
 format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
-format_nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
+format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=1.11)"]
 
 [[package]]
 name = "jupyter-client"
@@ -1305,7 +1312,7 @@ traitlets = "*"
 
 [package.extras]
 doc = ["myst-parser", "sphinx (>=1.3.6)", "sphinx-rtd-theme", "sphinxcontrib-github-alt"]
-test = ["codecov", "coverage", "ipykernel", "ipython", "mock", "mypy", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "pytest-timeout", "jedi (<0.18)"]
+test = ["codecov", "coverage", "ipykernel", "ipython", "jedi (<0.18)", "mock", "mypy", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "pytest-timeout"]
 
 [[package]]
 name = "jupyter-core"
@@ -1346,7 +1353,7 @@ traitlets = ">=5.1"
 websocket-client = "*"
 
 [package.extras]
-test = ["coverage", "ipykernel", "pre-commit", "pytest-console-scripts", "pytest-cov", "pytest-mock", "pytest-timeout", "pytest-tornasync", "pytest (>=6.0)", "requests"]
+test = ["coverage", "ipykernel", "pre-commit", "pytest (>=6.0)", "pytest-console-scripts", "pytest-cov", "pytest-mock", "pytest-timeout", "pytest-tornasync", "requests"]
 
 [[package]]
 name = "jupyter-server-proxy"
@@ -1384,7 +1391,7 @@ packaging = "*"
 tornado = ">=6.1.0"
 
 [package.extras]
-test = ["check-manifest", "coverage", "jupyterlab-server", "pytest (>=6.0)", "pytest-cov", "pytest-console-scripts", "pytest-check-links (>=0.5)", "requests", "requests-cache", "virtualenv", "pre-commit"]
+test = ["check-manifest", "coverage", "jupyterlab-server[test]", "pre-commit", "pytest (>=6.0)", "pytest-check-links (>=0.5)", "pytest-console-scripts", "pytest-cov", "requests", "requests-cache", "virtualenv"]
 ui-tests = ["build"]
 
 [[package]]
@@ -1417,7 +1424,7 @@ packaging = "*"
 requests = "*"
 
 [package.extras]
-test = ["codecov", "ipykernel", "pytest (>=5.3.2)", "pytest-cov", "jupyter-server", "openapi-core (>=0.14.0,<0.15.0)", "pytest-console-scripts", "strict-rfc3339", "ruamel.yaml", "wheel"]
+test = ["codecov", "ipykernel", "jupyter-server[test]", "openapi-core (>=0.14.0,<0.15.0)", "pytest (>=5.3.2)", "pytest-console-scripts", "pytest-cov", "ruamel.yaml", "strict-rfc3339", "wheel"]
 
 [[package]]
 name = "jupytext"
@@ -1482,7 +1489,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 MarkupSafe = ">=0.9.2"
 
 [package.extras]
-babel = ["babel"]
+babel = ["Babel"]
 lingua = ["lingua"]
 
 [[package]]
@@ -1508,11 +1515,11 @@ python-versions = "~=3.6"
 attrs = ">=19,<22"
 
 [package.extras]
-code_style = ["pre-commit (==2.6)"]
+code-style = ["pre-commit (==2.6)"]
 compare = ["commonmark (>=0.9.1,<0.10.0)", "markdown (>=3.2.2,<3.3.0)", "mistletoe-ebp (>=0.10.0,<0.11.0)", "mistune (>=0.8.4,<0.9.0)", "panflute (>=1.12,<2.0)"]
 linkify = ["linkify-it-py (>=1.0,<2.0)"]
 plugins = ["mdit-py-plugins"]
-rtd = ["myst-nb (==0.13.0a1)", "pyyaml", "sphinx (>=2,<4)", "sphinx-copybutton", "sphinx-panels (>=0.4.0,<0.5.0)", "sphinx-book-theme"]
+rtd = ["myst-nb (==0.13.0a1)", "pyyaml", "sphinx (>=2,<4)", "sphinx-book-theme", "sphinx-copybutton", "sphinx-panels (>=0.4.0,<0.5.0)"]
 testing = ["coverage", "psutil", "pytest (>=3.6,<4)", "pytest-benchmark (>=3.2,<4.0)", "pytest-cov", "pytest-regressions"]
 
 [[package]]
@@ -1562,7 +1569,7 @@ python-versions = "~=3.6"
 markdown-it-py = ">=1.0,<2.0"
 
 [package.extras]
-code_style = ["pre-commit (==2.6)"]
+code-style = ["pre-commit (==2.6)"]
 rtd = ["myst-parser (==0.14.0a3)", "sphinx-book-theme (>=0.1.0,<0.2.0)"]
 testing = ["coverage", "pytest (>=3.6,<4)", "pytest-cov", "pytest-regressions"]
 
@@ -1625,7 +1632,7 @@ python-versions = "*"
 six = "*"
 
 [package.extras]
-testing = ["pytest", "coverage", "astroid (>=1.5.3,<1.6.0)", "pylint (>=1.7.2,<1.8.0)", "astroid (>=2.0)", "pylint (>=2.3.1,<2.4.0)"]
+testing = ["astroid (>=1.5.3,<1.6.0)", "astroid (>=2.0)", "coverage", "pylint (>=1.7.2,<1.8.0)", "pylint (>=2.3.1,<2.4.0)", "pytest"]
 yaml = ["PyYAML (>=5.1.0)"]
 
 [[package]]
@@ -1657,7 +1664,7 @@ jupyter-server = ">=1.8,<2.0"
 notebook = "<7"
 
 [package.extras]
-test = ["pytest", "pytest-tornasync", "pytest-console-scripts"]
+test = ["pytest", "pytest-console-scripts", "pytest-tornasync"]
 
 [[package]]
 name = "nbclient"
@@ -1674,9 +1681,9 @@ nest-asyncio = "*"
 traitlets = ">=4.2"
 
 [package.extras]
-dev = ["codecov", "coverage", "ipython", "ipykernel", "ipywidgets", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "check-manifest", "flake8", "mypy", "tox", "bumpversion", "xmltodict", "pip (>=18.1)", "wheel (>=0.31.0)", "setuptools (>=38.6.0)", "twine (>=1.11.0)", "black"]
-sphinx = ["Sphinx (>=1.7)", "sphinx-book-theme", "mock", "moto", "myst-parser"]
-test = ["codecov", "coverage", "ipython", "ipykernel", "ipywidgets", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "check-manifest", "flake8", "mypy", "tox", "bumpversion", "xmltodict", "pip (>=18.1)", "wheel (>=0.31.0)", "setuptools (>=38.6.0)", "twine (>=1.11.0)", "black"]
+dev = ["black", "bumpversion", "check-manifest", "codecov", "coverage", "flake8", "ipykernel", "ipython", "ipywidgets", "mypy", "pip (>=18.1)", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "setuptools (>=38.6.0)", "tox", "twine (>=1.11.0)", "wheel (>=0.31.0)", "xmltodict"]
+sphinx = ["Sphinx (>=1.7)", "mock", "moto", "myst-parser", "sphinx-book-theme"]
+test = ["black", "bumpversion", "check-manifest", "codecov", "coverage", "flake8", "ipykernel", "ipython", "ipywidgets", "mypy", "pip (>=18.1)", "pytest (>=4.1)", "pytest-cov (>=2.6.1)", "setuptools (>=38.6.0)", "tox", "twine (>=1.11.0)", "wheel (>=0.31.0)", "xmltodict"]
 
 [[package]]
 name = "nbconvert"
@@ -1705,10 +1712,10 @@ tinycss2 = "*"
 traitlets = ">=5.0"
 
 [package.extras]
-all = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pre-commit", "pyppeteer (>=1,<1.1)", "tornado (>=6.1)", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
-docs = ["sphinx (>=1.5.1)", "sphinx-rtd-theme", "nbsphinx (>=0.2.12)", "ipython"]
+all = ["ipykernel", "ipython", "ipywidgets (>=7)", "nbsphinx (>=0.2.12)", "pre-commit", "pyppeteer (>=1,<1.1)", "pytest", "pytest-cov", "pytest-dependency", "sphinx (>=1.5.1)", "sphinx-rtd-theme", "tornado (>=6.1)"]
+docs = ["ipython", "nbsphinx (>=0.2.12)", "sphinx (>=1.5.1)", "sphinx-rtd-theme"]
 serve = ["tornado (>=6.1)"]
-test = ["pytest", "pytest-cov", "pytest-dependency", "ipykernel", "ipywidgets (>=7)", "pre-commit", "pyppeteer (>=1,<1.1)"]
+test = ["ipykernel", "ipywidgets (>=7)", "pre-commit", "pyppeteer (>=1,<1.1)", "pytest", "pytest-cov", "pytest-dependency"]
 webpdf = ["pyppeteer (>=1,<1.1)"]
 
 [[package]]
@@ -1726,7 +1733,7 @@ jupyter-core = "*"
 traitlets = ">=5.1"
 
 [package.extras]
-test = ["check-manifest", "testpath", "pytest", "pre-commit"]
+test = ["check-manifest", "pre-commit", "pytest", "testpath"]
 
 [[package]]
 name = "nest-asyncio"
@@ -1757,11 +1764,11 @@ optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-default = ["numpy (>=1.19)", "scipy (>=1.5,!=1.6.1)", "matplotlib (>=3.3)", "pandas (>=1.1)"]
+default = ["matplotlib (>=3.3)", "numpy (>=1.19)", "pandas (>=1.1)", "scipy (>=1.5,!=1.6.1)"]
 developer = ["black (==21.5b1)", "pre-commit (>=2.12)"]
-doc = ["sphinx (>=4.0,<5.0)", "pydata-sphinx-theme (>=0.6,<1.0)", "sphinx-gallery (>=0.9,<1.0)", "numpydoc (>=1.1)", "pillow (>=8.2)", "nb2plots (>=0.6)", "texext (>=0.6.6)"]
-extra = ["lxml (>=4.5)", "pygraphviz (>=1.7)", "pydot (>=1.4.1)"]
-test = ["pytest (>=6.2)", "pytest-cov (>=2.12)", "codecov (>=2.1)"]
+doc = ["nb2plots (>=0.6)", "numpydoc (>=1.1)", "pillow (>=8.2)", "pydata-sphinx-theme (>=0.6,<1.0)", "sphinx (>=4.0,<5.0)", "sphinx-gallery (>=0.9,<1.0)", "texext (>=0.6.6)"]
+extra = ["lxml (>=4.5)", "pydot (>=1.4.1)", "pygraphviz (>=1.7)"]
+test = ["codecov (>=2.1)", "pytest (>=6.2)", "pytest-cov (>=2.12)"]
 
 [[package]]
 name = "notebook"
@@ -1789,9 +1796,9 @@ tornado = ">=6.1"
 traitlets = ">=4.2.1"
 
 [package.extras]
-docs = ["sphinx", "nbsphinx", "sphinxcontrib-github-alt", "sphinx-rtd-theme", "myst-parser"]
+docs = ["myst-parser", "nbsphinx", "sphinx", "sphinx-rtd-theme", "sphinxcontrib-github-alt"]
 json-logging = ["json-logging"]
-test = ["pytest", "coverage", "requests", "nbval", "selenium", "pytest-cov", "requests-unixsocket"]
+test = ["coverage", "nbval", "pytest", "pytest-cov", "requests", "requests-unixsocket", "selenium"]
 
 [[package]]
 name = "numba"
@@ -1804,6 +1811,7 @@ python-versions = ">=3.7,<3.11"
 [package.dependencies]
 llvmlite = ">=0.38.0rc1,<0.39"
 numpy = ">=1.18,<1.22"
+setuptools = "*"
 
 [[package]]
 name = "numcodecs"
@@ -1882,11 +1890,11 @@ tqdm = ">=4.48.0"
 
 [package.extras]
 all = ["altair", "channels", "codecov", "datashader", "django", "flake8", "folium", "graphviz", "holoviews", "holoviews (>1.14.1)", "hvplot", "ipyleaflet", "ipympl", "ipython (>=7.0)", "ipyvolume", "ipywidgets", "ipywidgets-bokeh", "jupyter-bokeh (>=3.0.2)", "lxml", "matplotlib (<3.4)", "nbsite (>=0.7.0a4)", "nbsmoke (>=0.2.0)", "notebook (>=5.4)", "pandas (>=1.3)", "parameterized", "pillow", "plotly", "plotly (>=4.0)", "pytest", "pytest-cov", "pyvista", "scikit-learn", "scipy", "streamz", "twine", "vega-datasets", "vtk (==9.0.1)", "xarray"]
-build = ["param (>=1.9.2)", "pyct (>=0.4.4)", "setuptools (>=30.3.0)", "bokeh (>=2.0.0)", "pyviz-comms (>=0.6.0)", "bleach", "tqdm"]
-doc = ["notebook (>=5.4)", "holoviews (>1.14.1)", "matplotlib (<3.4)", "pillow", "plotly", "nbsite (>=0.7.0a4)", "graphviz", "lxml"]
-examples = ["hvplot", "plotly (>=4.0)", "altair", "streamz", "vega-datasets", "vtk (==9.0.1)", "scikit-learn", "datashader", "jupyter-bokeh (>=3.0.2)", "django", "channels", "pyvista", "ipywidgets", "ipywidgets-bokeh", "ipyvolume", "ipyleaflet", "xarray"]
-recommended = ["notebook (>=5.4)", "holoviews (>1.14.1)", "matplotlib (<3.4)", "pillow", "plotly"]
-tests = ["flake8", "parameterized", "pytest", "scipy", "nbsmoke (>=0.2.0)", "pytest-cov", "codecov", "folium", "ipympl", "twine", "pandas (>=1.3)", "ipython (>=7.0)", "holoviews"]
+build = ["bleach", "bokeh (>=2.0.0)", "param (>=1.9.2)", "pyct (>=0.4.4)", "pyviz-comms (>=0.6.0)", "setuptools (>=30.3.0)", "tqdm"]
+doc = ["graphviz", "holoviews (>1.14.1)", "lxml", "matplotlib (<3.4)", "nbsite (>=0.7.0a4)", "notebook (>=5.4)", "pillow", "plotly"]
+examples = ["altair", "channels", "datashader", "django", "hvplot", "ipyleaflet", "ipyvolume", "ipywidgets", "ipywidgets-bokeh", "jupyter-bokeh (>=3.0.2)", "plotly (>=4.0)", "pyvista", "scikit-learn", "streamz", "vega-datasets", "vtk (==9.0.1)", "xarray"]
+recommended = ["holoviews (>1.14.1)", "matplotlib (<3.4)", "notebook (>=5.4)", "pillow", "plotly"]
+tests = ["codecov", "flake8", "folium", "holoviews", "ipympl", "ipython (>=7.0)", "nbsmoke (>=0.2.0)", "pandas (>=1.3)", "parameterized", "pytest", "pytest-cov", "scipy", "twine"]
 
 [[package]]
 name = "param"
@@ -1897,9 +1905,9 @@ optional = false
 python-versions = ">=2.7"
 
 [package.extras]
-all = ["flake8", "graphviz", "myst-parser", "myst-nb (==0.12.2)", "nbconvert (<6.0)", "nbsite (>=0.6.1)", "nose", "pydata-sphinx-theme", "pygraphviz"]
-doc = ["pygraphviz", "nbsite (>=0.6.1)", "pydata-sphinx-theme", "myst-parser", "nbconvert (<6.0)", "graphviz", "myst-nb (==0.12.2)"]
-tests = ["nose", "flake8"]
+all = ["flake8", "graphviz", "myst-nb (==0.12.2)", "myst-parser", "nbconvert (<6.0)", "nbsite (>=0.6.1)", "nose", "pydata-sphinx-theme", "pygraphviz"]
+doc = ["graphviz", "myst-nb (==0.12.2)", "myst-parser", "nbconvert (<6.0)", "nbsite (>=0.6.1)", "pydata-sphinx-theme", "pygraphviz"]
+tests = ["flake8", "nose"]
 
 [[package]]
 name = "parse"
@@ -1950,7 +1958,7 @@ locket = "*"
 toolz = "*"
 
 [package.extras]
-complete = ["numpy (>=1.9.0)", "pandas (>=0.19.0)", "pyzmq", "blosc"]
+complete = ["blosc", "numpy (>=1.9.0)", "pandas (>=0.19.0)", "pyzmq"]
 
 [[package]]
 name = "pathspec"
@@ -2008,7 +2016,7 @@ packaging = "*"
 
 [package.extras]
 numpy = ["numpy (>=1.14)"]
-test = ["pytest", "pytest-mpl", "pytest-cov", "pytest-subtests"]
+test = ["pytest", "pytest-cov", "pytest-mpl", "pytest-subtests"]
 uncertainties = ["uncertainties (>=3.0)"]
 
 [[package]]
@@ -2025,7 +2033,7 @@ pandas = ">=1.0.4"
 pint = ">=0.13"
 
 [package.extras]
-test = ["pytest", "pytest-mpl", "pytest-cov", "pytest-subtests", "codecov", "coveralls", "nbval"]
+test = ["codecov", "coveralls", "nbval", "pytest", "pytest-cov", "pytest-mpl", "pytest-subtests"]
 
 [package.source]
 type = "git"
@@ -2106,7 +2114,7 @@ optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.extras]
-test = ["ipaddress", "mock", "unittest2", "enum34", "pywin32", "wmi"]
+test = ["enum34", "ipaddress", "mock", "pywin32", "unittest2", "wmi"]
 
 [[package]]
 name = "ptyprocess"
@@ -2163,7 +2171,7 @@ python-versions = ">=2.7"
 param = ">=1.7.0"
 
 [package.extras]
-build = ["setuptools", "param (>=1.7.0)"]
+build = ["param (>=1.7.0)", "setuptools"]
 cmd = ["pyyaml", "requests"]
 doc = ["nbsite", "sphinx-ioam-theme"]
 tests = ["flake8", "pytest"]
@@ -2419,7 +2427,7 @@ param = "*"
 
 [package.extras]
 all = ["flake8", "jupyter-packaging (>=0.7.9,<0.8.0)", "jupyterlab (>=3.0,<4.0)", "keyring", "nose", "rfc3986", "setuptools", "twine"]
-build = ["setuptools", "jupyterlab (>=3.0,<4.0)", "jupyter-packaging (>=0.7.9,<0.8.0)", "twine", "rfc3986", "keyring"]
+build = ["jupyter-packaging (>=0.7.9,<0.8.0)", "jupyterlab (>=3.0,<4.0)", "keyring", "rfc3986", "setuptools", "twine"]
 tests = ["flake8", "nose"]
 
 [[package]]
@@ -2482,7 +2490,7 @@ urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
-use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<5)"]
 
 [[package]]
 name = "rich"
@@ -2546,10 +2554,10 @@ scipy = ">=0.19.1"
 threadpoolctl = ">=2.0.0"
 
 [package.extras]
-benchmark = ["matplotlib (>=2.1.1)", "pandas (>=0.25.0)", "memory-profiler (>=0.57.0)"]
-docs = ["matplotlib (>=2.1.1)", "scikit-image (>=0.13)", "pandas (>=0.25.0)", "seaborn (>=0.9.0)", "memory-profiler (>=0.57.0)", "sphinx (>=3.2.0)", "sphinx-gallery (>=0.7.0)", "numpydoc (>=1.0.0)", "Pillow (>=7.1.2)", "sphinx-prompt (>=1.3.0)"]
-examples = ["matplotlib (>=2.1.1)", "scikit-image (>=0.13)", "pandas (>=0.25.0)", "seaborn (>=0.9.0)"]
-tests = ["matplotlib (>=2.1.1)", "scikit-image (>=0.13)", "pandas (>=0.25.0)", "pytest (>=5.0.1)", "pytest-cov (>=2.9.0)", "flake8 (>=3.8.2)", "mypy (>=0.770)", "pyamg (>=4.0.0)"]
+benchmark = ["matplotlib (>=2.1.1)", "memory-profiler (>=0.57.0)", "pandas (>=0.25.0)"]
+docs = ["Pillow (>=7.1.2)", "matplotlib (>=2.1.1)", "memory-profiler (>=0.57.0)", "numpydoc (>=1.0.0)", "pandas (>=0.25.0)", "scikit-image (>=0.13)", "seaborn (>=0.9.0)", "sphinx (>=3.2.0)", "sphinx-gallery (>=0.7.0)", "sphinx-prompt (>=1.3.0)"]
+examples = ["matplotlib (>=2.1.1)", "pandas (>=0.25.0)", "scikit-image (>=0.13)", "seaborn (>=0.9.0)"]
+tests = ["flake8 (>=3.8.2)", "matplotlib (>=2.1.1)", "mypy (>=0.770)", "pandas (>=0.25.0)", "pyamg (>=4.0.0)", "pytest (>=5.0.1)", "pytest-cov (>=2.9.0)", "scikit-image (>=0.13)"]
 
 [[package]]
 name = "scipy"
@@ -2571,9 +2579,22 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-nativelib = ["pyobjc-framework-cocoa", "pywin32"]
-objc = ["pyobjc-framework-cocoa"]
+nativelib = ["pyobjc-framework-Cocoa", "pywin32"]
+objc = ["pyobjc-framework-Cocoa"]
 win32 = ["pywin32"]
+
+[[package]]
+name = "setuptools"
+version = "65.5.0"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-hoverxref (<2)", "sphinx-inline-tabs", "sphinx-notfound-page (==0.8.3)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
+testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8 (<5)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mock", "pip (>=19.1)", "pip-run (>=8.8)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
+testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
 name = "shapely"
@@ -2731,8 +2752,8 @@ python-versions = ">=3.6"
 webencodings = ">=0.4"
 
 [package.extras]
-doc = ["sphinx", "sphinx-rtd-theme"]
-test = ["pytest", "pytest-cov", "pytest-flake8", "pytest-isort", "coverage"]
+doc = ["sphinx", "sphinx_rtd_theme"]
+test = ["coverage[toml]", "pytest", "pytest-cov", "pytest-flake8", "pytest-isort"]
 
 [[package]]
 name = "toml"
@@ -2800,11 +2821,12 @@ python-versions = "*"
 
 [package.dependencies]
 numpy = "*"
+setuptools = "*"
 
 [package.extras]
-all = ["pyglet", "lxml", "psutil", "requests", "python-fcl", "sympy", "pycollada", "setuptools", "shapely", "networkx", "glooey", "svg.path", "xatlas", "mapbox-earcut", "pillow", "meshio", "scikit-image", "rtree", "colorlog", "chardet", "scipy", "jsonschema", "triangle", "msgpack", "xxhash"]
-easy = ["pyglet", "lxml", "rtree", "colorlog", "requests", "sympy", "pycollada", "chardet", "setuptools", "shapely", "networkx", "scipy", "jsonschema", "svg.path", "msgpack", "pillow", "xxhash"]
-test = ["pytest", "pytest-cov", "coveralls", "pyinstrument"]
+all = ["chardet", "colorlog", "glooey", "jsonschema", "lxml", "mapbox-earcut", "meshio", "msgpack", "networkx", "pillow", "psutil", "pycollada", "pyglet", "python-fcl", "requests", "rtree", "scikit-image", "scipy", "setuptools", "shapely", "svg.path", "sympy", "triangle", "xatlas", "xxhash"]
+easy = ["chardet", "colorlog", "jsonschema", "lxml", "msgpack", "networkx", "pillow", "pycollada", "pyglet", "requests", "rtree", "scipy", "setuptools", "shapely", "svg.path", "sympy", "xxhash"]
+test = ["coveralls", "pyinstrument", "pytest", "pytest-cov"]
 
 [[package]]
 name = "typing-extensions"
@@ -2826,7 +2848,7 @@ python-versions = "*"
 future = "*"
 
 [package.extras]
-all = ["numpy", "sphinx", "nose"]
+all = ["nose", "numpy", "sphinx"]
 docs = ["sphinx"]
 optional = ["numpy"]
 tests = ["nose", "numpy"]
@@ -2841,7 +2863,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
-secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)"]
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
@@ -2899,14 +2921,15 @@ python-versions = ">=3.7"
 [package.dependencies]
 numpy = ">=1.17"
 pandas = ">=1.0"
+setuptools = ">=40.4"
 
 [package.extras]
-accel = ["scipy", "bottleneck", "numbagg"]
-complete = ["netcdf4", "h5netcdf", "scipy", "pydap", "zarr", "fsspec", "cftime", "rasterio", "cfgrib", "pooch", "bottleneck", "numbagg", "dask", "matplotlib", "seaborn", "nc-time-axis"]
-docs = ["netcdf4", "h5netcdf", "scipy", "pydap", "zarr", "fsspec", "cftime", "rasterio", "cfgrib", "pooch", "bottleneck", "numbagg", "dask", "matplotlib", "seaborn", "nc-time-axis", "sphinx-autosummary-accessors", "sphinx-rtd-theme", "ipython", "ipykernel", "jupyter-client", "nbsphinx", "scanpydoc"]
-io = ["netcdf4", "h5netcdf", "scipy", "pydap", "zarr", "fsspec", "cftime", "rasterio", "cfgrib", "pooch"]
-parallel = ["dask"]
-viz = ["matplotlib", "seaborn", "nc-time-axis"]
+accel = ["bottleneck", "numbagg", "scipy"]
+complete = ["bottleneck", "cfgrib", "cftime", "dask[complete]", "fsspec", "h5netcdf", "matplotlib", "nc-time-axis", "netCDF4", "numbagg", "pooch", "pydap", "rasterio", "scipy", "seaborn", "zarr"]
+docs = ["bottleneck", "cfgrib", "cftime", "dask[complete]", "fsspec", "h5netcdf", "ipykernel", "ipython", "jupyter-client", "matplotlib", "nbsphinx", "nc-time-axis", "netCDF4", "numbagg", "pooch", "pydap", "rasterio", "scanpydoc", "scipy", "seaborn", "sphinx-autosummary-accessors", "sphinx-rtd-theme", "zarr"]
+io = ["cfgrib", "cftime", "fsspec", "h5netcdf", "netCDF4", "pooch", "pydap", "rasterio", "scipy", "zarr"]
+parallel = ["dask[complete]"]
+viz = ["matplotlib", "nc-time-axis", "seaborn"]
 
 [[package]]
 name = "xmltodict"
@@ -2943,7 +2966,7 @@ numcodecs = ">=0.6.4"
 numpy = ">=1.7"
 
 [package.extras]
-jupyter = ["notebook", "ipytree"]
+jupyter = ["ipytree", "notebook"]
 
 [[package]]
 name = "zc.lockfile"
@@ -2952,6 +2975,9 @@ description = "Basic inter-process locks"
 category = "main"
 optional = false
 python-versions = "*"
+
+[package.dependencies]
+setuptools = "*"
 
 [package.extras]
 test = ["zope.testing"]
@@ -3532,9 +3558,7 @@ glob2 = [
 ]
 grandalf = [
     {file = "grandalf-0.6-py2-none-any.whl", hash = "sha256:d671fdfa5310f2639538b6c858c4b1aef7755535ccfcb9c1cdf0d29171326add"},
-    {file = "grandalf-0.6-py2.7.egg", hash = "sha256:51e34e141be2dd19bca74448918ebce88c1cd95498842a13d191df0a52a3955a"},
     {file = "grandalf-0.6-py3-none-any.whl", hash = "sha256:357946e2fd35fc92c327cf3c091acc5aef93e0c74c60fed0a727d827ab3b1272"},
-    {file = "grandalf-0.6-py3.5.egg", hash = "sha256:aa985ba9992aba30e9c09d3cd9574054268b74ff2d34ced68aa9e7ca698724b0"},
     {file = "grandalf-0.6.tar.gz", hash = "sha256:7471db231bd7338bc0035b16edf0dc0c900c82d23060f4b4d0c4304caedda6e4"},
 ]
 graphviz = [
@@ -3617,8 +3641,8 @@ jinja2 = [
     {file = "Jinja2-3.0.2.tar.gz", hash = "sha256:827a0e32839ab1600d4eb1c4c33ec5a8edfbc5cb42dafa13b81f182f97784b45"},
 ]
 joblib = [
-    {file = "joblib-1.1.0-py2.py3-none-any.whl", hash = "sha256:f21f109b3c7ff9d95f8387f752d0d9c34a02aa2f7060c2135f465da0e5160ff6"},
-    {file = "joblib-1.1.0.tar.gz", hash = "sha256:4158fcecd13733f8be669be0683b96ebdbbd38d23559f54dca7205aea1bf1e35"},
+    {file = "joblib-1.2.0-py3-none-any.whl", hash = "sha256:091138ed78f800342968c523bdde947e7a305b8594b910a0fea2ab83c3c6d385"},
+    {file = "joblib-1.2.0.tar.gz", hash = "sha256:e1cee4a79e4af22881164f218d4311f60074197fb707e082e803b61f6d137018"},
 ]
 json5 = [
     {file = "json5-0.9.6-py2.py3-none-any.whl", hash = "sha256:823e510eb355949bed817e1f3e2d682455dc6af9daf6066d5698d6a2ca4481c2"},
@@ -4332,18 +4356,7 @@ pyarrow = [
     {file = "pyarrow-5.0.0.tar.gz", hash = "sha256:24e64ea33eed07441cc0e80c949e3a1b48211a1add8953268391d250f4d39922"},
 ]
 pyasn1 = [
-    {file = "pyasn1-0.4.8-py2.4.egg", hash = "sha256:fec3e9d8e36808a28efb59b489e4528c10ad0f480e57dcc32b4de5c9d8c9fdf3"},
-    {file = "pyasn1-0.4.8-py2.5.egg", hash = "sha256:0458773cfe65b153891ac249bcf1b5f8f320b7c2ce462151f8fa74de8934becf"},
-    {file = "pyasn1-0.4.8-py2.6.egg", hash = "sha256:5c9414dcfede6e441f7e8f81b43b34e834731003427e5b09e4e00e3172a10f00"},
-    {file = "pyasn1-0.4.8-py2.7.egg", hash = "sha256:6e7545f1a61025a4e58bb336952c5061697da694db1cae97b116e9c46abcf7c8"},
     {file = "pyasn1-0.4.8-py2.py3-none-any.whl", hash = "sha256:39c7e2ec30515947ff4e87fb6f456dfc6e84857d34be479c9d4a4ba4bf46aa5d"},
-    {file = "pyasn1-0.4.8-py3.1.egg", hash = "sha256:78fa6da68ed2727915c4767bb386ab32cdba863caa7dbe473eaae45f9959da86"},
-    {file = "pyasn1-0.4.8-py3.2.egg", hash = "sha256:08c3c53b75eaa48d71cf8c710312316392ed40899cb34710d092e96745a358b7"},
-    {file = "pyasn1-0.4.8-py3.3.egg", hash = "sha256:03840c999ba71680a131cfaee6fab142e1ed9bbd9c693e285cc6aca0d555e576"},
-    {file = "pyasn1-0.4.8-py3.4.egg", hash = "sha256:7ab8a544af125fb704feadb008c99a88805126fb525280b2270bb25cc1d78a12"},
-    {file = "pyasn1-0.4.8-py3.5.egg", hash = "sha256:e89bf84b5437b532b0803ba5c9a5e054d21fec423a89952a74f87fa2c9b7bce2"},
-    {file = "pyasn1-0.4.8-py3.6.egg", hash = "sha256:014c0e9976956a08139dc0712ae195324a75e142284d5f87f1a87ee1b068a359"},
-    {file = "pyasn1-0.4.8-py3.7.egg", hash = "sha256:99fcc3c8d804d1bc6d9a099921e39d827026409a58f2a720dcdb89374ea0c776"},
     {file = "pyasn1-0.4.8.tar.gz", hash = "sha256:aef77c9fb94a3ac588e87841208bdec464471d9871bd5050a287cc9a475cd0ba"},
 ]
 pycparser = [
@@ -4748,6 +4761,7 @@ rtree = [
 ]
 "ruamel.yaml.clib" = [
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:6e7be2c5bcb297f5b82fee9c665eb2eb7001d1050deaba8471842979293a80b0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:066f886bc90cc2ce44df8b5f7acfc6a7e2b2e672713f027136464492b0c34d7c"},
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:221eca6f35076c6ae472a531afa1c223b9c29377e62936f61bc8e6e8bdc5f9e7"},
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win32.whl", hash = "sha256:1070ba9dd7f9370d0513d649420c3b362ac2d687fe78c6e888f5b12bf8bc7bee"},
     {file = "ruamel.yaml.clib-0.2.6-cp310-cp310-win_amd64.whl", hash = "sha256:77df077d32921ad46f34816a9a16e6356d8100374579bc35e15bab5d4e9377de"},
@@ -4757,18 +4771,22 @@ rtree = [
     {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-win_amd64.whl", hash = "sha256:de9c6b8a1ba52919ae919f3ae96abb72b994dd0350226e28f3686cb4f142165c"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:d67f273097c368265a7b81e152e07fb90ed395df6e552b9fa858c6d2c9f42502"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:72a2b8b2ff0a627496aad76f37a652bcef400fd861721744201ef1b45199ab78"},
+    {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:d3c620a54748a3d4cf0bcfe623e388407c8e85a4b06b8188e126302bcab93ea8"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-win32.whl", hash = "sha256:9efef4aab5353387b07f6b22ace0867032b900d8e91674b5d8ea9150db5cae94"},
     {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-win_amd64.whl", hash = "sha256:846fc8336443106fe23f9b6d6b8c14a53d38cef9a375149d61f99d78782ea468"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:0847201b767447fc33b9c235780d3aa90357d20dd6108b92be544427bea197dd"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:78988ed190206672da0f5d50c61afef8f67daa718d614377dcd5e3ed85ab4a99"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:210c8fcfeff90514b7133010bf14e3bad652c8efde6b20e00c43854bf94fa5a6"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-win32.whl", hash = "sha256:a49e0161897901d1ac9c4a79984b8410f450565bbad64dbfcbf76152743a0cdb"},
     {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-win_amd64.whl", hash = "sha256:bf75d28fa071645c529b5474a550a44686821decebdd00e21127ef1fd566eabe"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:a32f8d81ea0c6173ab1b3da956869114cae53ba1e9f72374032e33ba3118c233"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:7f7ecb53ae6848f959db6ae93bdff1740e651809780822270eab111500842a84"},
+    {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:61bc5e5ca632d95925907c569daa559ea194a4d16084ba86084be98ab1cec1c6"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-win32.whl", hash = "sha256:89221ec6d6026f8ae859c09b9718799fea22c0e8da8b766b0b2c9a9ba2db326b"},
     {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-win_amd64.whl", hash = "sha256:31ea73e564a7b5fbbe8188ab8b334393e06d997914a4e184975348f204790277"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:dc6a613d6c74eef5a14a214d433d06291526145431c3b964f5e16529b1842bed"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:1866cf2c284a03b9524a5cc00daca56d80057c5ce3cdc86a52020f4c720856f0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:1b4139a6ffbca8ef60fdaf9b33dec05143ba746a6f0ae0f9d11d38239211d335"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win32.whl", hash = "sha256:3fb9575a5acd13031c57a62cc7823e5d2ff8bc3835ba4d94b921b4e6ee664104"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win_amd64.whl", hash = "sha256:825d5fccef6da42f3c8eccd4281af399f21c02b32d98e113dbc631ea6a6ecbc7"},
     {file = "ruamel.yaml.clib-0.2.6.tar.gz", hash = "sha256:4ff604ce439abb20794f05613c374759ce10e3595d1867764dd1ae675b85acbd"},
@@ -4832,6 +4850,10 @@ scipy = [
 send2trash = [
     {file = "Send2Trash-1.8.0-py3-none-any.whl", hash = "sha256:f20eaadfdb517eaca5ce077640cb261c7d2698385a6a0f072a4a5447fd49fa08"},
     {file = "Send2Trash-1.8.0.tar.gz", hash = "sha256:d2c24762fd3759860a0aff155e45871447ea58d2be6bdd39b5c8f966a0c99c2d"},
+]
+setuptools = [
+    {file = "setuptools-65.5.0-py3-none-any.whl", hash = "sha256:f62ea9da9ed6289bfe868cd6845968a2c854d1427f8548d52cae02a42b4f0356"},
+    {file = "setuptools-65.5.0.tar.gz", hash = "sha256:512e5536220e38146176efb833d4a62aa726b7bbff82cfbc8ba9eaa3996e0b17"},
 ]
 shapely = [
     {file = "Shapely-1.7.1-1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:46da0ea527da9cf9503e66c18bab6981c5556859e518fe71578b47126e54ca93"},
