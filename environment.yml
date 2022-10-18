@@ -6,14 +6,14 @@ channels:
   - conda-forge/label/poetry_dev
   - conda-forge/label/cleo_dev
 dependencies:
-  - rapidsai::cuml=22.10.00[md5=368ba6692aca5f028c8b46d92e3fd7be]
-  - rapidsai::cuspatial=22.10.00[md5=4d05488fce92108110ee7204936c4caf]
-  - conda-forge::geos=3.11.0[md5=a583d0bc9a85c48e8b07a588d1ac8a80]
-  - conda-forge::gmt=6.4.0[md5=e7464da7595af633bd12e818d9ee53ab]
+  - rapidsai::cuml=22.02.00[md5=a26aaf37baadf1ba7bdb5a6f0c393240]
+  - rapidsai::cuspatial=22.02.00[md5=202ee098d4f8eb3c61b6eab74cd7195a]
+  - conda-forge::geos=3.10.0[md5=f3e1934c48463a3fbc87075ba2e94070]
+  - conda-forge::gmt=6.3.0[md5=b0f680c17a9ea5866b26eb2332c09afc]
   - conda-forge::graphviz=2.49.1[md5=9705e060a5e6395db9b0784220aa0b92]
   - conda-forge::gxx_linux-64=11.3.0[md5=15fbc9079f191d468403639a6515652c]
   - conda-forge::parallel=20210822[md5=c1c5ca73d7086d3e7fe7e8f092454b0e]
   - conda-forge::pip=22.3[md5=6f4c6de9fed2a9bd8043283611b09587]
   - conda-forge/label/poetry_dev::poetry=1.2.0rc2[md5=4b02bd45c74cc3570c1b73d9e3daac7d]
-  - conda-forge::proj=9.0.1[md5=8259528ea471b0963a91ce174f002e55]
+  - conda-forge::proj=8.2.0[md5=7ba8c7a9bf1c2fedf4a6d6dc92839baf]
   - conda-forge::python=3.8.12[md5=775bb3a23a9b1b529e0cd06bd0091adf]
