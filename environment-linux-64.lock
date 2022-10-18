@@ -5,7 +5,7 @@
 https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/ca-certificates-2022.9.24-ha878542_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/dcw-gmt-2.1.1-ha770c72_0.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/faiss-proc-1.0.0-cuda.tar.bz2
+https://conda.anaconda.org/rapidsai/linux-64/faiss-proc-1.0.0-cuda.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/font-ttf-dejavu-sans-mono-2.37-hab24e00_0.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/font-ttf-inconsolata-3.000-h77eed37_0.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/font-ttf-source-code-pro-2.038-h77eed37_0.tar.bz2
@@ -21,7 +21,7 @@ https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-devel_linux-64-11.3.0-
 https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-12.2.0-h46fd767_18.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/poppler-data-0.4.11-hd8ed1ab_0.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/tzdata-2022e-h191b570_0.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/ucx-proc-1.0.0-gpu.tar.bz2
+https://conda.anaconda.org/rapidsai/linux-64/ucx-proc-1.0.0-gpu.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/libgfortran-ng-12.2.0-h69a702a_18.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/libgomp-12.2.0-h65d4601_18.tar.bz2
@@ -34,7 +34,7 @@ https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-12.2.0-h65d4601_18.tar
 https://conda.anaconda.org/conda-forge/linux-64/aws-c-common-0.6.2-h7f98852_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/bzip2-1.0.8-h7f98852_4.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/c-ares-1.18.1-h7f98852_0.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/cudatoolkit-11.7.0-hd8887f6_10.tar.bz2
+https://conda.anaconda.org/nvidia/linux-64/cudatoolkit-11.7.0-hd8887f6_10.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/dlpack-0.5-h9c3ff4c_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/expat-2.4.9-h27087fc_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/fftw-3.3.10-nompi_hf0379b8_105.tar.bz2
@@ -106,7 +106,7 @@ https://conda.anaconda.org/conda-forge/linux-64/librttopo-1.1.0-hf730bdb_11.tar.
 https://conda.anaconda.org/conda-forge/linux-64/libsqlite-3.39.4-h753d276_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/libssh2-1.10.0-haa6b8db_3.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/libxcb-1.13-h7f98852_1004.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/libxml2-2.10.3-h7463322_0.tar.bz2
+https://conda.anaconda.org/conda-forge/linux-64/libxml2-2.9.14-h22db469_4.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/libzip-1.9.2-hc869a4a_1.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/nccl-2.14.3.1-h0800d71_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/pcre2-10.37-hc3806b6_1.tar.bz2
@@ -212,7 +212,7 @@ https://conda.anaconda.org/conda-forge/noarch/zipp-3.9.0-pyhd8ed1ab_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/cffi-1.15.1-py38h4a40e3a_0.tar.bz2
 https://conda.anaconda.org/conda-forge/label/cleo_dev/noarch/cleo-1.0.0a5-pyh7f68eee_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/click-8.1.3-py38h578d9bd_0.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/cuda-python-11.7.0-py38hfa26641_0.tar.bz2
+https://conda.anaconda.org/nvidia/linux-64/cuda-python-11.7.0-py38h3fd9d12_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/cytoolz-0.12.0-py38h0a891b7_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/fastavro-1.6.1-py38h0a891b7_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/fastrlock-0.8-py38hfa26641_2.tar.bz2
@@ -227,7 +227,7 @@ https://conda.anaconda.org/conda-forge/linux-64/kealib-1.4.15-ha7026e8_1.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/kiwisolver-1.4.4-py38h43d8883_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/libdap4-3.20.6-hd7c4107_2.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/libnetcdf-4.8.1-nompi_h21705cb_104.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/libspatialite-5.0.1-hd36657c_19.tar.bz2
+https://conda.anaconda.org/conda-forge/linux-64/libspatialite-5.0.1-h38b5f51_18.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/llvmlite-0.39.1-py38h38d86a4_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/lz4-4.0.0-py38h1bf946c_2.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/markupsafe-2.1.1-py38h0a891b7_1.tar.bz2
@@ -268,7 +268,7 @@ https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.37.4-py38h0a891b7_0.
 https://conda.anaconda.org/conda-forge/noarch/importlib_metadata-4.11.4-hd8ed1ab_0.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/jinja2-3.1.2-pyhd8ed1ab_1.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/jsonschema-4.16.0-pyhd8ed1ab_0.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/libgdal-3.5.2-hc23bfc3_1.tar.bz2
+https://conda.anaconda.org/conda-forge/linux-64/libgdal-3.5.2-hc23bfc3_3.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/numba-0.56.3-py38h9a4aae9_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/pandas-1.5.0-py38h8f669ce_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/pango-1.50.11-h382ae3d_0.tar.bz2
@@ -278,7 +278,7 @@ https://conda.anaconda.org/conda-forge/linux-64/shapely-1.8.5-py38hc9bb657_0.tar
 https://conda.anaconda.org/rapidsai/linux-64/ucx-py-0.28.00-py38_g8292636_0.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/bokeh-2.4.3-pyhd8ed1ab_3.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/branca-0.5.0-pyhd8ed1ab_0.tar.bz2
-https://conda.anaconda.org/conda-forge/linux-64/gdal-3.5.2-py38h1f15b03_1.tar.bz2
+https://conda.anaconda.org/conda-forge/linux-64/gdal-3.5.2-py38h1f15b03_3.tar.bz2
 https://conda.anaconda.org/conda-forge/noarch/geopandas-base-0.11.1-pyha770c72_0.tar.bz2
 https://conda.anaconda.org/conda-forge/linux-64/gtk2-2.24.33-h90689f9_2.tar.bz2
 https://conda.anaconda.org/rapidsai/linux-64/libcudf-22.10.00-cuda11_g8ffe375d85_0.tar.bz2

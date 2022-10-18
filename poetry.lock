@@ -224,7 +224,7 @@ webencodings = "*"
 
 [[package]]
 name = "bokeh"
-version = "2.4.0"
+version = "2.4.3"
 description = "Interactive plots and applications in the browser from Python"
 category = "main"
 optional = false
@@ -405,23 +405,21 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "cupy-cuda112"
-version = "9.5.0"
+name = "cupy-cuda11x"
+version = "11.2.0"
 description = "CuPy: NumPy & SciPy for GPU"
 category = "main"
 optional = true
-python-versions = ">=3.6.0"
+python-versions = ">=3.7"
 
 [package.dependencies]
 fastrlock = ">=0.5"
-numpy = ">=1.17,<1.24"
+numpy = ">=1.20,<1.26"
 
 [package.extras]
-all = ["Cython (>=0.29.22,<3)", "optuna (>=2.0)", "scipy (>=1.4,<1.10)"]
-jenkins = ["codecov", "coverage (<5)", "coveralls", "pytest (>=6.2)", "pytest-cov", "pytest-timeout"]
-setup = ["Cython (>=0.29.22,<3)", "fastrlock (>=0.5)"]
-stylecheck = ["autopep8 (==1.5.5)", "flake8 (==3.8.4)", "pbr (==5.5.1)", "pycodestyle (==2.6.0)"]
-test = ["pytest (>=6.2)"]
+all = ["Cython (>=0.29.22,<3)", "optuna (>=2.0)", "scipy (>=1.6,<1.12)"]
+stylecheck = ["autopep8 (==1.5.5)", "flake8 (==3.8.4)", "mypy (==0.950)", "pbr (==5.5.1)", "pycodestyle (==2.6.0)", "types-setuptools (==57.4.14)"]
+test = ["hypothesis (>=6.37.2,<6.55.0)", "pytest (>=6.2)"]
 
 [[package]]
 name = "cycler"
@@ -444,51 +442,51 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "dask"
-version = "2021.10.0"
+version = "2022.9.2"
 description = "Parallel PyData with Task Scheduling"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
-bokeh = {version = ">=1.0.0,<2.0.0 || >2.0.0", optional = true, markers = "extra == \"complete\""}
+bokeh = {version = ">=2.4.2", optional = true, markers = "extra == \"complete\""}
 cloudpickle = ">=1.1.1"
-distributed = {version = "2021.10.0", optional = true, markers = "extra == \"distributed\""}
+distributed = {version = "2022.9.2", optional = true, markers = "extra == \"distributed\""}
 fsspec = ">=0.6.0"
 jinja2 = {version = "*", optional = true, markers = "extra == \"complete\""}
 numpy = {version = ">=1.18", optional = true, markers = "extra == \"complete\""}
 packaging = ">=20.0"
 pandas = {version = ">=1.0", optional = true, markers = "extra == \"complete\""}
 partd = ">=0.3.10"
-pyyaml = "*"
+pyyaml = ">=5.3.1"
 toolz = ">=0.8.2"
 
 [package.extras]
 array = ["numpy (>=1.18)"]
-complete = ["bokeh (>=1.0.0,!=2.0.0)", "distributed (==2021.10.0)", "jinja2", "numpy (>=1.18)", "pandas (>=1.0)"]
+complete = ["bokeh (>=2.4.2)", "distributed (==2022.9.2)", "jinja2", "numpy (>=1.18)", "pandas (>=1.0)"]
 dataframe = ["numpy (>=1.18)", "pandas (>=1.0)"]
-diagnostics = ["bokeh (>=1.0.0,!=2.0.0)", "jinja2"]
-distributed = ["distributed (==2021.10.0)"]
-test = ["pre-commit", "pytest", "pytest-rerunfailures", "pytest-xdist"]
+diagnostics = ["bokeh (>=2.4.2)", "jinja2"]
+distributed = ["distributed (==2022.9.2)"]
+test = ["pandas[test]", "pre-commit", "pytest", "pytest-rerunfailures", "pytest-xdist"]
 
 [[package]]
 name = "dask-cuda"
-version = "21.12.0a211025"
+version = "22.10.0"
 description = "Utilities for Dask and CUDA interactions"
 category = "main"
 optional = true
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
-dask = ">=2021.09.1"
-distributed = ">=2021.09.1"
-numba = ">=0.53.1"
+dask = "2022.9.2"
+distributed = "2022.9.2"
+numba = ">=0.54"
 numpy = ">=1.16.0"
 pynvml = ">=11.0.0"
 
 [[package]]
 name = "dask-labextension"
-version = "5.1.0"
+version = "5.3.0"
 description = "A JupyterLab extension for Dask."
 category = "dev"
 optional = false
@@ -589,25 +587,27 @@ python-versions = ">=3"
 
 [[package]]
 name = "distributed"
-version = "2021.10.0"
+version = "2022.9.2"
 description = "Distributed scheduler for Dask"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
 click = ">=6.6"
 cloudpickle = ">=1.5.0"
-dask = "2021.10.0"
+dask = "2022.9.2"
 jinja2 = "*"
+locket = ">=1.0.0"
 msgpack = ">=0.6.0"
+packaging = ">=20.0"
 psutil = ">=5.0"
 pyyaml = "*"
-setuptools = "*"
 sortedcontainers = "<2.0.0 || >2.0.0,<2.0.1 || >2.0.1"
 tblib = ">=1.6.0"
 toolz = ">=0.8.2"
-tornado = {version = ">=6.0.3", markers = "python_version >= \"3.8\""}
+tornado = ">=6.0.3,<6.2"
+urllib3 = "*"
 zict = ">=0.1.3"
 
 [[package]]
@@ -770,7 +770,7 @@ lzo = ["python-lzo"]
 
 [[package]]
 name = "fastrlock"
-version = "0.6"
+version = "0.8"
 description = "Fast, re-entrant optimistic lock implemented in Cython"
 category = "main"
 optional = true
@@ -1479,8 +1479,8 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "locket"
-version = "0.2.1"
-description = "File-based locks for Python for Linux and Windows"
+version = "1.0.0"
+description = "File-based locks for Python on Linux and Windows"
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -3023,12 +3023,12 @@ docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker
 testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
 
 [extras]
-cuda = ["cupy-cuda112", "dask-cuda"]
+cuda = ["cupy-cuda11x", "dask-cuda"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.8"
-content-hash = "bb54972b750d5ce929b7751e12af1740c3fafa6d8e9e4aa85d65411131475e5b"
+content-hash = "378feff621b4afbf560a21ff69dc26bcd8b148fbf3b4d5caaaf68d7d64564b5c"
 
 [metadata.files]
 aiohttp = [
@@ -3143,8 +3143,8 @@ bleach = [
     {file = "bleach-4.1.0.tar.gz", hash = "sha256:0900d8b37eba61a802ee40ac0061f8c2b5dee29c1927dd1d233e075ebf5a71da"},
 ]
 bokeh = [
-    {file = "bokeh-2.4.0-py3-none-any.whl", hash = "sha256:91a7c3b8a42d9275df26f13269859a1add82dc9e5dda316f7476ad76a5a10851"},
-    {file = "bokeh-2.4.0.tar.gz", hash = "sha256:6fa00ed8baab5cca33f4175792c309fa2536eaae7e90abee884501ba8c90fddb"},
+    {file = "bokeh-2.4.3-py3-none-any.whl", hash = "sha256:104d2f0a4ca7774ee4b11e545aa34ff76bf3e2ad6de0d33944361981b65da420"},
+    {file = "bokeh-2.4.3.tar.gz", hash = "sha256:ef33801161af379665ab7a34684f2209861e3aefd5c803a21fbbb99d94874b03"},
 ]
 certifi = [
     {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
@@ -3318,15 +3318,15 @@ cramjam = [
     {file = "cramjam-2.4.0-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:b49e5cd3ea5c6dcf1f16e8cce504e7f33b88996671913d5603a30ed582953066"},
     {file = "cramjam-2.4.0.tar.gz", hash = "sha256:3bb30a3498bdb3fb9e69f8c772794f3d77fb78f68b325e76ae17c5cf73525cbf"},
 ]
-cupy-cuda112 = [
-    {file = "cupy_cuda112-9.5.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:b6420ec168bf7660addc46bf8130d92e1b9e2118840fffd600d5eb189731f890"},
-    {file = "cupy_cuda112-9.5.0-cp36-cp36m-win_amd64.whl", hash = "sha256:b160cc50dd2f4560fb60a4d9d65e0e906984ea37a00873466cd002c281d4a59d"},
-    {file = "cupy_cuda112-9.5.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:80aeea7b333d898852de05262dcc3b405ed81e44eec89f4e7ab4d1903cb27785"},
-    {file = "cupy_cuda112-9.5.0-cp37-cp37m-win_amd64.whl", hash = "sha256:563ea08afb6ac2cc05a779de5342840dc39c7cc62b13da2f7b0d798f03dda36b"},
-    {file = "cupy_cuda112-9.5.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:9d838deb5e8c70d96213c2dd8d02bb33fb42dcf675d3a0a85082ef49ae458a0b"},
-    {file = "cupy_cuda112-9.5.0-cp38-cp38-win_amd64.whl", hash = "sha256:9862a66c5021b1a24e276ef5af05686eb1ed5b0365955eca3a0dcb07de1a7bbf"},
-    {file = "cupy_cuda112-9.5.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:160a1c0fef466ba02f39d3ffb7bb9f36b73bd58270ad19516a35bc0faf6bc148"},
-    {file = "cupy_cuda112-9.5.0-cp39-cp39-win_amd64.whl", hash = "sha256:6ef2a619e3ebd723ad52941f3bf0864fd51a6cfa3f0695a63e7b24534655e009"},
+cupy-cuda11x = [
+    {file = "cupy_cuda11x-11.2.0-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:bd673c8a3ca26421697cf3442b5eaae9f12fbcb1d6cbb5c0d674227cdb4bee78"},
+    {file = "cupy_cuda11x-11.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:4835f3f755257ff1f8582f2e4219606336c883ace3ffd7f9998690177b2ed3ad"},
+    {file = "cupy_cuda11x-11.2.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:c7022bd1679676dae8cd2886afb1e0323f8d733097a8d541a0a7804baa00991e"},
+    {file = "cupy_cuda11x-11.2.0-cp37-cp37m-win_amd64.whl", hash = "sha256:ad40f5ebc5e4deef3ab879ecc334a632f58d114b52d6abc133673f52a7e04c7a"},
+    {file = "cupy_cuda11x-11.2.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:12fda3e9f838f4db6cfbc5b9d84a7c867feedb3c5770d9194c04513b9e67ff59"},
+    {file = "cupy_cuda11x-11.2.0-cp38-cp38-win_amd64.whl", hash = "sha256:e370d33a5607585803da3833740480dbbc837e822fe448d93906daf276b9e514"},
+    {file = "cupy_cuda11x-11.2.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:b9272155578caf7d7f2571f0bfb0363039bf0809057bcf7dbe8e7935d49f3be7"},
+    {file = "cupy_cuda11x-11.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:4423ee8c07c2c7e8995448141c12fb50e3f300bd392f17747940a80315193e3a"},
 ]
 cycler = [
     {file = "cycler-0.10.0-py2.py3-none-any.whl", hash = "sha256:1d8a5ae1ff6c5cf9b93e8811e581232ad8920aeec647c37316ceac982b08cb2d"},
@@ -3374,16 +3374,16 @@ cython = [
     {file = "Cython-0.29.24.tar.gz", hash = "sha256:cdf04d07c3600860e8c2ebaad4e8f52ac3feb212453c1764a49ac08c827e8443"},
 ]
 dask = [
-    {file = "dask-2021.10.0-py3-none-any.whl", hash = "sha256:b678d802ea8126c0168a1b429182b7dc01ade8ad84cfd62b804c52c4c29b6fc3"},
-    {file = "dask-2021.10.0.tar.gz", hash = "sha256:a98b2e44acaad369bb21f79fc92f756532acfe62c3aeba3982006b7339d0d2e3"},
+    {file = "dask-2022.9.2-py3-none-any.whl", hash = "sha256:42ee25ade79a1af006b57f0eabe207edfddc1eee23b075e77306a31990541351"},
+    {file = "dask-2022.9.2.tar.gz", hash = "sha256:2e214f97af5195ce08f4a3be198b2fca2de709c23e06966bfa3298851ac91507"},
 ]
 dask-cuda = [
-    {file = "dask-cuda-21.12.0a211025.tar.gz", hash = "sha256:bff1cfe6e86ddcc7e9452f779020f1130161dd9c92804c0ebf248b9bc862cdc0"},
-    {file = "dask_cuda-21.12.0a211025-py3-none-any.whl", hash = "sha256:d213fcc3f1018dd18c454190e829e16be8aae71255cf9ab8ff58b628f6dd4567"},
+    {file = "dask-cuda-22.10.0.tar.gz", hash = "sha256:e146db702c03611643019cc2d9754cf06c4f4061e8f0fbf6144859cdcb5105e9"},
+    {file = "dask_cuda-22.10.0-py3-none-any.whl", hash = "sha256:17708a9c93378a86b563403cba563013da5c4bf8d5cb0d4be8f0e72510649e0e"},
 ]
 dask-labextension = [
-    {file = "dask_labextension-5.1.0-py3-none-any.whl", hash = "sha256:8ee819aabd0e664e4e1f5d68684f920479e612ff0f30075d661951ee826c94f2"},
-    {file = "dask_labextension-5.1.0.tar.gz", hash = "sha256:bc476e8040428f9b141e44126d2ae17173ff8b10968ca25375441eff6f2c2279"},
+    {file = "dask_labextension-5.3.0-py3-none-any.whl", hash = "sha256:ce25890f57eb36621bd866747799ca135aeadbe50fc346bd8f99ed2b97a393a8"},
+    {file = "dask_labextension-5.3.0.tar.gz", hash = "sha256:ff722654e6e23baaad0f8b97216a25b1fad668fd86ec02088a1222a225d1ce80"},
 ]
 datashader = [
     {file = "datashader-0.13.0-py2.py3-none-any.whl", hash = "sha256:7888740956213f4bc27816dfbb5bfc5d3f8fd92d583632d688ccbad167e657dc"},
@@ -3432,8 +3432,8 @@ diskcache = [
     {file = "diskcache-5.2.1.tar.gz", hash = "sha256:1805acd5868ac10ad547208951a1190a0ab7bbff4e70f9a07cde4dbdfaa69f64"},
 ]
 distributed = [
-    {file = "distributed-2021.10.0-py3-none-any.whl", hash = "sha256:16ed49c279d273444dea45cbd4436648a63190855dea187d8eda2baec29a926d"},
-    {file = "distributed-2021.10.0.tar.gz", hash = "sha256:ea27051fdb8351710978fd1beac49d5b9ad2b919328b4d348f5c58b1393dd84d"},
+    {file = "distributed-2022.9.2-py3-none-any.whl", hash = "sha256:63d14e99013b83f5a40a3f82bc449639833abd35438a3d350dbe9f13776fa0a6"},
+    {file = "distributed-2022.9.2.tar.gz", hash = "sha256:910627092a79ba105a80a7e1ea53ccc184ed3cbccd217943940a871515624d0b"},
 ]
 distro = [
     {file = "distro-1.6.0-py2.py3-none-any.whl", hash = "sha256:c8713330ab31a034623a9515663ed87696700b55f04556b97c39cd261aa70dc7"},
@@ -3510,33 +3510,34 @@ fastparquet = [
     {file = "fastparquet-0.7.1.tar.gz", hash = "sha256:3b8906f3aa94539e2849927fae572c93d9ed229ecf39032f0a42b47e06dfb569"},
 ]
 fastrlock = [
-    {file = "fastrlock-0.6-cp27-cp27m-manylinux1_i686.whl", hash = "sha256:1c3c41102cd8ebdb7b2c23d59e3adfbaf2b3ee6d40478edb79dfbb8e6dc699b1"},
-    {file = "fastrlock-0.6-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:39301f99493e060a9cb8d6e35464f3a93354b34a57c9618bfdd00694c396f21c"},
-    {file = "fastrlock-0.6-cp27-cp27m-win32.whl", hash = "sha256:bd121ac603dc9c185a7a3e55490f579f841b7ced1008d289acdd18ee48e038f7"},
-    {file = "fastrlock-0.6-cp27-cp27m-win_amd64.whl", hash = "sha256:6c55095309d53906c808186fd4f0cfa17da28165b7c26c4d154b078da6be690f"},
-    {file = "fastrlock-0.6-cp27-cp27mu-manylinux1_i686.whl", hash = "sha256:f899b54d157deb800c3cb4c8a6d20358bc6d5f5c72711ea98e721971c5cfb8b8"},
-    {file = "fastrlock-0.6-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:cce3198c1e250c62bf9078fdaedc95c45f08420eaa7f42d423b68b3e2aa8b1f7"},
-    {file = "fastrlock-0.6-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:8a6935a4805f6b52358b7bc1e5ef9278ca5fb487748bfc5d44c5206bcdb20917"},
-    {file = "fastrlock-0.6-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:38054112b22f349f5df7a69d8823a0d35f9cf8e418df366f7f429834fd35de44"},
-    {file = "fastrlock-0.6-cp35-cp35m-win32.whl", hash = "sha256:87ca5b0a57d48ea8a88906126e3c2892dafb3c53d704abf4428a75aab7e4e17b"},
-    {file = "fastrlock-0.6-cp35-cp35m-win_amd64.whl", hash = "sha256:8197da446ba2182bc3e399ab9144055acb9f772f1918e1d75ca8a16da947f40a"},
-    {file = "fastrlock-0.6-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:df28002e7ded5749ede0cd2739a71b51767f415e458044d0beece3d3a72d3666"},
-    {file = "fastrlock-0.6-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:a27259e4ab34a09391db2382359f55ff24713d5702fc83e051a3bf3e9e7eaf97"},
-    {file = "fastrlock-0.6-cp36-cp36m-win32.whl", hash = "sha256:9ef82cb3bab5f5713463ad45bf77c244f9dfb4a2974c689eeb9e2bbd0cb55278"},
-    {file = "fastrlock-0.6-cp36-cp36m-win_amd64.whl", hash = "sha256:48309221b6df5b74ba3fb1d92e19b5e0a5b56b89773d40849062e8e868c9379c"},
-    {file = "fastrlock-0.6-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:2a8f26d885890f92f34bdba19abe861f18674bcdfc30a2972651cc072c09bbd4"},
-    {file = "fastrlock-0.6-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:4a20fd9f2995b72ff60b86a599b247ae141be9520013e525428c62839fdf679d"},
-    {file = "fastrlock-0.6-cp37-cp37m-win32.whl", hash = "sha256:a2dcb0a0aa9fa9558091e1cd550747494ea39c44a54fbc89dc2bc5f64a31c308"},
-    {file = "fastrlock-0.6-cp37-cp37m-win_amd64.whl", hash = "sha256:0d841e1c18d8c43b31eb9fc4763d272c92d3060d0bcd379a74bc29d9fe45264f"},
-    {file = "fastrlock-0.6-cp38-cp38-manylinux1_i686.whl", hash = "sha256:9dc7fee1ac2fd443166bb13dd4a777259ead5431b844ad7ce7f696c4276d204b"},
-    {file = "fastrlock-0.6-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:c78340c4d0ab84893bebd1642fa4a498d09365c607e35db5be2e7c46452fd38b"},
-    {file = "fastrlock-0.6-cp38-cp38-win32.whl", hash = "sha256:20b4d7ae8b23ac7ac9fed2e55141bc7ed7c45ee126a76b79c100fbc2f25ca4b6"},
-    {file = "fastrlock-0.6-cp38-cp38-win_amd64.whl", hash = "sha256:69d791ce2024b49fc11a5411934d0b7f6d53237daeec5b69a654d0e6dd872e14"},
-    {file = "fastrlock-0.6-cp39-cp39-manylinux1_i686.whl", hash = "sha256:d5955a03b2a458f8d14cfb352610e88c4277e61e21ef2463ff998dce7d3ffd64"},
-    {file = "fastrlock-0.6-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:8e7a163aa1d78019ee377774ceec6a6037dd7855aa72451bbd5d9f6d38f6ab02"},
-    {file = "fastrlock-0.6-cp39-cp39-win32.whl", hash = "sha256:36b57043b138bc60cbfa8061bd24ca083c1272976996ae9d69402797254bc38e"},
-    {file = "fastrlock-0.6-cp39-cp39-win_amd64.whl", hash = "sha256:6bd625f8adfece45109b3fba8156a468d81862e7c5f24a9c09edf8413e9a65b0"},
-    {file = "fastrlock-0.6.tar.gz", hash = "sha256:9f5d6ec9fe130b7490bb04572134392420b72bd0842185e02d461a797d6bc749"},
+    {file = "fastrlock-0.8-cp27-cp27m-win32.whl", hash = "sha256:4d414a5e97a545fee64437586c70bd295d22ac49614eeb76fb67980e32a0d1ae"},
+    {file = "fastrlock-0.8-cp27-cp27m-win_amd64.whl", hash = "sha256:b991766baec0113829c5a10bec4c5ec987cab31dfcb1fabf53e370b83b939ef9"},
+    {file = "fastrlock-0.8-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5356a15375fab5a8090f255b54122eead504ebcec8a67ac369489e3e315dfd21"},
+    {file = "fastrlock-0.8-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:8369ce6d228fc3efbfcff5499468200bd12c35efdbc787eeaf8064153bcf0d72"},
+    {file = "fastrlock-0.8-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:09314c5c0f63fe252a3ee038af855d7fb5668d0ccbae94846a35b32487c6256c"},
+    {file = "fastrlock-0.8-cp35-cp35m-win32.whl", hash = "sha256:b724a7f5c1d5f9cdc30a13022e6e8cf319812c40dad0fd722b5ea18d2cfc4c4d"},
+    {file = "fastrlock-0.8-cp35-cp35m-win_amd64.whl", hash = "sha256:c7ec22a5726467af53950a8baba92327620c0f73c34fab930ce29b94c8645c7e"},
+    {file = "fastrlock-0.8-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:dcd7a05ba34702d0f0e9751d35afb06be21034fcf00197567ff0dcdf48cde8e7"},
+    {file = "fastrlock-0.8-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:997bc6c4fafda396449e2410a5d32b69d231fdccc5af6de6cefe9d67e5f7157e"},
+    {file = "fastrlock-0.8-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:4ba3d3dc0dbb1cff2eee033a1f6369c24a86e8c20b427edfceff3f38b48b391c"},
+    {file = "fastrlock-0.8-cp36-cp36m-win32.whl", hash = "sha256:f365fc1de226ce96fedbb475c4523b304ce00f9a59beea620dba34e21239f5f3"},
+    {file = "fastrlock-0.8-cp36-cp36m-win_amd64.whl", hash = "sha256:7c9c66ab93877272169b017dc24f63c9c94b3f9d55b0b0b8c3f6d9644280120c"},
+    {file = "fastrlock-0.8-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b5d5fd2a76aa9cd451a8820e2427e512620062ffa62ea5732da0ab8888b6be6e"},
+    {file = "fastrlock-0.8-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:340ae0734305d780aaad0893dba8185f4dbb0575d5fd696b5720eaf800526bbc"},
+    {file = "fastrlock-0.8-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:719743b5b3c2b214fdf63096ac6a68615b4d9b8cb210e9e6ddf0293b38da2c9a"},
+    {file = "fastrlock-0.8-cp37-cp37m-win32.whl", hash = "sha256:1cfb5ac6336ff327359a31b690898adf9a813fd44a76196115a3f0afb2367c81"},
+    {file = "fastrlock-0.8-cp37-cp37m-win_amd64.whl", hash = "sha256:5aa6b442b12fa1f9041248506c8ea5ae909a92aedd5a139647dce2ee87e5b944"},
+    {file = "fastrlock-0.8-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:af9df4c17c3142c9774cd1b9edea586f709c6421f02bcf7614507937b921ea7f"},
+    {file = "fastrlock-0.8-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:951a5c4dc6fbe4481082752ce9f21aabcaa1cf6185f683d7b5cbae254f10bb46"},
+    {file = "fastrlock-0.8-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:5c75985ba70fb4e8af595a0f67f58b96e0dbc53562768208890b4b2ac25b4b52"},
+    {file = "fastrlock-0.8-cp38-cp38-win32.whl", hash = "sha256:0b459511349dc96c8961f1d43635bb94cfc2404a8899792a1f9aaa9998fa0eca"},
+    {file = "fastrlock-0.8-cp38-cp38-win_amd64.whl", hash = "sha256:7b612474ddacf808c663aa8020db0a78f54a665ccabd9dbe505d3d4c4b3f6044"},
+    {file = "fastrlock-0.8-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:fe85f98fa66de41f929b8e01e4a9c5a7d20e660f605054b847c4ac54fadc8f79"},
+    {file = "fastrlock-0.8-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:d2029fb44eac8ab5f7aafb3fcde9419cbdaa07a08f72dac8cd7790dc0f73e596"},
+    {file = "fastrlock-0.8-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:3bba2a866c9f6eb1923ead5e70e1da02b3e57c531830eb4fcbd2d8e9530a2d7e"},
+    {file = "fastrlock-0.8-cp39-cp39-win32.whl", hash = "sha256:85c36ac55dc917c7e1f4fb03a841fe84b3fb2669dd0306bb94bf62c5749b1a7f"},
+    {file = "fastrlock-0.8-cp39-cp39-win_amd64.whl", hash = "sha256:4bb33625117bc9f1a66a5049a5d03ac4b38a44cb8eefdff1a394f7a435da54c9"},
+    {file = "fastrlock-0.8.tar.gz", hash = "sha256:9cc100ed0924b32173d7de705a82fdf1257cdf60af1952a13f64759307b40931"},
 ]
 fiona = [
     {file = "Fiona-1.8.20-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:02880556540e36ad6aac97687799d9b3093c354787a47bc0e73026c7fc15f1b3"},
@@ -3801,8 +3802,8 @@ llvmlite = [
     {file = "llvmlite-0.39.1.tar.gz", hash = "sha256:b43abd7c82e805261c425d50335be9a6c4f84264e34d6d6e475207300005d572"},
 ]
 locket = [
-    {file = "locket-0.2.1-py2.py3-none-any.whl", hash = "sha256:12b6ada59d1f50710bca9704dbadd3f447dbf8dac6664575c1281cadab8e6449"},
-    {file = "locket-0.2.1.tar.gz", hash = "sha256:3e1faba403619fe201552f083f1ecbf23f550941bc51985ac6ed4d02d25056dd"},
+    {file = "locket-1.0.0-py2.py3-none-any.whl", hash = "sha256:b6c819a722f7b6bd955b80781788e4a66a55628b858d347536b7e81325a3a5e3"},
+    {file = "locket-1.0.0.tar.gz", hash = "sha256:5c0d4c052a8bbbf750e056a8e65ccd309086f4f0f18a2eac306a8dfa4112a632"},
 ]
 mailchecker = [
     {file = "mailchecker-4.0.12.tar.gz", hash = "sha256:71772ffbe9f0837e19e1289945bd399ba18bf03fe719ab4075f20930f1a21e40"},

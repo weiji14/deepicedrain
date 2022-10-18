@@ -1,10 +1,10 @@
 name: deepicedrain
 channels:
+  - nvidia
+  - rapidsai
   - conda-forge
   - conda-forge/label/poetry_dev
   - conda-forge/label/cleo_dev
-  - nvidia
-  - rapidsai
 dependencies:
   - rapidsai::cuml=22.10.00[md5=368ba6692aca5f028c8b46d92e3fd7be]
   - rapidsai::cuspatial=22.10.00[md5=4d05488fce92108110ee7204936c4caf]
