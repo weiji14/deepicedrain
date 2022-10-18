@@ -12,12 +12,12 @@ cupy-cuda11x = {version = "^11.2.0", optional = true}
 cython = "^0.29.24"
 dask = {extras = ["distributed"], version = "^2022.9.2"}
 dask-cuda = {version = "^22.10.0", optional = true}
-datashader = "^0.13.0"
+datashader = "^0.14.2"
 dvc = "^2.5.4"
 geopandas = "^0.9.0"
 graphviz = "^0.17"
 h5netcdf = "^0.11.0"
-hvplot = "^0.7.3"
+hvplot = "^0.8.1"
 icepyx = "^0.4.0"
 intake = {extras = ["dataframe", "server"], version = "^0.6.1"}
 intake-geopandas = "^0.2.4"
