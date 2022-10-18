@@ -1,17 +1,20 @@
 name: deepicedrain
 channels:
-  - conda-forge
   - nvidia
   - rapidsai
+  - conda-forge
+  - conda-forge/label/poetry_dev
+  - conda-forge/label/cleo_dev
 dependencies:
-  - rapidsai::cuml=21.10.00[md5=b4b75e75b3c9489fabdcf6f7f411ba90]
-  - rapidsai::cuspatial=21.10.00[md5=439a561bacd5561a100b4f9cdc8cb29e]
-  - conda-forge::geos=3.9.1[md5=b9a6d9422aed3ad84ec6ccee9bfcaa0f]
-  - conda-forge::gmt=6.2.0[md5=bf0a13923777d4c140e31245f6ebc00b]
+  - nvidia::cuda-python=11.7.0[md5=52a9899a1d177afd0e7f4ef536186aab]
+  - rapidsai::cuml=22.02.00[md5=a26aaf37baadf1ba7bdb5a6f0c393240]
+  - rapidsai::cuspatial=22.02.00[md5=202ee098d4f8eb3c61b6eab74cd7195a]
+  - conda-forge::geos=3.10.0[md5=f3e1934c48463a3fbc87075ba2e94070]
+  - conda-forge::gmt=6.3.0[md5=b0f680c17a9ea5866b26eb2332c09afc]
   - conda-forge::graphviz=2.49.1[md5=9705e060a5e6395db9b0784220aa0b92]
-  - conda-forge::gxx_linux-64=11.2.0[md5=c738b2d8aad20e287e7567de72ffb1cb]
+  - conda-forge::gxx_linux-64=11.3.0[md5=15fbc9079f191d468403639a6515652c]
   - conda-forge::parallel=20210822[md5=c1c5ca73d7086d3e7fe7e8f092454b0e]
-  - conda-forge::pip=21.2.4[md5=4104ada314dd5639ea36cc12bce0a2cd]
-  - conda-forge::poetry=1.1.11[md5=23a6f50870f5f9e5891a64a0a3b51625]
-  - conda-forge::proj=8.0.1[md5=5f820fa831777ee6463ee8dc4f2054ba]
+  - conda-forge::pip=22.3[md5=6f4c6de9fed2a9bd8043283611b09587]
+  - conda-forge/label/poetry_dev::poetry=1.2.0rc2[md5=4b02bd45c74cc3570c1b73d9e3daac7d]
+  - conda-forge::proj=8.2.0[md5=7ba8c7a9bf1c2fedf4a6d6dc92839baf]
   - conda-forge::python=3.8.12[md5=775bb3a23a9b1b529e0cd06bd0091adf]

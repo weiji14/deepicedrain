@@ -512,7 +512,7 @@ def plot_icesurface(
     grid_region : tuple or np.ndarray
         The bounding cube of the grid given as (xmin, xmax, ymin, ymax, zmin,
         zmax).
-    diff_grid : xr.DataArray
+    diff_grid : str or xr.DataArray
         A differenced elevation grid as an xarray.DataArray.
     diff_grid_region : tuple or np.ndarray
         The bounding cube of the diff_grid given as (xmin, xmax, ymin, ymax,
@@ -584,7 +584,7 @@ def plot_icesurface(
             'x+l"Elevation Trend"',
             "y+lm/yr",
         ]
-        if "?dhdt" in diff_grid
+        if "?dhdt" in str(diff_grid)
         else ['x+l"Elevation Change"', "y+lm"],
         perspective=True,
     )
