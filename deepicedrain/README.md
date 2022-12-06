@@ -14,6 +14,7 @@ Contents:
   - calculate_delta - Calculates the change in some quantity variable between two ICESat-2 cycles
   - nanptp - Range of values (maximum - minimum) along an axis, ignoring any NaNs
   - nan_linregress - Linear Regression function that handles NaN and NaT values
+  - dhdt_maxslp - Maximum slope for any consecutive paired value within an elevation time-series
 
 - :globe_with_meridians: spatiotemporal.py - Tools for doing geospatial and temporal subsetting and conversions
   - Region - Bounding box data class structure that has xarray subsetting capabilities and more!

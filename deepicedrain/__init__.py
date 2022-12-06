@@ -4,7 +4,7 @@ import logging
 import intake
 
 import deepicedrain
-from deepicedrain.deltamath import calculate_delta, nan_linregress, nanptp
+from deepicedrain.deltamath import calculate_delta, dhdt_maxslp, nan_linregress, nanptp
 from deepicedrain.extraload import (
     array_to_dataframe,
     ndarray_to_parquet,

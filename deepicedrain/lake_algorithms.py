@@ -56,6 +56,8 @@ def find_clusters(
     """
     try:
         from cuml.cluster import DBSCAN
+
+        kwargs.update(dict(calc_core_sample_indices=False))
     except ImportError:
         from sklearn.cluster import DBSCAN
 

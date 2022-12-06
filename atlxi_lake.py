@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: hydrogen
 #       format_version: '1.3'
-#       jupytext_version: 1.11.3
+#       jupytext_version: 1.11.4
 #   kernelspec:
 #     display_name: deepicedrain
 #     language: python
@@ -37,7 +37,7 @@
 import os
 import subprocess
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1,0"
 
 import cudf
 import cuml
@@ -70,7 +70,7 @@ else:
     cluster = dask.distributed.LocalCluster(n_workers=8, threads_per_worker=1)
 
 client = dask.distributed.Client(address=cluster)
-client
+print(client)
 
 # %% [markdown]
 # # Data Preparation
@@ -102,6 +102,7 @@ cudf_raw: cudf.DataFrame = dask_cudf.read_parquet(
     path="ATLXI/df_dhdt_antarctica.parquet",
     columns=["x", "y", "dhdt_slope", "referencegroundtrack"],
     # filters=[[('dhdt_slope', '<', -0.105)], [('dhdt_slope', '>', 0.105)]],
+    split_row_groups=2,  # split data into 2 GPUs to ensure enough memory
 )
 # Filter to points with dhdt that is less than -0.105 m/yr or more than +0.105 m/yr
 # Based on ICESat-2 ATL06's accuracy and precision of 3.3 ± 7.2cm from Brunt et al 2020
@@ -190,7 +191,7 @@ basins = drainage_basins[drainage_basins.NAME == basin_name].index  # one specif
 basins: pd.core.indexes.numeric.Int64Index = drainage_basins.index  # run on all basins
 
 eps: int = 3000  # ICESat-2 tracks are separated by ~3 km across track, with each laser pair ~90 m apart
-min_samples: int = 300
+min_samples: int = 320
 for basin_index in tqdm.tqdm(iterable=basins):
     # Initial data cleaning, filter to rows that are in the drainage basin
     basin = drainage_basins.loc[basin_index]
@@ -305,9 +306,7 @@ if len(activelakes["geometry"]) >= 1:
     gdf = gpd.GeoDataFrame(activelakes, crs="EPSG:3031")
     basename = "antarctic_subglacial_lakes"  # f"temp_{basin_name.lower()}_lakes"  #
     gdf.to_file(filename=f"{basename}_3031.geojson", driver="GeoJSON")
-    gdf.to_crs(crs={"init": "epsg:4326"}).to_file(
-        filename=f"{basename}_4326.geojson", driver="GeoJSON"
-    )
+    gdf.to_crs(epsg=4326).to_file(filename=f"{basename}_4326.geojson", driver="GeoJSON")
 
 print(f"Total of {len(gdf)} subglacial lakes found")
 
@@ -325,12 +324,12 @@ X_ = X.to_pandas()
 # Plot clusters on a map in colour, noise points/outliers as small dots
 fig = pygmt.Figure()
 n_clusters_ = len(X_.cluster_id.unique()) - 1  # No. of clusters minus noise (NaN)
-sizes = (X_.cluster_id.isna()).map(arg={True: 0.01, False: 0.1})
+size = (X_.cluster_id.isna()).map(arg={True: 0.01, False: 0.1})
 pygmt.makecpt(cmap="polar", series=(-1, 1, 2), color_model="+cDrain,Fill", reverse=True)
 fig.plot(
     x=X_.x,
     y=X_.y,
-    sizes=sizes,
+    size=size,
     style="cc",
     color=pd.cut(x=X_.cluster_id, bins=(-np.inf, 0, np.inf), labels=[-1, 1]),
     cmap=True,
@@ -417,7 +416,7 @@ if not os.path.exists(path=outline_points):
 
 # %%
 # Generate gridded time-series of ice elevation over lake
-cycles: tuple = (3, 4, 5, 6, 7, 8, 9)
+cycles: tuple = (3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
 os.makedirs(name=f"figures/{placename}", exist_ok=True)
 ds_lake: xr.Dataset = deepicedrain.spatiotemporal_cube(
     table=df_lake.to_pandas(),

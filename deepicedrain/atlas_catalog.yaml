@@ -255,69 +255,69 @@ sources:
     metadata:
       lakedict:
         - lakename: Kamb 1
-          ids: [69]
+          ids: [76]
         - lakename: Kamb 34
-          ids: [67]
-        - lakename: Kamb 5
-          ids: [75]
+          ids: [78]
+        # - lakename: Kamb 5
+        #   ids: [75]
         - lakename: Kamb 6
-          ids: [71]
-        - lakename: Kamb 7
-          ids: [67]
-        - lakename: Kamb 8
-          ids: [72]
-        - lakename: Kamb 10
           ids: [74]
+        # - lakename: Kamb 7
+        #   ids: [67]
+        - lakename: Kamb 8
+          ids: [75]
+        - lakename: Kamb 10
+          ids: [77]
         - lakename: MacAyeal 1
-          ids: [122]
-        - lakename: MacAyeal 4
-          ids: [121]
+          ids: [151]
+        # - lakename: MacAyeal 4
+        #   ids: [121]
         - lakename: Subglacial Lake Mercer
-          ids: [18, 23]
-        - lakename: Recovery 2
-          ids: [187, 188]
+          ids: [27, 32]
+        # - lakename: Recovery 2
+        #   ids: [187, 188]
         - lakename: Recovery IV
-          ids: [184]
+          ids: [195]
         - lakename: Slessor 23
-          ids: [142]
+          ids: [162]
         - lakename: Slessor 45
-          ids: [133]
+          ids: [164]
         - lakename: Subglacial Lake Conway
-          ids: [48, 49]
+          ids: [58, 59]
         - lakename: Subglacial Lake Whillans
-          ids: [54, 55, 57]
+          ids: [65, 66]
           transect: 0989_pt1
-        - lakename: Whillans 6
-          ids: [46]
+        # - lakename: Whillans 6
+        #   ids: [46]
         - lakename: Whillans 7
-          ids: [45]
+          ids: [55]
           transect: 0531_pt1
         - lakename: Whillans IX
-          ids: [56]
+          ids: [57]
           transect: 1080_pt3
-        - lakename: Whillans X
-          ids: [51]
+        # - lakename: Whillans X
+        #   ids: [51]
         - lakename: Whillans XI
-          ids: [61, 62]
+          ids: [69, 70]
         - lakename: Subglacial Lake Engelhardt
-          ids: [53]
-        - lakename: Lake 78
-          ids: [23]
+          ids: [64]
+        # - lakename: Lake 78
+        #   ids: [23]
         - lakename: Lake 12
-          ids: [60]
+          ids: [67]
           transect: 0593_pt1
         - lakename: \* 1
-          ids: [50]
+          ids: [60]
         - lakename: \* 2
-          ids: [52]
+          ids: [61]
         - lakename: \* 3
-          ids: [64]
+          ids: [72]
         - lakename: \* 4
-          ids: [81, 82, 83, 91]
-        - lakename: \* 5
-          ids: [97]
+          ids: [92, 93]
+        # - lakename: \* 5
+        #   ids: [97]
         - lakename: \* 6
-          ids: [179]
+          ids: [186, 189]
   test_data:
     description: 'Sample ICESat-2 datasets for testing purposes'
     args:

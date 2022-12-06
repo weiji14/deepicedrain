@@ -65,3 +65,45 @@ def nan_linregress(x, y) -> np.ndarray:
         linregress_result = np.full(shape=(5,), fill_value=np.NaN)
 
     return linregress_result
+
+
+def dhdt_maxslp(x, y) -> np.ndarray:
+    """
+    Maximum slope (i.e. steepest gradient) for any consecutive paired value
+    within an elevation time-series. Hardcoded so that x is expected to be the
+    time array.
+
+    For example, in the plot below, the rate of elevation change over time is
+    greatest from point B to C, so the algorithm will return the dhdt_maxslp
+    value as (elev_C - elev_B) / (time_C - time_B).
+
+             ^
+             |        C
+             |           D
+    elev (m) |
+             |     B        E
+             |  A              F
+             -------------------->
+                     time
+
+    Note that NaN values are ignored in the calculation. So if point E had a
+    NaN value, the algorithm will calculate dhdt between point F and D.
+    """
+    x = np.atleast_2d(x)  # shape of at least (1, 9) instead of (9,)
+    y = np.atleast_2d(y)  # shape of at least (1, 9) instead of (9,)
+
+    mask = ~np.isnan(y)
+
+    # Rolling difference, i.e. x_2 - x_1, x_3 - x_2, etc
+    roll_xdiff = np.diff(a=x[mask])  # rolling time difference
+    roll_ydiff = np.diff(a=y[mask])  # rolling elev difference
+
+    try:
+        # Get maximum absolute dhdt slope value
+        dhdt_values = roll_ydiff / roll_xdiff
+        maxslp_index = np.argmax(np.abs(dhdt_values))
+        maxslp_result = dhdt_values[maxslp_index]
+    except ValueError:  # axes don't match array
+        maxslp_result = np.full(shape=(1,), fill_value=np.NaN)
+
+    return maxslp_result
